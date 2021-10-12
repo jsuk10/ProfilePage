@@ -1,5 +1,5 @@
 ## 이정석의 포토폴리오 사이트
-https://jsuk10.github.io/Profile/
+https://jsuk10.github.io/ProfilePage/
 
 
 - 본 페이지는 notion을 기반으로 제작되었기 때문에 본 페이지 보다 notion으로 보는게 더 깔끔합니다.
