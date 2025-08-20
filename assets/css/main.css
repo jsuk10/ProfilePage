@@ -2562,6 +2562,14 @@ h2 ,#head{
 				.wrapper.style3-alt .icon.major:before {
 					color: #953d75;
 				}
+				
+				.wrapper.style4 .icon.major:before {
+					color: #00ff37;
+				}
+
+				.wrapper.style4-alt .icon.major:before {
+					color: #00ff37;
+				}
 
 /* Image */
 
@@ -3248,30 +3256,63 @@ h2 ,#head{
 			background-color: #261c3e;
 		}
 
+		.wrapper.style1,
+		.wrapper.style1-alt {
+			background-color: #1e0d42;
+		}
+
+		.wrapper.style2,
+		.wrapper.style2-alt {
+			background-color: #5b4297;
+		}
+
+		.wrapper.style3,
+		.wrapper.style3-alt {
+			background-color: #7050a1;
+		}
+
+		.wrapper.style4,
+		.wrapper.style4-alt {
+			background-color: #3c2277;
+		}
+
+		/*
+		.wrapper.alt {
+			background-color: #1A2A80;
+		}
+
 		.wrapper.style1 {
-			background-color: #5e42a6;
+			background-color: #1A2A80;
 		}
 
 		.wrapper.style1-alt {
-			background-color: #493382;
+			background-color: #0C3452;
 		}
 
 		.wrapper.style2 {
-			background-color: #5052b5;
+			background-color: #7A85C1;
 		}
 
 		.wrapper.style2-alt {
-			background-color: #3e4094;
+			background-color: #7A85C1;
 		}
 
 		.wrapper.style3 {
-			background-color: #b74e91;
+			background-color: #B2B0E8;
 		}
 
 		.wrapper.style3-alt {
-			background-color: #953d75;
+			background-color: #B2B0E8;
 		}
 
+		.wrapper.style4 {
+			background-color: #3B38A0;
+		}
+
+		.wrapper.style4-alt {
+			background-color: #3B38A0;
+		}
+		*/
 		.wrapper.fullscreen {
 			display: -moz-flex;
 			display: -webkit-flex;
