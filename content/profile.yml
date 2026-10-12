@@ -1,0 +1,65 @@
+# 첫 화면 (Intro)
+#
+# 문장 안에서 **굵게**, [링크 글자](주소), `코드` 같은 Markdown 표기를 쓸 수 있습니다.
+# 여러 줄로 쓸 때는 둘 중 하나를 골라 붙이고, 다음 줄부터 들여 씁니다.
+#   >-  줄들이 한 문단으로 이어집니다. (엔터가 띄어쓰기가 됩니다)
+#   |-  엔터가 화면에서도 줄바꿈이 되고, 빈 줄은 문단을 나눕니다. (아래 summary 처럼)
+
+name: 이정석
+name_en: Lee JeongSeok
+role: Unreal Engine 클라이언트 / 엔진 프로그래머
+
+# 이름 바로 아래 나오는 한 줄 소개입니다.
+# 중괄호 자리는 경력 파일(content/career/*.md)의 period 로 오늘 날짜 기준 자동 계산됩니다.
+#   {total}          모든 경력 기간의 합                        예) 4년 11개월
+#   {경력 섹션 id}    그 경력 하나의 기간 (content/site.yml 의 id)   예) {prasia} → 3년 11개월
+# 이 표기는 다른 내용 파일 글 안에서도 똑같이 쓸 수 있습니다. 자세한 건 content/README.md 를 보세요.
+brief: 넥슨에서 4년, NC에서 근무 중인 Unreal 클라이언트/엔진 개발자입니다.
+
+photo: images/frofile.png
+photo_alt: 이정석 프로필 사진
+
+summary: |-
+  **넥슨 · [프라시아 전기](https://wp.nexon.com/main) - 기술(엔진) 파트** (Unreal Engine 4.27)
+  출시 전 1년부터 라이브 3년까지 함께했습니다.
+  퍼포먼스 개선, 플러그인 도입과 유지보수, CI/CD 자동화를 맡았습니다.
+
+  **NC · [Like Or Die](https://likeordie.plaync.com/ko-kr/conts/260826_teasing) - 클라이언트 파트** (Unreal Engine 5, 신작 FPS)
+  사운드와 공간음향, 리플레이, 로드 최적화, 에디터 툴과 ML R&D 를 맡고 있습니다.
+
+# 소개 아래 네 칸입니다. logo 에 그림 주소를 적으면 값 왼쪽에 작은 로고가 붙습니다. (비우면 글자만)
+# 로고 파일은 images/logos/ 에 배경이 투명한 PNG 로 넣습니다.
+facts:
+  - label: 현재
+    value: NC Like Or Die
+    meta: 2025.10 ~ 현재
+    logo: images/logos/nc.png
+  - label: 이전
+    value: 넥슨 프라시아 전기
+    meta: 2021.11 ~ 2025.09
+    logo: images/logos/nexon.png
+  - label: 엔진
+    value: Unreal Engine 4.27 / 5
+    meta: Windows · iOS · Android
+    logo: images/logos/unreal-engine.png
+  - label: 학력
+    value: 전남대학교 소프트웨어공학과
+    meta: 2016 ~ 2022
+    logo: images/logos/jnu.png
+
+motto:
+  avatar: images/MyLittleJs.png
+  text: 많은 경험과 끊임없는 공부로 레벨업해서 같이 일하고 싶은 개발자이자 팀일 때 든든한 개발자를 목표로 합니다.
+
+links:
+  - label: Notion 포트폴리오
+    url: https://app.notion.com/p/JEONGSEOK-LEE-255bed59c3638035bc9afe030ed9dea3
+    primary: true
+  - label: GitHub
+    url: https://github.com/jsuk10
+
+# 연락처입니다. 버튼 아래에 주소가 글자로 보이고, 누르면 메일 앱이 열립니다.
+# 옆의 '복사' 버튼은 주소를 클립보드에 복사합니다. url 을 비우면 mailto: 로 연결합니다.
+contact:
+  - label: Email
+    value: jsuk970407@gmail.com

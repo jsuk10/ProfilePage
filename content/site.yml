@@ -1,0 +1,61 @@
+# 페이지 구성표
+#
+# 위에서부터 이 순서대로 섹션이 그려지고, 메뉴(데스크톱은 왼쪽, 태블릿/모바일은 위쪽)도 이 순서를 따릅니다.
+#
+#   id      주소 뒤에 붙는 이름입니다. 예) index.html#like-or-die  (영문 소문자, 숫자, - 만 쓰세요)
+#   nav     메뉴에 보일 이름입니다. 지우면 메뉴에서 빠집니다.
+#   type    섹션 모양입니다. intro, skills, career, impact, spatial-audio, projects, activities 중 하나.
+#   source  내용 파일 경로입니다. (content/ 기준)
+#   style   배경색입니다. style1(가장 어두움), alt, style4, style2, style3(가장 밝음)
+#
+# 섹션을 빼려면 블록을 지우고, 순서를 바꾸려면 블록을 통째로 옮기면 됩니다.
+# 회사를 추가하려면 career/ 폴더에 .md 파일을 만들고 type: career 블록을 하나 더 쓰면 됩니다.
+
+sections:
+  - id: intro
+    nav: Intro
+    type: intro
+    source: profile.yml
+    style: style1
+
+  - id: skills
+    nav: Skills
+    type: skills
+    source: skills.yml
+    style: style4
+
+  - id: like-or-die
+    nav: Like Or Die (NC)
+    type: career
+    source: career/nc-like-or-die.md
+    style: alt
+
+  - id: impact
+    nav: Impact
+    type: impact
+    source: impact.yml
+    style: style1
+
+  - id: spatial-audio
+    nav: Spatial Audio
+    type: spatial-audio
+    source: spatial-audio.yml
+    style: style4
+
+  - id: prasia
+    nav: Wars of Prasia (Nexon)
+    type: career
+    source: career/nexon-prasia.md
+    style: alt
+
+  - id: student-works
+    nav: Student Works
+    type: projects
+    source: projects.yml
+    style: style2
+
+  - id: activities
+    nav: Activities
+    type: activities
+    source: activities.yml
+    style: style3

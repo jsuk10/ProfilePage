@@ -1,0 +1,117 @@
+# 성과 지표 (개선 전 막대 위에 개선 후 막대를 겹친 그래프)
+#
+# cases 하나가 그래프 묶음 하나입니다. metrics 에 지표를 적으면 그래프가 그려집니다.
+#   before / after  숫자만 씁니다. 적은 그대로 표시됩니다. (낮을수록 좋은 지표 기준)
+#   unit            숫자 뒤에 붙는 단위입니다. 예) 초, ms, 회
+#   change          변화율 표기를 직접 정할 때만 씁니다. 비우면 before / after 로 계산합니다.
+#   note            지표 이름 아래 작은 글씨로 붙는 보충 설명입니다.
+
+title: 성과 지표
+lead: |-
+  Like Or Die 에서 Unreal Insights 트레이스를 전후 1:1로 비교해 얻은 값입니다. (같은 맵, 같은 DDC 조건, 대조군 포함)
+
+  모두 낮을수록 좋은 지표입니다. **빨간 막대가 개선 전**, 그 위에 겹친 **초록 막대가 개선 후**이고 남은 빨간 부분만큼 줄었습니다.
+
+cases:
+  - title: 나이아가라 상속 드리프트
+    subtitle: 로드마다 재컴파일 제거
+    text: >-
+      미동기 상태의 ChangeId 재발급과 머지 직후 dirty 해제가 겹쳐 로드마다 머지 → 링커 리셋 → 강제 플러시가 반복됐습니다.
+      장기간 미반영된 부모 변경을 해소(에셋 111개 일괄 리세이브)하고 재발 방지 에디터 서브시스템을 새로 구현했습니다.
+    metrics:
+      - label: VFX 폴더 로드
+        before: 18.4
+        after: 4.5
+        unit: 초
+        change: -76%
+      - label: 이미터 머지
+        note: 299회 → 15회
+        before: 14.7
+        after: 0.7
+        unit: 초
+        change: -95%
+      - label: 중복 로드
+        before: 14.6
+        after: 1.1
+        unit: 초
+        change: -92%
+      - label: PIE 50ms 초과 프레임
+        before: 204
+        after: 114
+        unit: 프레임
+        change: -44%
+
+  - title: Mutable 플러그인 동기 로드
+    subtitle: 참조자 클래스 필터 3줄
+    text: >-
+      참조자를 클래스 확인 전에 전부 로드해, 애님 시퀀스 200여 개가 첫 프레임에 동기 로드되고 있었습니다.
+      로드 전에 AssetData 로 클래스를 확인해 건너뛰게 고쳤고 이후 엔진 5.8에서 개선되었습니다.
+    metrics:
+      - label: 에디터 첫 프레임
+        before: 20.8
+        after: 9.2
+        unit: 초
+        change: -56%
+      - label: Mutable 틱
+        before: 19.0
+        after: 7.6
+        unit: 초
+        change: -60%
+      - label: 첫 틱 에셋 로드
+        before: 9.2
+        after: 1.6
+        unit: 초
+        change: -83%
+
+  - title: 인게임 이펙트 스폰 비용
+    subtitle: 비동기 프리로드 + 나이아가라 컴포넌트 풀링
+    text: >-
+      쿠킹 빌드 A/B/C 3세션으로 측정했습니다. GC 시점을 고정해 재현성을 확보했고
+      트레이드오프(VRAM +56MB)와 사용 규칙을 팀 가이드라인으로 문서화했습니다.
+    metrics:
+      - label: 첫 발사 프레임
+        before: 28.8
+        after: 16.1
+        unit: ms
+        change: -44%
+      - label: 그 프레임 동기 로드
+        note: 12회 → 2회
+        before: 17.7
+        after: 5.1
+        unit: ms
+        change: -71%
+      - label: 컴포넌트 등록
+        before: 2640
+        after: 324
+        unit: 회
+        change: -88%
+      - label: GC 1회 파괴 비용
+        before: 3.2
+        after: 0.8
+        unit: ms
+        change: -74%
+
+  - title: 매치 시작 저프레임
+    subtitle: 애님 PostLoad 2단계 감축
+    text: >-
+      프레임마다 애님 시퀀스 PostLoad 가 끼어 GT 바운드였던 구간을, ControlRig 초기화 지연(1단계)과
+      스켈레톤 GUID 불일치 애님 543개 일괄 재저장(2단계)으로 줄였습니다. 쿡 빌드에는 없는 구간이라 에디터 체감 개선으로 범위를 명시했습니다.
+    metrics:
+      - label: 저프레임 구간
+        note: 11~50fps → 40~80fps
+        before: 53
+        after: 32
+        unit: 초
+      - label: 애님 1개 PostLoad
+        before: 17.6
+        after: 6.3
+        unit: ms
+      - label: 시퀀스 PostLoad
+        note: 829회 합계
+        before: 5.9
+        after: 0.05
+        unit: 초
+      - label: 16.7ms 초과 프레임
+        before: 497
+        after: 306
+        unit: 프레임

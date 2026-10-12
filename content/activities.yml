@@ -1,0 +1,94 @@
+# 학생 시절 활동
+#
+# groups 하나가 칸 하나입니다. (아이콘 + 제목 + 목록)
+#   icon    Font Awesome 5 아이콘 이름 (fa- 뒤 부분). 예) trophy, graduation-cap, book-open, users
+#           목록: https://fontawesome.com/v5/search?o=r&m=free&s=solid
+#   items   text 와 date 를 적습니다. text 에는 [글자](주소) 로 링크를 걸 수 있습니다.
+#           [ 로 시작하는 text 는 ">-" 를 붙이고 다음 줄에 씁니다. (YAML 규칙)
+#   highlight  적으면 그 항목 글자를 굵게 하고 옆에 그 글자로 표시를 붙입니다. 예) highlight: 게임
+
+title: 학생 시절 활동
+lead: >-
+  학력, 수상, 교육 프로그램, 동아리 이력입니다.
+
+links:
+  - label: 학생 시절 작품 & 활동 (Notion)
+    url: https://app.notion.com/p/3f7bed59c36381ee80b9ebb951ce9502
+
+groups:
+  - title: 학력 / 병역
+    icon: graduation-cap
+    items:
+      - text: >-
+          [전남대학교](https://www.jnu.ac.kr/) [소프트웨어공학과](https://sw.jnu.ac.kr/)
+        date: 2016.03 ~ 2022.03
+      - text: 육군 28사단 신병교육대대 조교 만기 전역
+        date: 2017.10 ~ 2019.07
+      - text: 전남 순천고등학교
+        date: 2013.03 ~ 2016.03
+
+  - title: 수상
+    icon: trophy
+    items:
+      - text: 광주 진흥원 인디스타즈 5기 대상
+        date: 2021.01.06
+      - text: 제1회 오아시스 해커톤 특별상
+        date: 2021.01.06
+      - text: 2020 게임 사관학교 여름방학 과정 특별상
+        date: 2020.08.31
+      - text: 2019 게임 사관학교 여름방학 과정 특별상
+        date: 2019.08.29
+      - text: 잡 로드맵 경진 대회 금상
+        date: 2016.11.24
+      - text: 호남 / 제주권 창의적 문제 해결 대회 최우수상
+        date: 2016.11.18
+
+  - title: 교육 / 프로그램
+    icon: book-open
+    items:
+      - text: >-
+          [KAIST & 크래프톤 몰입캠프](https://madcamp.io/)
+        date: 2021.07
+        highlight: 게임
+      - text: >-
+          [스마일게이트 CSR 멤버십 전문성 봉사](https://www.smilegatefoundation.org/)
+        date: 2021.07 ~ 2021.11
+        highlight: 게임
+      - text: 광주 진흥원 인디스타즈 6기
+        date: 2021.04 ~ 2021.10
+      - text: 넷챌린지 (NIA)
+        date: 2021.04 ~ 2021.10
+      - text: 인디스타즈 5기
+        date: 2020.04 ~ 2020.12
+        highlight: 게임
+      - text: 인프런 애플 웹사이트 인터랙션 클론
+        date: 2020.11 ~ 2020.12
+      - text: >-
+          [GitHub Game Off 2020](https://itch.io/jam/game-off-2020/rate/837025) (Moon Slasher)
+        date: 2020.11
+        highlight: 게임
+      - text: >-
+          [노마드 코더](https://nomadcoders.co/) Vanilla JS & Challenge
+        date: 2020.10
+      - text: 제2회 전남대학교 해커톤
+        date: 2020.08
+      - text: 콘텐츠 아카데미 여름방학 정규 과정 (100H), 우수상
+        date: 2020.08
+      - text: 콘텐츠 아카데미 여름방학 정규 과정 (100H), 우수상
+        date: 2019.08
+      - text: 콘텐츠 아카데미 여름방학 정규 과정 (100H)
+        date: 2016.08
+
+  - title: 동아리 / 커뮤니티
+    icon: users
+    items:
+      - text: KAIST 몰입캠프 12기
+        date: '2021'
+      - text: 광주 진흥원 인디스타즈 5, 6기
+        date: 2020 ~ 2021
+      - text: 전남대학교 게임 개발 동아리 PIMM
+        date: 2016 ~ 2021
+      - text: 전남대학교 게임 동아리 CTRL
+        date: '2021'
+      - text: 전남대학교 전자컴퓨터공학부 학생회
+        date: 2016, 2017, 2019

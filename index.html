@@ -3,391 +3,76 @@
 	Hyperspace by HTML5 UP
 	html5up.net | @ajlkn
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+
+	이 파일은 뼈대입니다. 내용은 content/ 폴더의 .yml, .md 파일을 고치면 됩니다.
+	assets/js/portfolio/app.js 가 그 파일들을 읽어 섹션을 그립니다. 방법은 content/README.md 를 보세요.
 -->
-<html>
+<html lang="ko">
 
 <head>
-	<title>Lee jeong seok 포토폴리오</title>
 	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<title>이정석 포트폴리오 | Unreal Engine 클라이언트 / 엔진 프로그래머</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="description" content="넥슨 프라시아 전기와 NC Like Or Die 에서 Unreal Engine 클라이언트 / 엔진 개발을 맡아 온 이정석의 포트폴리오입니다. 퍼포먼스 최적화, 사운드와 공간음향, 리플레이, 빌드 자동화." />
+	<meta name="theme-color" content="#312450" />
+	<meta name="color-scheme" content="dark" />
+	<meta property="og:type" content="website" />
+	<meta property="og:locale" content="ko_KR" />
+	<meta property="og:title" content="이정석 포트폴리오" />
+	<meta property="og:description" content="Unreal Engine 클라이언트 / 엔진 프로그래머. 넥슨 프라시아 전기, NC Like Or Die." />
+	<meta property="og:url" content="https://jsuk10.github.io/ProfilePage/" />
+	<meta property="og:image" content="https://jsuk10.github.io/ProfilePage/images/frofile.png" />
+	<link rel="icon" href="images/MyLittleJs.png" />
+	<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
 	<link rel="stylesheet" href="assets/css/main.css" />
-	<noscript>
-		<link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	<link rel="stylesheet" href="assets/css/portfolio.css" />
+	<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	<script>
+		// index.html 을 파일로 바로 열었는지 확인합니다. (이때는 content/ 를 읽을 수 없어 안내문을 보여 줍니다.)
+		if (location.protocol === 'file:') document.documentElement.classList.add('is-file-protocol');
+	</script>
 </head>
 
 <body class="is-preload">
 
-	<!-- Sidebar -->
+	<a class="pf-skip" href="#wrapper">본문으로 건너뛰기</a>
+
+	<!-- Sidebar: 메뉴는 content/site.yml 의 nav 값으로 채워집니다. -->
 	<section id="sidebar">
 		<div class="inner">
-			<nav>
-				<ul>
-					<li><a href="#intro">Who Am I</a></li>
-					<li><a href="#career">career</a></li>
-					<li><a href="#project">my projects List</a></li>
-					<li><a href="#activity">What I do</a></li>
-				</ul>
+			<nav aria-label="섹션 이동">
+				<ul></ul>
 			</nav>
 		</div>
 	</section>
 
-	<!-- Wrapper -->
-	<div id="wrapper">
-
-		<!-- Intro -->
-		<section id="intro" class="wrapper style1 fullscreen fade-up">
-			<div class="inner">
-
-				<div class="split style1">
-					<section>
-						<div class="inner">
-							<h1>레벨업 하고 싶은 개발자</h1>
-							<div> 많은 경험과 끊임없는 공부를 통해 레벨업하여</div>
-							<div> 같이 일하고 싶은 개발자, 팀일 때 든든한 개발자를 목표로 하고 있습니다.</div>
-							<br>
-						</div>
-					</section>
-					<section>
-						<ul class="contact">
-							<div class="image fit">
-								<img src="images/MyLittleJs.png">
-							</div>
-						</ul>
-					</section>
-				</div>
-				<div class="split style1">
-					<section>
-						<div class="inner">
-							<h1>이정석 Lee JeongSeok</h1>
-							<div>Birth : 1997.04.07</div>
-							<div>Character : 책임감, 호탕함, 쾌활함, 친근함 </div>
-							<!-- 개인정보 제외 처리
-								<div>Address : 서울특별시 광진구 자양동</div>
-								<div>Mail : jsuk970407@gmail.com</div>
-								<div>Phone : 82+) 010-6575-5784</div>
-							-->
-							<br>
-							<div>Career : <a href="https://wp.nexon.com/main" target="_blank">프라시아 전기 (2021.11.~2025.08.)</a> </div>
-							<div>Education : 전남대학교 소프트웨어 공학 전공 (2016~2022) </div>
-							<br>
-							<br>
-							<ul class="actions">
-								<li> <a class="button" target="_blank"
-										href="https://www.notion.so/JEONGSEOK-LEE-255bed59c3638035bc9afe030ed9dea3?source=copy_link">Notion portfolio</a></li>
-								<li> <a class="button" target="_blank" href="https://github.com/jsuk10">Git Hub Page</a></li>
-							</ul>
-						</div>
-					</section>
-					<section>
-						<ul class="contact">
-							<div class="image fit">
-								<img src="images/frofile.png">
-							</div>
-						</ul>
-					</section>
-				</div>
+	<!-- Wrapper: 섹션이 여기에 그려집니다. -->
+	<main id="wrapper" tabindex="-1">
+		<p class="pf-status" role="status">포트폴리오를 불러오는 중입니다.</p>
+		<div class="pf-notice pf-notice--file">
+			<strong>내용 파일을 읽을 수 없습니다.</strong>
+			index.html 을 파일로 바로 열면 브라우저 보안 정책 때문에 content/ 폴더를 읽지 못합니다.
+			VS Code 의 Live Server 같은 로컬 서버로 열어 주세요.
+		</div>
+		<div class="pf-notice pf-notice--legacy">
+			<strong>이 브라우저에서는 포트폴리오를 표시할 수 없습니다.</strong>
+			최신 Chrome, Edge, Safari, Firefox 로 열어 주세요.
+		</div>
+		<noscript>
+			<div class="pf-notice">
+				<strong>이 페이지는 JavaScript 로 내용을 그립니다.</strong>
+				같은 내용은 <a href="https://app.notion.com/p/JEONGSEOK-LEE-255bed59c3638035bc9afe030ed9dea3">Notion 포트폴리오</a>에서 볼 수 있습니다.
 			</div>
-		</section>
-		
-		<section id="career" class="wrapper style4 fullscreen fade-up">
-			<div class="inner">
-				<div class="split style1-alt">
-					<section style="flex-basis: 40%;">
-						<div class="inner">
-							<h1>CAREER</h1>
-							<p>
-								<a href="https://wp.nexon.com/main" target="_blank">2021.11. ~ 2025.08. Nexon 프라시아전기 팀</a>
-								<br>
-								- 2023.03.30 출시
-							</p>
-							<ul style="margin-top:8px;">
-								<li>Unreal Engine(UE4.27) 기반 모바일·PC 프로젝트에서 엔진 기능 도입/개선</li>
-								<li>퍼포먼스 최적화(히치 완화, 애니메이션 예산 관리, 셰이더 캐시)</li>
-								<li>플러그인 유지보수(Backtrace/Wwise/Vivox)</li>
-								<li>CI/CD 및 소스컨트롤 운영(Jenkins/Perforce)</li>
-								<li>업무 자동화(Python/Power Automate)</li>
-								<li>에디터 확장과 검증 로직 구축</li>
-								<li>보안 작업(Text 이중 암호화)</li>
-								<li>기획 파트 작업 프로세스 간소화 및 유틸 제공</li>
-							</ul>
-							<ul class="actions">
-								<li> <a class="button" target="_blank"
-										href="https://www.notion.so/255bed59c3638157bbc4cdf8cd119e1d?source=copy_link">details in notion</a>
-								</li>
-								<li> <a class="button" href="Project/Carrer.pdf" target="_blank">details.pdf</a>
-							</ul>
-						</div>
-					</section>
-					<section style="flex-basis: 60%; display: flex; align-items: center; justify-content: center;">
-						<div class="image fit" style="width:100%; margin: 0 auto;">
-							<img src="images/warofprasia.jpg" style="width:100%; display: block; margin: 0 auto;">
-						</div>
-					</section>
-				</div>
-			</div>
-		</section>
-
-		<!-- project -->
-		<section id="project" class="wrapper style2 spotlights">
-			<div class="inner">
-				<h2>My Project List</h2>
-				아래 프로젝트를 포함한 노션링크를 보려면 버튼을 눌러주세요.
-				<br>
-				<br>
-				<div class="inner">
-					<ul class="actions">
-						<li> <a class="button"
-								href="https://www.notion.so/255bed59c3638134a934c71a404f72f0?v=255bed59c363819a8082000ce4e7be0c&source=copy_link">Other Project</a>
-					</ul>
-				</div>
-			</div>
-			<!-- 문슬레이어 -->
-			<section>
-				<a class="image"><img src="images/pic01.png" alt="" data-position="center center" /></a>
-				<div class="content">
-					<div class="inner">
-						<h2>Moon Slasher</h2>
-						<p>
-							<a href="https://itch.io/jam/game-off-2020/rate/837025">Git Hub Game Gam 출품작</a><br>
-							Git Flow를 통해 개발<br>
-							상속을 적극적으로 사용하여 상속을 이해하게 됨.<br>
-							디자인 패턴 및 최적화 기법을 사용하며 여러 프로그래밍 기법에 관심이 생기게 됨.<br>
-							2020.11.01~2020.11.30 (1달)
-						</p>
-						<ul class="actions">
-							<li> <a class="button" href="https://www.notion.so/Moon-Slasher-255bed59c36381a19b4cd2be102ac798?source=copy_link">details in notion</a>
-							<li> <a class="button" href="https://itch.io/jam/game-off-2020/rate/837025">Game Jam Site</a>
-							<li> <a class="button" href="https://github.com/PMM-Dev/moonshot">Git</a>
-							<li> <a class="button" href="Project/MoonSlayer.pdf" target="_blank">details.pdf</a>
-						</ul> 
-						<div style="display: flex; justify-content: center; align-items: center; width: 100%;">
-							<iframe src="https://drive.google.com/file/d/19-HunFVhMqJXQabaP1h45om-gA7aVHKY/preview" width="320" height="180" allow="autoplay"></iframe>
-						</div>
-					</div>
-				</div>
-			</section>
-			<!-- 에드 아스트라 -->
-			<section>
-				<a class="image"><img src="images/pic02.png" alt="" data-position="center center" /></a>
-
-				<div class="content">
-					<div class="inner">
-						<h2>Ad Astra</h2>
-						<p>
-							<a href="https://madcamp.io/">몰입캠프 3주차 최우수 픽</a><br>
-							처음 개발한 멀티(서버) 게임<br>
-							Pothon 활용하여 개발<br>
-							2021.07.14~2021.07.21 (1주)
-						</p>
-
-						<ul class="actions">
-							<li> <a class="button" href="https://www.notion.so/Ad-Astra-3-255bed59c363815f8e5efe478ba04d55?source=copy_link">details in notion</a>
-							<li> <a class="button" href="https://github.com/jsuk10/FlowCamp3_AdAstra">Git</a>
-							<li> <a class="button" href="Project/AdAstra.pdf" target="_blank">details.pdf</a>
-						</ul>
-						
-						<div style="display: flex; justify-content: center; align-items: center; width: 100%;">
-							<iframe src="https://drive.google.com/file/d/1O9YYkWU-kxczq6kvw9jUTSjTDFTTIeCx/preview" width="320" height="180" allow="autoplay"></iframe>
-						</div>
-
-					</div>
-				</div>
-			</section>
-			<!-- 프린키피움 -->
-			<section>
-				<a class="image"><img src="images/pic03.png" alt="" data-position="center center" /></a>
-				<div class="content">
-					<div class="inner">
-						<h2>프린키피움</h2>
-						<p>
-							<a href="https://www.newsway.co.kr/news/view?ud=2021010116315211164">광주
-								진흥원 인디스타즈 대상</a><br>
-							주 개발자로 참여하여 게임을 처음부터 끝까지 완성함.<br>
-							저학년 팀원들과 함께 개발하며 팀원 성장에 목표를 두어 개발하며 설명하는 멘토 멘티 방식으로 진행한 프로젝트<br>
-							2020.04.01~2020.12.05
-						</p>
-						<ul class="actions">
-							<li> <a class="button" href="https://www.notion.so/255bed59c36381ae9117c8f3bd17d5e8?source=copy_link">details in notion</a>
-							<li> <a class="button" href="https://github.com/Leejeongseok0407/principium.git">Git</a>
-							<li> <a class="button" href="Project/프린키피움.pdf" target="_blank">details.pdf</a>
-						</ul>
-						
-						<div style="display: flex; justify-content: center; align-items: center; width: 100%;">
-							<iframe src="https://drive.google.com/file/d/1Z5ljd2X0Dn3j1MHu9gLM6pXfgtJ2pw8X/preview" width="320" height="180" allow="autoplay"></iframe>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<!-- World Tower Defense -->
-			<section>
-				<a class="image"><img src="images/pic04.png" alt="" data-position="center center" /></a>
-				<div class="content">
-
-					<div class="inner">
-						<h2>World Tower Defense</h2>
-						<p>
-							전남대학교 졸업 캡스톤 작품<br>
-							유전 알고리즘을 활용하여 게임 밸런스 테스트에 활용할 수 있는지 테스트해 본 게임<br>
-							게임을 만들며 C#의 제네릭 활용법, CSV(엑셀) 데이터 파싱, 오브젝트 풀링등의 최적화 기술을 공부하고 활용해봄<br>
-							<a target="_blank"
-								href="https://play.google.com/store/apps/details?id=com.Capstone.WorldTowerDefense">구글
-								플레이 스토어 출시 (현재는 내려감)</a><br>
-							2021.03.01~2021.06.30
-						</p>
-						<ul class="actions">
-							<li> <a class="button" href="https://www.notion.so/World-Tower-Defense-255bed59c363810ea6ccd6285fa56d0b?source=copy_link">details in notion</a>
-							<li> <a class="button" href="https://github.com/jiyullee/WorldTD">Git</a>
-							<li> <a class="button" href="Project/WorldTowerDefense.pdf" target="_blank">details.pdf</a>
-						</ul>
-						<div style="display: flex; justify-content: center; align-items: center; width: 100%;">
-							<iframe src="https://drive.google.com/file/d/12JCj7FyUF2uOPp6bS7cPqJELVzYsz3v9/preview" width="320" height="180" allow="autoplay"></iframe>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<!-- GrowMawang -->
-			<section>
-				<a class="image"><img src="images/pic05.png" alt="" data-position="center center" /></a>
-
-				<div class="content">
-					<div class="inner">
-						<h2>GrowMawang</h2>
-						<p>
-							전남대학교 게임 개발 캡스톤(교양)으로 제작<br>
-
-							지인이 <a target="_blank"
-								href="https://play.google.com/store/apps/details?id=com.Degames.FarmDevil">출시한
-								게임</a>의 리소스를 빌려 게임을 제작함.<br>
-							Unity에서 플레이어 프리팹을 사용하여 로컬 데이터를 저장하는 방법을 알게 됨.<br>
-							코루틴의 개념과 사용법을 알게 됨.<br>
-							2019.09.15~2019.12.31
-						</p>
-						<ul class="actions">
-							<li> <a class="button" href="https://www.notion.so/GrowMawang-255bed59c36381f783ede512b6f3f0fb?source=copy_link">details in notion</a>
-							<li> <a class="button" href="Project/GrowMawang.pdf" target="_blank">details.pdf</a>
-							<li> <a class="button" href="https://github.com/jsuk10/nugsa">Git</a>
-						</ul>
-					</div>
-					
-					<div style="display: flex; justify-content: center; align-items: center; width: 100%;">
-						<iframe src="https://drive.google.com/file/d/1Zxk_pxGe3NEYBOMy2kQrk6Dpn_M_cXo0/preview" width="320" height="180" allow="autoplay"></iframe>
-					</div>
-				</div>
-			</section>
-
-			<!-- 용족 대 명절 -->
-			<section>
-				<a class="image"><img src="images/pic06.png" alt="" data-position="center center" /></a>
-
-				<div class="content">
-					<div class="inner">
-						<h2>용족 대 명절</h2>
-						<p>
-							<a target="_blank" href="https://www.gitct.or.kr/main/">광주 진흥원 콘텐츠 아카데미 우수상</a><br>
-							처음 만든 게임 프로젝트<br>
-							Unity를 활용하여 만든 첫 프로젝트로 게임이 돌아가는 알고리즘, Unity Asset 사용법 등의 전반적인 Unity를 학습함.<br>
-							2019.08.01~2019.08.31
-						</p>
-						<ul class="actions">
-							<li> <a class="button" href="https://www.notion.so/255bed59c363810e813af1c7a9e6b9ae?source=copy_link">details in notion</a>
-							<li> <a class="button" href="Project/용족대명절.pdf" target="_blank">details.pdf</a>
-						</ul>
-					</div>
-					<div style="display: flex; justify-content: center; align-items: center; width: 100%;">
-						<iframe src="https://drive.google.com/file/d/1hY-_kmUSkvvVM1NhksbAAAm5YpYRAbEL/preview" width="320" height="180" allow="autoplay"></iframe>
-					</div>
-
-				</div>
-			</section>
-
-			<!-- activity -->
-			<section id="activity" class="wrapper style3 fade-up">
-				<div class="inner">
-					<h2>What I do</h2>
-
-					<h3></h3>
-					<div class="features">
-						<section>
-							<span class="icon major fa-gem"></span>
-							<h3>수상 목록</h3>
-							<div>
-								<h3>GAME</h4>
-									<li>인디스타즈 5기 (대상) - 2021.01.06</li>
-									<li>2020 게임 사관학교 여름방학 과정 (특별상) - 2020.08.31</li>
-									<li>2019 게임 사관학교 여름방학 과정 (특별상) - 2019.08.29</li>
-							</div>
-							<br>
-							<div>
-								<h3>ETC</h4>
-									<li>오아시스 해커톤 (특별상) - 2021.01.06</li>
-									<li>잡 로드맵 경진 대회 (금상) - 2016.11.24</li>
-									<li>호남, 제주권 창의적 문제 해결 대회(최우수상) - 2016.11.18</li>
-							</div>
-
-						</section>
-						<section>
-							<span class="icon solid major fa-desktop"></span>
-							<h3>2021 참가 교육</h3>
-							<div>
-								<li><a target="_blank" href="https://www.madcamp.io/">KAIST & 크래프톤 몰입캠프 [7月]</a></li>
-								<li>2020 인디스타즈 6기 [4月~10月]</li>
-								<li>넷 첼린지 [4月~10月]</li>
-								<li><a target="_blank" href="https://www.smilegatefoundation.org/">스마일 게이트 (CSR멤버십 전문성 봉사) [7月~11月]</a> </li>
-								<li> 제 1회 오아시스 해커톤 [01月] / 특별상</li>
-							</div>
-						</section>
-						<section>
-							<span class="icon solid major fa-desktop"></span>
-							<h3>2020 참가 교육</h3>
-							<div>
-								<li>2020 인디스타즈 5기 / [04月~12月] </li>
-								<li><a target="_blank" href="https://www.inflearn.com/">애플 웹사이트 인터랙션 클론[11月~12月]</a> </li>
-								<li><a target="_blank" href="https://itch.io/jam/game-off-2020/rate/837025">Game Off 2020 MoonShot [11月]</a> </li>
-								<li><a target="_blank" href="https://nomadcoders.co/">노마드 코더 Vanilla JS & Chllang [10月]</a> </li>
-								<li>제 2회 전남대학교 해커톤 [08月]</li>
-								<li>콘텐츠 아카데미 여름방학 정규 과정(100H) [08月] / 우수상 </li>
-							</div>
-						</section>
-						<section>
-							<span class="icon solid major fa-desktop"></span>
-							<h3>2019 참가 교육</h3>콘텐츠 아카데미 여름방학 정규 과정 (100H)[08月]/ 우수상</a></li>
-						</section>
-						<section>
-							<span class="icon solid major fa-desktop"></span>
-							<h3>2016 참가 교육</h3>콘텐츠 아카데미 여름방학 정규 과정 (100H)[08月]</li>
-
-						</section>
-						<section>
-							<span class="icon solid major fa-link"></span>
-							<h3>ETC</h3>
-							<li>KAIST 몰입캠프 12기<br> - 2020 </li>
-							<li>광주 컨텐츠 진흥원 인디스타즈 5, 6기<br> - 2020 ~ 2021 </li>
-							<li>전남대학교 게임 개발 동아리 "PIMM"에서 활동<br> - 2016 ~ 2021 </li>
-							<li>전남대학교 게임 동아리 "CTRL"활동 <br> - 2021</li>
-							<li>육군 28사단 신병교육대대 조교 만기 전역<br> - 2017 ~ 2019 </li>
-							<li>전남대학교 전자컴퓨터 공학부 학생회<br> - 2016, 2017, 2019 </li>
-						</section>
-					</div>
-
-
-					<ul class="actions">
-						<li><a target="_blank"
-								href="https://www.notion.so/255bed59c36381a1a969c58379e0d837?v=255bed59c36381f2a0cb000c075fc947&source=copy_link8"
-								class="button">Notion Page</a></li>
-					</ul>
-				</div>
-			</section>
-	</div>
+		</noscript>
+	</main>
 
 	<!-- Footer -->
 	<footer id="footer" class="wrapper style1-alt">
 		<div class="inner">
 			<ul class="menu">
-				<li>&copy; Untitled. All rights reserved.</li>
-				<li>ref: <a target="_blank" href="http://html5up.net">HTML5 UP</a></li>
-				<li>modfiy by: lee jeong seok</li>
+				<li>&copy; 이정석</li>
+				<li>Design: <a href="https://html5up.net" target="_blank" rel="noopener">HTML5 UP</a> (Hyperspace)</li>
 			</ul>
 		</div>
 	</footer>
@@ -400,6 +85,10 @@
 	<script src="assets/js/breakpoints.min.js"></script>
 	<script src="assets/js/util.js"></script>
 	<script src="assets/js/main.js"></script>
+	<script type="module" src="assets/js/portfolio/app.js"></script>
+	<script nomodule>
+		document.documentElement.className += ' is-legacy-browser';
+	</script>
 
 </body>
 
