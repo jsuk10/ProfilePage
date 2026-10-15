@@ -2486,6 +2486,161 @@
 		color: var(--pf-text-muted);
 	}
 
+/* Splash (불러오는 동안 보이는 명함, index.html 의 #pf-splash) */
+
+	.pf-splash {
+		align-items: center;
+		background: var(--pf-surface);
+		display: flex;
+		inset: 0;
+		justify-content: center;
+		padding: 1.5em;
+		position: fixed;
+		transition: opacity 360ms ease, visibility 360ms;
+		z-index: 10000;
+	}
+
+		.pf-splash.is-leaving {
+			opacity: 0;
+			pointer-events: none;
+			visibility: hidden;
+		}
+
+		/* 템플릿은 로드가 끝날 때까지 모든 움직임을 끄지만 명함은 그 전에 뜨고 사라집니다. */
+		body.is-preload .pf-splash {
+			transition: opacity 360ms ease, visibility 360ms !important;
+		}
+
+		.is-file-protocol .pf-splash,
+		.is-legacy-browser .pf-splash {
+			display: none;
+		}
+
+	.pf-card {
+		align-items: center;
+		animation: pf-card-in 600ms var(--pf-ease-out) both;
+		background: rgba(0, 0, 0, 0.18);
+		border: solid 1px var(--pf-line-strong);
+		border-radius: var(--pf-radius-m);
+		box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+		display: flex;
+		gap: 1.75em;
+		max-width: 34em;
+		padding: 1.75em 2em;
+		width: 100%;
+	}
+
+		body.is-preload .pf-card {
+			animation: pf-card-in 600ms var(--pf-ease-out) both !important;
+		}
+
+		.pf-card__photo {
+			aspect-ratio: 509 / 634;
+			border-radius: var(--pf-radius-m);
+			flex: none;
+			height: auto;
+			object-fit: cover;
+			width: 7.5em;
+		}
+
+		.pf-card__body {
+			min-width: 0;
+		}
+
+		.pf-card__name {
+			color: var(--pf-ink);
+			font-size: 1.6em;
+			font-weight: 700;
+			line-height: 1.2;
+			margin: 0;
+		}
+
+		.pf-card__name-en {
+			color: var(--pf-text-muted);
+			font-size: 0.55em;
+			font-weight: 500;
+			letter-spacing: 0.04em;
+			margin-left: 0.5em;
+		}
+
+		.pf-card__role {
+			color: var(--pf-accent);
+			font-size: 0.95em;
+			font-weight: 600;
+			margin: 0.35em 0 0.9em 0;
+		}
+
+		.pf-card__career {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+
+			.pf-card__career li {
+				align-items: center;
+				display: flex;
+				flex-wrap: wrap;
+				font-size: 0.9em;
+				gap: 0.3em 0.6em;
+				padding: 0.25em 0;
+			}
+
+			.pf-card__career img {
+				border-radius: 3px;
+				height: 1.25em;
+				width: 1.25em;
+			}
+
+		.pf-card__meta {
+			color: var(--pf-text-muted);
+			font-variant-numeric: tabular-nums;
+		}
+
+		.pf-card__status {
+			color: var(--pf-text-muted);
+			font-size: 0.8em;
+			margin: 1em 0 0 0;
+		}
+
+		.pf-card__dots {
+			animation: pf-pulse 1.2s ease-in-out infinite;
+			display: inline-block;
+			margin-left: 0.15em;
+		}
+
+			body.is-preload .pf-card__dots {
+				animation: pf-pulse 1.2s ease-in-out infinite !important;
+			}
+
+	@keyframes pf-card-in {
+		from { opacity: 0; transform: translateY(12px); }
+		to { opacity: 1; transform: none; }
+	}
+
+	@keyframes pf-pulse {
+		0%, 100% { opacity: 0.25; }
+		50% { opacity: 1; }
+	}
+
+	@media screen and (max-width: 480px) {
+
+		.pf-card {
+			flex-direction: column;
+			gap: 1em;
+			padding: 1.5em;
+			text-align: center;
+		}
+
+			.pf-card__career li {
+				justify-content: center;
+			}
+
+			.pf-card__photo {
+				width: 6em;
+			}
+
+	}
+
 /* Status (불러오는 중 / 오류 / 안내) */
 
 	.pf-status,
@@ -2556,10 +2711,13 @@
 		.pf-media--slide img,
 		.pf-screen__toast,
 		.pf-screen__window,
+		.pf-card,
+		.pf-card__dots,
 		.pf-detail__chevron,
 		.pf-meter__fill,
 		.pf-switch__thumb,
 		.pf-skip {
+			animation: none !important;
 			transition: none !important;
 		}
 

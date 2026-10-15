@@ -49,6 +49,20 @@ function readSections(site) {
   });
 }
 
+// 불러오는 동안 보이던 명함(index.html 의 #pf-splash)을 치웁니다. 너무 빨리 사라져 깜빡이지 않게 1.2초는 보여 줍니다.
+const SPLASH_HOLD_MS = 1200;
+
+function hideSplash() {
+  const splash = document.getElementById('pf-splash');
+  if (!splash) return;
+  const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const wait = reduce ? 0 : Math.max(0, SPLASH_HOLD_MS - performance.now());
+  window.setTimeout(() => {
+    splash.classList.add('is-leaving');
+    window.setTimeout(() => splash.remove(), 400);
+  }, wait);
+}
+
 function createSection(section, output) {
   const element = document.createElement('section');
   element.id = section.id;
@@ -129,6 +143,7 @@ async function main() {
 
   enhance(wrapper);
   document.documentElement.classList.add('is-rendered');
+  hideSplash();
   document.dispatchEvent(new CustomEvent('portfolio:rendered'));
   window.requestAnimationFrame(openInitialHash);
 }

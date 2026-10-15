@@ -36,6 +36,11 @@
 	<script>
 		// index.html 을 파일로 바로 열었는지 확인합니다. (이때는 content/ 를 읽을 수 없어 안내문을 보여 줍니다.)
 		if (location.protocol === 'file:') document.documentElement.classList.add('is-file-protocol');
+		// 내용을 끝내 못 그리면 명함(#pf-splash)이 영원히 남지 않게 8초 뒤에는 치웁니다.
+		window.setTimeout(function () {
+			var splash = document.getElementById('pf-splash');
+			if (splash && !document.documentElement.classList.contains('is-rendered')) splash.classList.add('is-leaving');
+		}, 8000);
 	</script>
 </head>
 
@@ -51,6 +56,22 @@
 			</nav>
 		</div>
 	</section>
+
+	<!-- Splash: 불러오는 동안 보이는 명함. 내용 파일보다 먼저 떠야 해서 여기 직접 적습니다. 이름이나 경력이 바뀌면 함께 고치세요. -->
+	<div class="pf-splash" id="pf-splash">
+		<div class="pf-card">
+			<img class="pf-card__photo" src="images/frofile.png" alt="" width="509" height="634" decoding="async" fetchpriority="high">
+			<div class="pf-card__body">
+				<p class="pf-card__name">이정석 <span class="pf-card__name-en">Lee JeongSeok</span></p>
+				<p class="pf-card__role">Unreal Engine 클라이언트 / 엔진 프로그래머</p>
+				<ul class="pf-card__career">
+					<li><img src="images/logos/nc.png" alt=""><span>NC · Like Or Die</span><span class="pf-card__meta">2025.10 ~ 현재</span></li>
+					<li><img src="images/logos/nexon.png" alt=""><span>넥슨 · 프라시아 전기</span><span class="pf-card__meta">2021.11 ~ 2025.09</span></li>
+				</ul>
+				<p class="pf-card__status" role="status">포트폴리오를 불러오는 중입니다<span class="pf-card__dots" aria-hidden="true">…</span></p>
+			</div>
+		</div>
+	</div>
 
 	<!-- Wrapper: 섹션이 여기에 그려집니다. -->
 	<main id="wrapper" tabindex="-1">

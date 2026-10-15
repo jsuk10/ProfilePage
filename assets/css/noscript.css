@@ -4,6 +4,12 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
 
+/* Splash (불러오는 동안 보이는 명함): JS 가 없으면 내용도 안 그려지니 띄우지 않습니다. */
+
+	.pf-splash {
+		display: none !important;
+	}
+
 /* Spotlights */
 
 	.spotlights > section > .image:before {
