@@ -23,7 +23,7 @@
 | `career/*.md` | 회사 경력 하나. 앞부분은 요약, 본문은 '경력 상세' 펼침 목록 |
 | `impact.yml` | 성과 지표 그래프 |
 | `spatial-audio.yml` | 공간음향 차폐 데모: 설명, 와이즈 공간음향 대신 직접 계산한 이유(`realtime`), 부하를 줄인 방법(`optimizations`), 층별 3D 배치도(`layers`, 적는 법은 파일 맨 위 주석) |
-| `like-or-die-lab.yml` | Like Or Die 툴 데모(`type: lab`): Slate 백그라운드 알림(이벤트 버튼, 알림 그림) |
+| `like-or-die-lab.yml` | Like Or Die 툴 데모(`type: lab`): Slate 백그라운드 알림(이벤트 버튼과 알림 글, 커마 캐릭터 캡처 `thumb`) |
 | `prasia-lab.yml` | 프라시아 전기 툴 데모(`type: lab`): NeverCook 콘텐츠 브라우저(폴더, 에셋, 처음 표시할 것), 트레이 알림 + 풍선 메시지(그림), 렌더링 지표 미니맵(웨이포인트, 기준값) |
 | `projects.yml` | 학생 시절 작품 |
 | `activities.yml` | 학력, 수상, 교육, 동아리 |

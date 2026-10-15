@@ -596,18 +596,19 @@ export function mountTray(container, config) {
 /* Slate 백그라운드 알림 ------------------------------------------------------ */
 
 const BANNER_MS = 5000;
+const PERSON_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6" fill="currentColor"/></svg>';
 
 export function mountNotify(container, config) {
   const text = (value) => String(value ?? '').trim();
   const app = text(config?.app) || '게임';
   const editor = text(config?.editor) || 'Unreal Editor';
-  const banner = text(config?.banner);
-  const windowImage = text(config?.window);
+  const thumb = text(config?.thumb);
+  const thumbAlt = text(config?.thumb_alt) || '플레이어가 커스터마이징한 캐릭터 캡처';
   const events = (Array.isArray(config?.events) ? config.events : [])
     .map((event) => (typeof event === 'string' ? { label: event } : event))
     .filter((event) => event && text(event.label))
-    .map((event) => ({ label: text(event.label), always: Boolean(event.always) }));
-  if (!banner || !events.length) return;
+    .map((event) => ({ label: text(event.label), always: Boolean(event.always), title: text(event.title) || text(event.label), body: text(event.body) }));
+  if (!events.length) return;
 
   container.innerHTML = `
     <div class="pf-tray__controls">
@@ -619,12 +620,14 @@ export function mountNotify(container, config) {
         <div class="pf-win__title"><span class="pf-win__app-icon pf-win__app-icon--editor" aria-hidden="true"></span>${escapeHtml(editor)}<span class="pf-win__title-buttons" aria-hidden="true">− □ ×</span></div>
         <div class="pf-win__editor" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
       </div>
-      <div class="pf-win__window pf-win__window--game" data-window="game">
+      <div class="pf-win__window pf-win__window--game is-minimized" data-window="game">
         <div class="pf-win__title"><span class="pf-win__app-icon" aria-hidden="true"></span>${escapeHtml(app)}<span class="pf-win__title-buttons" aria-hidden="true">− □ ×</span></div>
-        ${windowImage ? `<img src="${escapeHtml(windowImage)}" alt="${escapeHtml(app)} 게임 화면" loading="lazy" decoding="async">` : ''}
+        <div class="pf-win__blank">게임 프로세스</div>
       </div>
       <button type="button" class="pf-button pf-win__balloon pf-win__banner" data-banner hidden>
-        <img src="${escapeHtml(banner)}" alt="${escapeHtml(text(config?.banner_alt) || `${app} 알림. 누르면 게임 창이 앞으로 옵니다.`)}" decoding="async">
+        <span class="pf-win__banner-thumb">${thumb ? `<img src="${escapeHtml(thumb)}" alt="${escapeHtml(thumbAlt)}" decoding="async">` : `${PERSON_ICON}<i>캐릭터 캡처</i>`}</span>
+        <span class="pf-win__banner-text"><strong data-banner-title></strong><span data-banner-body></span></span>
+        <span class="pf-win__banner-app">${escapeHtml(app)}</span>
       </button>
       <div class="pf-win__taskbar">
         <span class="pf-win__start" aria-hidden="true"></span>
@@ -639,6 +642,8 @@ export function mountNotify(container, config) {
 
   const status = container.querySelector('[data-status]');
   const bannerButton = container.querySelector('[data-banner]');
+  const bannerTitle = container.querySelector('[data-banner-title]');
+  const bannerBody = container.querySelector('[data-banner-body]');
   const windows = Object.fromEntries([...container.querySelectorAll('[data-window]')].map((node) => [node.dataset.window, node]));
   const tasks = Object.fromEntries([...container.querySelectorAll('[data-task]')].map((node) => [node.dataset.task, node]));
   let front = 'editor';
@@ -647,6 +652,7 @@ export function mountNotify(container, config) {
   const say = (message) => {
     status.textContent = message;
   };
+  const minimized = (which) => windows[which].classList.contains('is-minimized');
   function setFront(which) {
     front = which;
     for (const key of Object.keys(windows)) {
@@ -654,12 +660,31 @@ export function mountNotify(container, config) {
       tasks[key].classList.toggle('is-active', key === which);
     }
   }
+  function restore(which) {
+    const win = windows[which];
+    if (win.classList.contains('is-minimized')) {
+      win.classList.remove('is-minimized');
+      win.classList.remove('is-restoring');
+      void win.offsetWidth;
+      win.classList.add('is-restoring');
+    }
+    setFront(which);
+  }
+  function minimize(which) {
+    windows[which].classList.add('is-minimized');
+    windows[which].classList.remove('is-front');
+    tasks[which].classList.remove('is-active');
+    if (front === which) front = '';
+  }
   function hideBanner() {
     window.clearTimeout(bannerTimer);
     bannerButton.classList.remove('is-shown');
     bannerButton.hidden = true;
   }
-  function showBanner() {
+  function showBanner(event) {
+    bannerTitle.textContent = event.title;
+    bannerBody.textContent = event.body;
+    bannerBody.hidden = !event.body;
     bannerButton.hidden = false;
     void bannerButton.offsetWidth;
     bannerButton.classList.add('is-shown');
@@ -672,18 +697,19 @@ export function mountNotify(container, config) {
       const event = events[Number(button.dataset.event)];
       if (front === 'game' && !event.always) {
         hideBanner();
-        say(`${event.label}: 게임이 앞에 있어 알림을 띄우지 않습니다. (게임이 뒤에 있을 때만 뜹니다)`);
+        say(`${event.label}: 게임이 앞에 있어 알림을 띄우지 않습니다. (게임이 뒤에 있거나 최소화됐을 때만 뜹니다)`);
         return;
       }
-      showBanner();
-      say(event.always ? `${event.label}: 에디터가 앞에 있어도 알림을 띄웁니다. 5초 뒤 저절로 닫힙니다.` : `${event.label}: 게임이 뒤에 있어 알림을 띄웠습니다. 5초 뒤 저절로 닫힙니다.`);
+      showBanner(event);
+      say(event.always ? `${event.label}: 에디터가 앞에 있어도 알림을 띄웁니다. 5초 뒤 저절로 닫힙니다.` : `${event.label}: 게임이 ${minimized('game') ? '최소화돼 있어' : '뒤에 있어'} 알림을 띄웠습니다. 5초 뒤 저절로 닫힙니다.`);
     });
   });
   bannerButton.addEventListener('click', (event) => {
     event.stopPropagation();
     hideBanner();
-    setFront('game');
-    say('알림을 눌러 게임 창을 앞으로 가져왔습니다. 알림 창은 포커스를 받지 않는 topmost 창이라 이 클릭이 창을 올릴 권한이 됩니다.');
+    const wasMinimized = minimized('game');
+    restore('game');
+    say(`알림을 눌러 게임 창을 ${wasMinimized ? '복원해 ' : ''}앞으로 가져왔습니다. 알림 창은 포커스를 받지 않는 topmost 창이라 이 클릭이 창을 올릴 권한이 됩니다.`);
   });
   for (const key of Object.keys(windows)) {
     windows[key].addEventListener('click', (event) => {
@@ -692,9 +718,11 @@ export function mountNotify(container, config) {
     });
     tasks[key].addEventListener('click', (event) => {
       event.stopPropagation();
-      setFront(key);
+      if (minimized(key)) restore(key);
+      else if (front === key) minimize(key);
+      else setFront(key);
     });
   }
   setFront('editor');
-  say('에디터가 앞에 있고 게임은 뒤에 있습니다. 이벤트를 눌러 보세요.');
+  say('에디터가 앞에 있고 게임은 최소화돼 있습니다. 이벤트를 눌러 보세요.');
 }
