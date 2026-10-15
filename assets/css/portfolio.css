@@ -2873,10 +2873,10 @@
 		box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
 		color: var(--pf-ink);
 		display: block;
-		font-size: 0.78em;
+		font-size: 0.7em;
 		overflow: hidden;
 		text-align: left;
-		width: min(48%, 300px);
+		width: min(34%, 230px);
 	}
 
 		.pf-win__banner-cover {
@@ -2975,7 +2975,7 @@
 		@media screen and (max-width: 736px) {
 
 			.pf-win__banner {
-				width: min(82%, 300px);
+				width: min(66%, 230px);
 			}
 
 		}
