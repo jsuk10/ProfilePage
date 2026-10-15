@@ -1,7 +1,8 @@
-// 프라시아 전기 툴 데모 (content/prasia-lab.yml)
-//   NeverCook: 콘텐츠 브라우저 섬네일을 누르면 NeverCook 아이콘이 붙고 떨어집니다. (DOM)
-//   트레이: 트레이 아이콘 메뉴와 풍선 메시지, 풍선을 누르면 게임 창이 앞으로 옵니다. (DOM)
-//   미니맵: 웨이포인트를 순회하며 노드마다 DrawCall / Primitive 를 재고 색으로 표시합니다. (Canvas 2D)
+// 툴 데모 (type: lab 섹션, content/prasia-lab.yml / like-or-die-lab.yml). demos 의 kind 마다 아래 mount 함수 하나입니다.
+//   nevercook  콘텐츠 브라우저 폴더 / 섬네일을 누르면 NeverCook 아이콘이 붙고 떨어집니다. (DOM)
+//   tray       트레이 아이콘 메뉴와 풍선 메시지, 풍선을 누르면 게임 창이 앞으로 옵니다. (DOM)
+//   notify     게임이 뒤에 있을 때 Slate 알림을 띄우고, 누르면 게임 창이 앞으로 옵니다. (DOM)
+//   minimap    웨이포인트를 순회하며 노드마다 DrawCall / Primitive 를 재고 색으로 표시합니다. (Canvas 2D)
 // 지도, 수치, 이름은 데모용입니다.
 
 import { escapeHtml } from './markdown.js';
@@ -342,30 +343,45 @@ const NEVERCOOK_ICON = `<svg class="pf-cb__badge" viewBox="0 0 24 24" aria-hidde
   <path d="M4.5 4.5l15 15" stroke="#ff4747" stroke-width="2.6" stroke-linecap="round"/>
 </svg>`;
 
-export function mountNeverCook(container, config) {
-  const assets = (Array.isArray(config?.assets) ? config.assets : []).map((name) => String(name ?? '').trim()).filter(Boolean);
-  if (!assets.length) return;
-  const columns = Math.max(1, Math.round(num(config?.columns, 6)));
-  const rows = Math.ceil(assets.length / columns);
-  const marked = new Set((Array.isArray(config?.marked) ? config.marked : []).map((name) => String(name ?? '').trim()));
-  const sprite = String(config?.sprite ?? '').trim();
-  const path = String(config?.path ?? 'Content').trim();
+const FOLDER_ICON = `<svg class="pf-cb__folder" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+  <path d="M6 16a4 4 0 0 1 4-4h14l6 6h24a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="#8a7a55"/>
+  <path d="M6 26h52v24a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="#c9b37c"/>
+</svg>`;
 
-  const tile = (name, index) => {
-    const col = index % columns;
-    const row = Math.floor(index / columns);
+export function mountNeverCook(container, config) {
+  const text = (value) => String(value ?? '').trim();
+  const folders = (Array.isArray(config?.folders) ? config.folders : [])
+    .map((folder) => (typeof folder === 'string' ? { name: folder } : folder))
+    .filter((folder) => folder && text(folder.name))
+    .map((folder) => ({ name: text(folder.name), kind: 'folder', on: Boolean(folder.nevercook) }));
+  const marked = new Set((Array.isArray(config?.marked) ? config.marked : []).map(text));
+  const assets = (Array.isArray(config?.assets) ? config.assets : [])
+    .map(text)
+    .filter(Boolean)
+    .map((name, index) => ({ name, kind: 'asset', on: marked.has(name), index }));
+  const items = [...folders, ...assets];
+  if (!items.length) return;
+  const columns = Math.max(1, Math.round(num(config?.columns, assets.length || 1)));
+  const rows = Math.max(1, Math.ceil(assets.length / columns));
+  const sprite = text(config?.sprite);
+  const path = text(config?.path) || 'Content';
+
+  const thumb = (item) => {
+    if (item.kind === 'folder') return `<span class="pf-cb__thumb pf-cb__thumb--folder">${FOLDER_ICON}${NEVERCOOK_ICON}</span>`;
+    const col = item.index % columns;
+    const row = Math.floor(item.index / columns);
     const position = `${columns > 1 ? (col / (columns - 1)) * 100 : 0}% ${rows > 1 ? (row / (rows - 1)) * 100 : 0}%`;
     const style = sprite ? ` style="background-image: url('${escapeHtml(sprite)}'); background-size: ${columns * 100}% ${rows * 100}%; background-position: ${position};"` : '';
-    const on = marked.has(name);
-    return `
-        <li${on ? '' : ' class="is-off"'}>
-          <button type="button" class="pf-button pf-cb__tile${on ? ' is-nevercook' : ''}" data-asset="${escapeHtml(name)}" aria-pressed="${on}">
-            <span class="pf-cb__thumb"${style}>${NEVERCOOK_ICON}</span>
-            <span class="pf-cb__name">${escapeHtml(name)}</span>
-            <span class="pf-cb__type">Material</span>
+    return `<span class="pf-cb__thumb"${style}>${NEVERCOOK_ICON}</span>`;
+  };
+  const tile = (item) => `
+        <li${item.on ? '' : ' class="is-off"'}>
+          <button type="button" class="pf-button pf-cb__tile${item.on ? ' is-nevercook' : ''}" data-asset="${escapeHtml(item.name)}" data-kind="${item.kind}" aria-pressed="${item.on}">
+            ${thumb(item)}
+            <span class="pf-cb__name">${escapeHtml(item.name)}</span>
+            <span class="pf-cb__type">${item.kind === 'folder' ? 'Folder' : 'Material'}</span>
           </button>
         </li>`;
-  };
 
   container.innerHTML = `
     <div class="pf-cb">
@@ -376,9 +392,9 @@ export function mountNeverCook(container, config) {
         </button>
         <span class="pf-cb__count" data-count></span>
       </div>
-      <ul class="pf-cb__grid" style="--pf-cb-columns: ${columns}">${assets.map(tile).join('')}
+      <ul class="pf-cb__grid" style="--pf-cb-columns: ${Math.min(items.length, 8)}">${items.map(tile).join('')}
       </ul>
-      <p class="pf-cb__hint">섬네일을 누르면 NeverCook 에 넣거나 뺍니다. 아이콘이 붙은 에셋은 쿠킹(패키징)에서 빠집니다.</p>
+      <p class="pf-cb__hint">폴더나 섬네일을 누르면 NeverCook 에 넣거나 뺍니다. 아이콘이 붙은 폴더와 에셋은 쿠킹(패키징)에서 빠집니다.</p>
       <p class="pf-cb__list" data-list aria-live="polite"></p>
     </div>`;
 
@@ -389,7 +405,9 @@ export function mountNeverCook(container, config) {
   let filtered = false;
 
   function render() {
-    const names = tiles.filter((button) => button.classList.contains('is-nevercook')).map((button) => button.dataset.asset);
+    const names = tiles
+      .filter((button) => button.classList.contains('is-nevercook'))
+      .map((button) => (button.dataset.kind === 'folder' ? `${button.dataset.asset}/` : button.dataset.asset));
     count.textContent = `NeverCook ${names.length} / ${tiles.length}`;
     list.textContent = names.length ? `NeverCook 목록 (${names.length}): ${names.join(', ')}` : 'NeverCook 목록이 비어 있습니다.';
     tiles.forEach((button) => {
@@ -573,4 +591,110 @@ export function mountTray(container, config) {
     say('게임을 다시 실행했습니다. 창은 트레이로 숨겨 둔 상태입니다.');
   });
   say('게임은 켜져 있지만 창은 트레이로 숨겨 둔 상태입니다.');
+}
+
+/* Slate 백그라운드 알림 ------------------------------------------------------ */
+
+const BANNER_MS = 5000;
+
+export function mountNotify(container, config) {
+  const text = (value) => String(value ?? '').trim();
+  const app = text(config?.app) || '게임';
+  const editor = text(config?.editor) || 'Unreal Editor';
+  const banner = text(config?.banner);
+  const windowImage = text(config?.window);
+  const events = (Array.isArray(config?.events) ? config.events : [])
+    .map((event) => (typeof event === 'string' ? { label: event } : event))
+    .filter((event) => event && text(event.label))
+    .map((event) => ({ label: text(event.label), always: Boolean(event.always) }));
+  if (!banner || !events.length) return;
+
+  container.innerHTML = `
+    <div class="pf-tray__controls">
+      ${events.map((event, index) => `<button type="button" class="pf-button pf-lab__reset" data-event="${index}">${escapeHtml(event.label)}</button>`).join('')}
+      <span class="pf-tray__status" data-status aria-live="polite"></span>
+    </div>
+    <div class="pf-win pf-win--notify" data-desktop>
+      <div class="pf-win__window pf-win__window--editor" data-window="editor">
+        <div class="pf-win__title"><span class="pf-win__app-icon pf-win__app-icon--editor" aria-hidden="true"></span>${escapeHtml(editor)}<span class="pf-win__title-buttons" aria-hidden="true">− □ ×</span></div>
+        <div class="pf-win__editor" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="pf-win__window pf-win__window--game" data-window="game">
+        <div class="pf-win__title"><span class="pf-win__app-icon" aria-hidden="true"></span>${escapeHtml(app)}<span class="pf-win__title-buttons" aria-hidden="true">− □ ×</span></div>
+        ${windowImage ? `<img src="${escapeHtml(windowImage)}" alt="${escapeHtml(app)} 게임 화면" loading="lazy" decoding="async">` : ''}
+      </div>
+      <button type="button" class="pf-button pf-win__balloon pf-win__banner" data-banner hidden>
+        <img src="${escapeHtml(banner)}" alt="${escapeHtml(text(config?.banner_alt) || `${app} 알림. 누르면 게임 창이 앞으로 옵니다.`)}" decoding="async">
+      </button>
+      <div class="pf-win__taskbar">
+        <span class="pf-win__start" aria-hidden="true"></span>
+        <button type="button" class="pf-button pf-win__task" data-task="editor"><span class="pf-win__app-icon pf-win__app-icon--editor" aria-hidden="true"></span>${escapeHtml(editor)}</button>
+        <button type="button" class="pf-button pf-win__task" data-task="game"><span class="pf-win__app-icon" aria-hidden="true"></span>${escapeHtml(app)}</button>
+        <span class="pf-win__tray">
+          <span class="pf-win__sys" aria-hidden="true">${SYS_ICONS}</span>
+          <span class="pf-win__clock" aria-hidden="true">오후 9:41</span>
+        </span>
+      </div>
+    </div>`;
+
+  const status = container.querySelector('[data-status]');
+  const bannerButton = container.querySelector('[data-banner]');
+  const windows = Object.fromEntries([...container.querySelectorAll('[data-window]')].map((node) => [node.dataset.window, node]));
+  const tasks = Object.fromEntries([...container.querySelectorAll('[data-task]')].map((node) => [node.dataset.task, node]));
+  let front = 'editor';
+  let bannerTimer = 0;
+
+  const say = (message) => {
+    status.textContent = message;
+  };
+  function setFront(which) {
+    front = which;
+    for (const key of Object.keys(windows)) {
+      windows[key].classList.toggle('is-front', key === which);
+      tasks[key].classList.toggle('is-active', key === which);
+    }
+  }
+  function hideBanner() {
+    window.clearTimeout(bannerTimer);
+    bannerButton.classList.remove('is-shown');
+    bannerButton.hidden = true;
+  }
+  function showBanner() {
+    bannerButton.hidden = false;
+    void bannerButton.offsetWidth;
+    bannerButton.classList.add('is-shown');
+    window.clearTimeout(bannerTimer);
+    bannerTimer = window.setTimeout(hideBanner, BANNER_MS);
+  }
+
+  container.querySelectorAll('[data-event]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const event = events[Number(button.dataset.event)];
+      if (front === 'game' && !event.always) {
+        hideBanner();
+        say(`${event.label}: 게임이 앞에 있어 알림을 띄우지 않습니다. (게임이 뒤에 있을 때만 뜹니다)`);
+        return;
+      }
+      showBanner();
+      say(event.always ? `${event.label}: 에디터가 앞에 있어도 알림을 띄웁니다. 5초 뒤 저절로 닫힙니다.` : `${event.label}: 게임이 뒤에 있어 알림을 띄웠습니다. 5초 뒤 저절로 닫힙니다.`);
+    });
+  });
+  bannerButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    hideBanner();
+    setFront('game');
+    say('알림을 눌러 게임 창을 앞으로 가져왔습니다. 알림 창은 포커스를 받지 않는 topmost 창이라 이 클릭이 창을 올릴 권한이 됩니다.');
+  });
+  for (const key of Object.keys(windows)) {
+    windows[key].addEventListener('click', (event) => {
+      event.stopPropagation();
+      setFront(key);
+    });
+    tasks[key].addEventListener('click', (event) => {
+      event.stopPropagation();
+      setFront(key);
+    });
+  }
+  setFront('editor');
+  say('에디터가 앞에 있고 게임은 뒤에 있습니다. 이벤트를 눌러 보세요.');
 }

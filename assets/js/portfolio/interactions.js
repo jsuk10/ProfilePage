@@ -2,7 +2,7 @@
 //   - 경력 상세 펼치기 / 접기, 모두 펼치기
 //   - 근거 링크(#섹션--항목) 이동: 닫힌 항목을 열고, 그 자리로 스크롤한 뒤 잠깐 강조
 //   - 주소 끝 #항목 으로 들어오거나 뒤로 가기 했을 때 같은 이동 처리
-//   - #slide / #toast 이미지가 화면에 들어올 때 움직이는 효과와 다시 재생
+//   - #slide 이미지가 화면에 들어올 때 움직이는 효과
 //   - 연락처 '복사' 버튼
 // 왼쪽(위쪽) 메뉴의 스크롤 이동은 템플릿(main.js 의 scrolly)이 맡습니다.
 
@@ -188,23 +188,13 @@ function onBeforeMatch(event) {
   syncToggleAll(detail.parentElement);
 }
 
-// 주소 끝에 #slide / #toast 를 붙인 이미지(markdown.js)는 화면에 들어올 때 움직입니다. (슬라이드는 왼쪽에서, 토스트는 오른쪽 아래에서)
+// 주소 끝에 #slide 를 붙인 이미지(markdown.js)는 화면에 들어올 때 왼쪽에서 들어옵니다.
 // 접히거나 화면 밖으로 완전히 나가면 처음 자리로 돌아가서, 다시 볼 때 한 번 더 움직입니다.
 let slideObserver = null;
 
-function replay(item) {
-  item.classList.remove('is-shown', 'is-open');
-  void item.offsetWidth;
-  item.classList.add('is-shown');
-}
-
 function watchSlides(root) {
-  const items = [...root.querySelectorAll('.pf-media--slide, .pf-media--toast')];
+  const items = [...root.querySelectorAll('.pf-media--slide')];
   if (!items.length) return;
-  items.forEach((item) => {
-    item.querySelector('[data-replay]')?.addEventListener('click', () => replay(item));
-    item.querySelector('[data-toast-open]')?.addEventListener('click', () => item.classList.add('is-open'));
-  });
   if (!('IntersectionObserver' in window)) {
     items.forEach((item) => item.classList.add('is-shown'));
     return;
@@ -213,7 +203,7 @@ function watchSlides(root) {
     (entries) => {
       for (const entry of entries) {
         if (entry.intersectionRatio >= 0.6) entry.target.classList.add('is-shown');
-        else if (!entry.isIntersecting) entry.target.classList.remove('is-shown', 'is-open');
+        else if (!entry.isIntersecting) entry.target.classList.remove('is-shown');
       }
     },
     { threshold: [0, 0.6] },

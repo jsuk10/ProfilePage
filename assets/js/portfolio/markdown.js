@@ -8,9 +8,7 @@ const STRIKETHROUGH = /^~~(?=\S)([\s\S]*?\S)~~(?!~)/;
 const NEW_TAB = /^https?:\/\/|\.pdf(?:[?#]|$)/i;
 // 이미지 주소 끝의 효과 표시 (움직임은 interactions.js)
 //   #slide  화면에 들어올 때 왼쪽에서 오른쪽으로 미끄러져 들어옵니다.
-//   #toast  모니터 모양 상자의 오른쪽 아래 자리로 오른쪽 밖에서 왼쪽으로 알림처럼 들어오고 다시 재생 버튼이 붙습니다.
-//           #toast=창이미지 처럼 적으면 알림을 눌렀을 때 그 이미지가 게임 창처럼 앞으로 나옵니다.
-const EFFECT = /#(slide|toast)(?:=([^\s"]+))?$/i;
+const EFFECT = /#(slide)$/i;
 
 export function escapeHtml(value) {
   return String(value ?? '')
@@ -72,17 +70,6 @@ marked.use({
       const img = `<img src="${escapeAttr(url)}" alt="${escapeAttr(alt)}" loading="lazy" decoding="async">`;
       if (!effect && !title) return img;
       const caption = title ? `<span class="pf-media__caption">${escapeHtml(title)}</span>` : '';
-      if (effect === 'toast') {
-        const windowUrl = match[2] ? safeUrl(match[2]) : null;
-        const window = windowUrl
-          ? `<span class="pf-screen__window" aria-hidden="true"><span class="pf-screen__bar">− □ ×</span><img src="${escapeAttr(windowUrl)}" alt="" loading="lazy" decoding="async"></span>`
-          : '';
-        const toast = windowUrl
-          ? `<button type="button" class="pf-button pf-screen__toast" data-toast-open>${img}</button>`
-          : `<span class="pf-screen__toast">${img}</span>`;
-        const replay = '<button type="button" class="pf-button pf-media__replay" data-replay>다시 재생</button>';
-        return `<span class="pf-media pf-media--toast"><span class="pf-screen">${window}${toast}${replay}</span>${caption}</span>`;
-      }
       const media = effect === 'slide' ? `<span class="pf-media__frame">${img}</span>` : img;
       return `<span class="pf-media${effect === 'slide' ? ' pf-media--slide' : ''}">${media}${caption}</span>`;
     },

@@ -23,7 +23,8 @@
 | `career/*.md` | 회사 경력 하나. 앞부분은 요약, 본문은 '경력 상세' 펼침 목록 |
 | `impact.yml` | 성과 지표 그래프 |
 | `spatial-audio.yml` | 공간음향 차폐 데모: 설명, 와이즈 공간음향 대신 직접 계산한 이유(`realtime`), 부하를 줄인 방법(`optimizations`), 층별 3D 배치도(`layers`, 적는 법은 파일 맨 위 주석) |
-| `prasia-lab.yml` | 프라시아 전기 툴 데모: NeverCook 콘텐츠 브라우저(에셋 이름, 처음 표시할 것), 트레이 알림 + 풍선 메시지(그림), 렌더링 지표 미니맵(웨이포인트, 기준값) |
+| `like-or-die-lab.yml` | Like Or Die 툴 데모(`type: lab`): Slate 백그라운드 알림(이벤트 버튼, 알림 그림) |
+| `prasia-lab.yml` | 프라시아 전기 툴 데모(`type: lab`): NeverCook 콘텐츠 브라우저(폴더, 에셋, 처음 표시할 것), 트레이 알림 + 풍선 메시지(그림), 렌더링 지표 미니맵(웨이포인트, 기준값) |
 | `projects.yml` | 학생 시절 작품 |
 | `activities.yml` | 학력, 수상, 교육, 동아리 |
 
@@ -95,16 +96,12 @@
 
 ![대체 글](images/work/파일.png "이미지 아래에 나오는 설명")
 ![대체 글](images/work/파일.png#slide "설명")
-![대체 글](images/work/파일.png#toast "설명")
-![대체 글](images/work/파일.png#toast=images/창.png "설명")
 ```
 
 - `###` 는 항목 안의 작은 제목입니다.
 - 표는 `---:` 로 쓴 칸이 오른쪽 정렬됩니다. 휴대폰에서는 글자를 줄여 화면 폭 안에 넣으니, 칸은 네 개 정도까지가 알맞습니다.
 - 이미지 주소 뒤의 `"..."` 는 이미지 아래 작은 설명이 됩니다.
   주소 끝에 `#slide` 를 붙이면 화면에 들어올 때 왼쪽에서 오른쪽으로 미끄러져 들어옵니다.
-  `#toast` 를 붙이면 모니터 모양 상자의 오른쪽 아래 자리로 오른쪽 밖에서 왼쪽으로 알림처럼 들어오고, 아래에 다시 재생 버튼이 붙습니다.
-  `#toast=images/창.png` 처럼 `=` 뒤에 이미지를 적으면 알림을 눌렀을 때 그 이미지가 게임 창처럼 앞으로 나옵니다.
 
 ### 숙련도 표 쓰기
 
@@ -176,7 +173,7 @@
 | `assets/js/portfolio/spatial-audio-voxel.js` | 데모 계산: 복셀 그리드, 직선 레이, A\*, 밀폐도 |
 | `assets/js/portfolio/spatial-audio-demo.js` | 결과 패널, WebGL2 가 없을 때 쓰는 2D 단면 화면 |
 | `assets/js/portfolio/spatial-audio-sound.js` | 데모 소리: 계산한 수치를 Web Audio 로 소리에 입힘 (거리, 차폐, 밀폐도, 방향) |
-| `assets/js/portfolio/prasia-lab.js` | 프라시아 전기 툴 데모: NeverCook 콘텐츠 브라우저, 트레이 알림 + 풍선 메시지, 미니맵 순회(Canvas) |
+| `assets/js/portfolio/lab.js` | 툴 데모(`type: lab`): NeverCook 콘텐츠 브라우저, 트레이 알림 + 풍선 메시지, Slate 백그라운드 알림, 미니맵 순회(Canvas) |
 | `assets/js/portfolio/markdown.js`, `content.js` | Markdown, YAML 읽기 |
 | `assets/js/main.js` | 템플릿 인터랙션 (스크롤스파이, 등장 효과, spotlights) |
 | `assets/css/portfolio.css` | 이 포트폴리오 전용 스타일 (`main.css` 는 템플릿 스타일) |

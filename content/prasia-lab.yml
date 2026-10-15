@@ -1,77 +1,78 @@
-# 프라시아 전기 툴 데모 (경력 섹션 뒤에 붙는 인터랙티브 데모 세 개: NeverCook, 트레이 알림, 미니맵)
-#
-# nevercook: NeverCook 비주얼 툴. 콘텐츠 브라우저 섬네일 위에 NeverCook 아이콘을 붙입니다.
-#   sprite   섬네일을 가로 columns 칸으로 이어 붙인 그림 (지금은 6 x 2, 한 칸 105px)
-#   assets   섬네일 순서대로 에셋 이름. marked 는 처음부터 NeverCook 에 들어 있는 것
-# tray: 윈도우 트레이 아이콘 + 풍선 메시지. balloon 은 풍선 그림, window 는 게임 창에 보일 그림, event 는 알림 이름
-# minimap: 렌더링 지표 자동 측정 툴. 웨이포인트를 순회하며 노드마다 DrawCall / Primitive 를 재고 미니맵에 색으로 표시합니다.
-#   threshold  DrawCall 기준값. 이 값 이상이면 빨강, 70% 이상이면 노랑, 그 아래는 초록입니다. (슬라이더로 바꿀 수 있음)
-#   zones      지도 위 장식 영역. x y w h 는 0 ~ 1 비율, kind 는 water / forest / town 중 하나
-#   waypoints  순회 순서대로 적습니다. x y 는 0 ~ 1 비율, draw 는 DrawCall 수, prims 는 Primitive 수 (단위 M)
+# 툴 데모 섹션 (type: lab). demos 목록에 적은 순서대로 그려지고, 항목마다 kind 로 데모 종류를 고릅니다.
+# 항목 id 는 "섹션id--kind" 라서 경력 글에서 [글](#prasia-lab--nevercook) 처럼 링크할 수 있습니다.
+#   nevercook  NeverCook 비주얼 툴 (콘텐츠 브라우저)
+#              folders   폴더 목록. nevercook: true 면 처음부터 NeverCook
+#              assets    섬네일 순서대로 에셋 이름. marked 는 처음부터 NeverCook 인 에셋
+#              sprite    섬네일을 가로로 이어 붙인 그림, columns 는 그 칸 수 (지금은 6칸, 한 칸 105px)
+#              wide      true 면 한 줄을 다 씁니다
+#   tray       윈도우 트레이 아이콘 + 풍선 메시지. app(게임 이름), event(알림 이름), balloon(풍선 그림), window(게임 창 그림)
+#   minimap    렌더링 지표 자동 측정 툴. 웨이포인트를 순회하며 노드마다 DrawCall / Primitive 를 재고 미니맵에 색으로 표시합니다.
+#              threshold  DrawCall 기준값. 이 값 이상이면 빨강, 70% 이상이면 노랑, 그 아래는 초록 (슬라이더로 바꿀 수 있음)
+#              zones      지도 위 장식 영역. x y w h 는 0 ~ 1 비율, kind 는 water / forest / town 중 하나
+#              waypoints  순회 순서대로. x y 는 0 ~ 1 비율, draw 는 DrawCall 수, prims 는 Primitive 수 (단위 M)
+#   notify     Slate 백그라운드 알림 (like-or-die-lab.yml 에 예가 있습니다)
 # 지도, 수치, 에셋 이름은 데모용입니다.
 
 title: 프라시아 전기 툴 데모
 lead: >-
   프라시아 전기에서 만든 툴 세 가지를 데모로 옮겼습니다. 눌러 보세요. 지도, 수치, 에셋 이름은 데모용입니다.
 
-nevercook:
-  title: NeverCook 비주얼 툴
-  text: >-
-    쿠킹(패키징)에서 빼는 NeverCook 에셋을 콘텐츠 브라우저 섬네일 위에 아이콘으로 보여 주는 에디터 확장입니다.
-    섬네일을 누르면 NeverCook 에 넣거나 빼고, 필터로 NeverCook 에셋만 모아 볼 수 있습니다.
-  sprite: images/work/nexon-nevercook-thumbs.png
-  columns: 6
-  path: Content › Materials
-  assets:
-    - M_AssetPlatform
-    - M_Basic_Floor
-    - M_Basic_Wall
-    - M_Brick_Clay_Beveled
-    - M_Brick_Clay_New
-    - M_Brick_Clay_Old
-    - M_Brick_Cut_Stone
-    - M_Brick_Hewn_Stone
-    - M_Ceramic_Tile_Checker
-    - M_CobbleStone_Pebble
-    - M_CobbleStone_Rough
-    - M_CobbleStone_Smooth
-  marked:
-    - M_AssetPlatform
-    - M_Brick_Clay_Beveled
-    - M_Brick_Hewn_Stone
-    - M_CobbleStone_Rough
+demos:
+  - kind: nevercook
+    wide: true
+    title: NeverCook 비주얼 툴
+    text: >-
+      쿠킹(패키징)에서 빼는 NeverCook 폴더와 에셋을 콘텐츠 브라우저 위에 아이콘으로 보여 주는 에디터 확장입니다.
+      폴더나 섬네일을 누르면 NeverCook 에 넣거나 빼고, 필터로 NeverCook 만 모아 볼 수 있습니다.
+    sprite: images/work/nexon-nevercook-thumbs.png
+    columns: 6
+    path: Content › Materials
+    folders:
+      - name: Dev
+        nevercook: true
+      - name: Shared
+    assets:
+      - M_AssetPlatform
+      - M_Basic_Floor
+      - M_Brick_Clay_Beveled
+      - M_Brick_Hewn_Stone
+      - M_CobbleStone_Pebble
+      - M_CobbleStone_Rough
+    marked:
+      - M_Brick_Clay_Beveled
+      - M_CobbleStone_Rough
 
-tray:
-  title: 윈도우 트레이 알림 + 풍선 메시지
-  text: >-
-    게임 창을 트레이로 숨겨 두어도 파티 초대 같은 이벤트를 놓치지 않게 Win API 로 트레이 아이콘과 풍선 메시지를 붙였습니다.
-    알림을 보내 풍선 메시지를 눌러 보고, 트레이 아이콘의 Show Game / Hide Game / Exit 메뉴도 눌러 보세요.
-  app: 프라시아 전기
-  event: 파티 초대
-  balloon: images/work/nexon-tray-balloon.png
-  window: images/warofprasia.jpg
+  - kind: tray
+    title: 윈도우 트레이 알림 + 풍선 메시지
+    text: >-
+      게임 창을 트레이로 숨겨 두어도 파티 초대 같은 이벤트를 놓치지 않게 Win API 로 트레이 아이콘과 풍선 메시지를 붙였습니다.
+      알림을 보내 풍선 메시지를 눌러 보고, 트레이 아이콘의 Show Game / Hide Game / Exit 메뉴도 눌러 보세요.
+    app: 프라시아 전기
+    event: 파티 초대
+    balloon: images/work/nexon-tray-balloon.png
+    window: images/warofprasia.jpg
 
-minimap:
-  title: 렌더링 지표 미니맵
-  text: >-
-    게임 안 웨이포인트를 순회하며 노드마다 DrawCall 과 Primitive 를 재서 미니맵에 색으로 표시하는 툴입니다.
-    기준을 넘는 노드가 최적화 우선순위가 되고 주기적으로 프로파일 데이터와 가이드라인을 함께 냈습니다.
-  threshold: 1500
-  zones:
-    - { kind: water, x: 0, y: 0.62, w: 0.3, h: 0.38 }
-    - { kind: forest, x: 0.48, y: 0.04, w: 0.3, h: 0.3 }
-    - { kind: town, x: 0.1, y: 0.18, w: 0.22, h: 0.26 }
-    - { kind: town, x: 0.62, y: 0.52, w: 0.26, h: 0.3 }
-    - { kind: forest, x: 0.84, y: 0.08, w: 0.14, h: 0.36 }
-  waypoints:
-    - { name: 황금항 부두, x: 0.14, y: 0.7, draw: 1840, prims: 2.9 }
-    - { name: 황금항 시장, x: 0.2, y: 0.48, draw: 2310, prims: 3.6 }
-    - { name: 성문 앞 광장, x: 0.3, y: 0.3, draw: 1620, prims: 2.4 }
-    - { name: 북쪽 숲길, x: 0.46, y: 0.16, draw: 760, prims: 1.1 }
-    - { name: 숲속 제단, x: 0.62, y: 0.12, draw: 980, prims: 1.6 }
-    - { name: 협곡 다리, x: 0.76, y: 0.28, draw: 1180, prims: 1.5 }
-    - { name: 요새 외벽, x: 0.86, y: 0.46, draw: 1430, prims: 2.2 }
-    - { name: 요새 내성, x: 0.74, y: 0.64, draw: 2560, prims: 4.1 }
-    - { name: 전장 중앙, x: 0.56, y: 0.74, draw: 2050, prims: 3.3 }
-    - { name: 농경지, x: 0.4, y: 0.86, draw: 690, prims: 0.9 }
-    - { name: 폐광 입구, x: 0.34, y: 0.58, draw: 1120, prims: 1.7 }
+  - kind: minimap
+    title: 렌더링 지표 미니맵
+    text: >-
+      게임 안 웨이포인트를 순회하며 노드마다 DrawCall 과 Primitive 를 재서 미니맵에 색으로 표시하는 툴입니다.
+      기준을 넘는 노드가 최적화 우선순위가 되고 주기적으로 프로파일 데이터와 가이드라인을 함께 냈습니다.
+    threshold: 1500
+    zones:
+      - { kind: water, x: 0, y: 0.62, w: 0.3, h: 0.38 }
+      - { kind: forest, x: 0.48, y: 0.04, w: 0.3, h: 0.3 }
+      - { kind: town, x: 0.1, y: 0.18, w: 0.22, h: 0.26 }
+      - { kind: town, x: 0.62, y: 0.52, w: 0.26, h: 0.3 }
+      - { kind: forest, x: 0.84, y: 0.08, w: 0.14, h: 0.36 }
+    waypoints:
+      - { name: 황금항 부두, x: 0.14, y: 0.7, draw: 1840, prims: 2.9 }
+      - { name: 황금항 시장, x: 0.2, y: 0.48, draw: 2310, prims: 3.6 }
+      - { name: 성문 앞 광장, x: 0.3, y: 0.3, draw: 1620, prims: 2.4 }
+      - { name: 북쪽 숲길, x: 0.46, y: 0.16, draw: 760, prims: 1.1 }
+      - { name: 숲속 제단, x: 0.62, y: 0.12, draw: 980, prims: 1.6 }
+      - { name: 협곡 다리, x: 0.76, y: 0.28, draw: 1180, prims: 1.5 }
+      - { name: 요새 외벽, x: 0.86, y: 0.46, draw: 1430, prims: 2.2 }
+      - { name: 요새 내성, x: 0.74, y: 0.64, draw: 2560, prims: 4.1 }
+      - { name: 전장 중앙, x: 0.56, y: 0.74, draw: 2050, prims: 3.3 }
+      - { name: 농경지, x: 0.4, y: 0.86, draw: 690, prims: 0.9 }
+      - { name: 폐광 입구, x: 0.34, y: 0.58, draw: 1120, prims: 1.7 }

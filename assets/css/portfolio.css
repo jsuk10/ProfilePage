@@ -1238,114 +1238,6 @@
 				transition: transform 560ms var(--pf-ease-out), opacity 320ms ease-out;
 			}
 
-		/* 경로 끝 #toast: 모니터 모양 상자의 오른쪽 아래 자리로, 오른쪽 밖에서 왼쪽으로 알림처럼 들어옵니다. (is-shown 은 interactions.js) */
-		.pf-screen {
-			aspect-ratio: 16 / 9;
-			background: linear-gradient(160deg, #1b1133 0%, #0b0716 100%);
-			border: solid 1px var(--pf-line-strong);
-			border-radius: var(--pf-radius-m);
-			display: block;
-			max-width: 32em;
-			overflow: hidden;
-			position: relative;
-			width: 100%;
-		}
-
-			.pf-screen__toast {
-				bottom: 5%;
-				display: block;
-				padding: 0;
-				position: absolute;
-				right: 2.5%;
-				transform: translateX(130%);
-				width: 58%;
-			}
-
-				.pf-screen__toast img {
-					display: block;
-					margin: 0;
-					width: 100%;
-				}
-
-			.pf-media--toast.is-shown .pf-screen__toast {
-				transform: none;
-				transition: transform 720ms var(--pf-ease-out) 240ms;
-			}
-
-			/* 알림을 누르면 알림은 오른쪽으로 나가고 게임 창이 앞으로 옵니다. (is-open 은 interactions.js) */
-			.pf-media--toast.is-open .pf-screen__toast {
-				transform: translateX(130%);
-				transition: transform 360ms ease-in;
-			}
-
-			.pf-screen__window {
-				background: #000;
-				border-radius: 4px;
-				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-				display: flex;
-				flex-direction: column;
-				inset: 7% 6% 6% 6%;
-				opacity: 0;
-				overflow: hidden;
-				position: absolute;
-				transform: translateY(6%) scale(0.97);
-			}
-
-				.pf-screen__bar {
-					background: #1c1c1c;
-					color: #bdbdbd;
-					flex: none;
-					font-size: 0.65em;
-					letter-spacing: 0.35em;
-					line-height: 1.9;
-					padding: 0 0.5em;
-					text-align: right;
-				}
-
-				.pf-screen__window img {
-					display: block;
-					flex: 1 1 auto;
-					height: 100%;
-					margin: 0;
-					min-height: 0;
-					object-fit: cover;
-					width: 100%;
-				}
-
-			.pf-media--toast.is-open .pf-screen__window {
-				opacity: 1;
-				transform: none;
-				transition: opacity 260ms ease-out 120ms, transform 420ms var(--pf-ease-out) 120ms;
-			}
-
-		/* 다시 재생: 상자 안 왼쪽 아래 */
-		.pf-media__replay {
-			align-items: center;
-			background: rgba(30, 13, 66, 0.82);
-			border: solid 1px var(--pf-line-strong) !important;
-			bottom: 0.6em;
-			color: var(--pf-ink) !important;
-			display: inline-flex;
-			font-size: 0.8em;
-			font-weight: 600;
-			left: 0.6em;
-			min-height: 2.1em;
-			padding: 0 0.75em;
-			position: absolute;
-			transition: background-color 160ms var(--pf-ease-out), border-color 160ms var(--pf-ease-out), color 160ms var(--pf-ease-out);
-			z-index: 3;
-		}
-
-			.pf-media__replay:hover {
-				background: var(--pf-accent);
-				border-color: var(--pf-accent) !important;
-				color: var(--pf-accent-ink) !important;
-			}
-
-			.pf-media__replay:active {
-				transform: scale(0.97);
-			}
-
 		.pf-detail__content details {
 			background: rgba(0, 0, 0, 0.14);
 			border: solid 1px var(--pf-line);
@@ -2340,6 +2232,14 @@
 			grid-column: 1 / -1;
 		}
 
+		.pf-toollab--single {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+			.pf-toollab--single .pf-toollab__item {
+				max-width: 44em;
+			}
+
 		.pf-toollab__item h3 {
 			font-size: 1.15em;
 			margin: 0 0 0.5em 0;
@@ -2555,6 +2455,19 @@
 			position: relative;
 		}
 
+			.pf-cb__thumb--folder {
+				background-color: #2a2a2a;
+				border-bottom-color: transparent;
+			}
+
+			.pf-cb__folder {
+				height: 70%;
+				left: 15%;
+				position: absolute;
+				top: 15%;
+				width: 70%;
+			}
+
 		/* 섬네일 폭 기준 42% (105px 섬네일에서 44px, 처음 22px 의 2배), 구석에서 6% 띄움 */
 		.pf-cb__badge {
 			height: 42%;
@@ -2726,6 +2639,7 @@
 			font: inherit;
 			gap: 0.4em;
 			padding: 0.3em 0.7em;
+			white-space: nowrap;
 		}
 
 			.pf-win__task[hidden] {
@@ -2777,6 +2691,19 @@
 
 		.pf-win__clock {
 			color: #ddd;
+			white-space: nowrap;
+		}
+
+		@media screen and (max-width: 480px) {
+
+			.pf-win__taskbar {
+				font-size: 0.6em;
+			}
+
+			.pf-win__clock {
+				display: none;
+			}
+
 		}
 
 		.pf-win__balloon {
@@ -2855,6 +2782,60 @@
 	@keyframes pf-win-restore {
 		from { opacity: 0; transform: translateY(10%) scale(0.92); }
 		to { opacity: 1; transform: none; }
+	}
+
+	/* Slate 백그라운드 알림: 에디터 창이 앞, 게임 창이 뒤에서 시작합니다 */
+	.pf-win--notify .pf-win__window--editor {
+		left: 5%;
+		top: 7%;
+		width: 60%;
+	}
+
+	.pf-win--notify .pf-win__window--game {
+		left: 30%;
+		top: 20%;
+		width: 60%;
+	}
+
+	.pf-win__app-icon--editor {
+		background: linear-gradient(135deg, #e8e8e8, #8a8a8a);
+	}
+
+	.pf-win__editor {
+		aspect-ratio: 16 / 9;
+		background: #141414;
+		display: flex;
+		flex-direction: column;
+		gap: 6%;
+		padding: 6% 5%;
+	}
+
+		.pf-win__editor span {
+			background: rgba(255, 255, 255, 0.14);
+			border-radius: 2px;
+			display: block;
+			height: 5%;
+			width: 70%;
+		}
+
+			.pf-win__editor span:nth-child(2n) {
+				width: 45%;
+			}
+
+			.pf-win__editor span:nth-child(3n) {
+				width: 85%;
+			}
+
+	.pf-win__banner {
+		width: min(62%, 420px);
+	}
+
+	@media screen and (max-width: 980px) {
+
+		.pf-cb__grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+
 	}
 
 	@media screen and (max-width: 736px) {
@@ -3266,8 +3247,6 @@
 		.pf-bar__after,
 		.pf-bar__after::before,
 		.pf-media--slide img,
-		.pf-screen__toast,
-		.pf-screen__window,
 		.pf-card,
 		.pf-card__dots,
 		.pf-cb__badge,
@@ -3289,8 +3268,7 @@
 			opacity: 0;
 		}
 
-		.pf-media--slide img,
-		.pf-screen__toast {
+		.pf-media--slide img {
 			opacity: 1;
 			transform: none;
 		}

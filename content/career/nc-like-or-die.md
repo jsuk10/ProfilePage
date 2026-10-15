@@ -130,7 +130,7 @@ links:
 
 [이전 프로젝트에서 만든 트레이 아이콘 풍선 알림](#prasia--tray-notify)을 **게임 전용 Slate 배너**로 발전시킨 것이기도 합니다.
 
-![레퍼런스로 삼은 아크 레이더스의 대기창 알림. "정신 바짝 차리세요, 레이더님. 지상으로 가는 중입니다." 라고 적혀 있습니다.](images/work/arc-raiders-notification.png#toast "레퍼런스: 아크 레이더스(ARC Raiders) 대기창 알림")
+데모: [Like Or Die Lab 의 백그라운드 알림](#like-or-die-lab--notify)에서 알림을 띄우고 눌러 볼 수 있습니다. 알림 그림은 레퍼런스로 삼은 아크 레이더스 대기창 알림입니다.
 
 ### 포그라운드 정책 우회
 

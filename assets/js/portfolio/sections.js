@@ -8,7 +8,7 @@ import { markdown, inline, escapeHtml as esc, escapeAttr as attr, linkAttrs } fr
 import { mountSpatialAudioDemo } from './spatial-audio-demo.js';
 import { mountSpatialAudio3D, supportsWebGL2 } from './spatial-audio-3d.js';
 import { parseVoxelPreset, sliceAtListener } from './spatial-audio-voxel.js';
-import { mountMinimap, mountNeverCook, mountTray } from './prasia-lab.js';
+import { mountMinimap, mountNeverCook, mountNotify, mountTray } from './lab.js';
 
 const CHEVRON =
   '<svg class="pf-detail__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
@@ -522,31 +522,30 @@ function spatialAudio(data) {
 
 /* Prasia lab (프라시아 전기 툴 데모) ------------------------------------------ */
 
-function prasiaLab(data) {
-  const block = (key, wide = false) => {
-    const item = data[key];
-    if (!item || !has(item.title)) return '';
-    return `
-          <article class="pf-toollab__item${wide ? ' pf-toollab__item--wide' : ''}" id="prasia-lab--${key}">
-            <h3>${inline(item.title)}</h3>
-            ${has(item.text) ? `<p>${inline(item.text)}</p>` : ''}
-            <div class="pf-toollab__demo" data-demo="${key}"></div>
+// 툴 데모 묶음. demos 목록의 kind 마다 lab.js 의 mount 함수가 하나씩 있고, 항목 id 는 "섹션id--kind" 라 글에서 링크할 수 있습니다.
+const labDemos = { nevercook: mountNeverCook, tray: mountTray, notify: mountNotify, minimap: mountMinimap };
+
+function lab(data, section) {
+  const demos = toList(data.demos).filter((demo) => demo && has(demo.title) && has(demo.kind) && Object.hasOwn(labDemos, String(demo.kind).trim()));
+  const kind = (demo) => String(demo.kind).trim();
+  const block = (demo) => `
+          <article class="pf-toollab__item${demo.wide ? ' pf-toollab__item--wide' : ''}" id="${attr(`${section?.id ?? 'lab'}--${kind(demo)}`)}">
+            <h3>${inline(demo.title)}</h3>
+            ${has(demo.text) ? `<p>${inline(demo.text)}</p>` : ''}
+            <div class="pf-toollab__demo" data-demo="${attr(kind(demo))}"></div>
           </article>`;
-  };
   return {
     className: 'fade-up',
     html: `
       <div class="inner">
         <h2>${esc(data.title)}</h2>
         ${lead(data.lead)}
-        <div class="pf-toollab">${block('nevercook', true)}${block('tray')}${block('minimap')}</div>
+        <div class="pf-toollab${demos.length === 1 ? ' pf-toollab--single' : ''}">${demos.map(block).join('')}</div>
       </div>`,
     mount(element) {
-      const demos = { nevercook: mountNeverCook, tray: mountTray, minimap: mountMinimap };
-      for (const [key, mountDemo] of Object.entries(demos)) {
-        const demo = element.querySelector(`[data-demo="${key}"]`);
-        if (demo) mountDemo(demo, data[key]);
-      }
+      element.querySelectorAll('[data-demo]').forEach((target, index) => {
+        labDemos[target.dataset.demo](target, demos[index]);
+      });
     },
   };
 }
@@ -645,7 +644,7 @@ export const renderers = {
   career,
   impact,
   'spatial-audio': spatialAudio,
-  'prasia-lab': prasiaLab,
+  lab,
   projects,
   activities,
 };
