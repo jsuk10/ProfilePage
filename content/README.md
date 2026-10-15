@@ -23,6 +23,7 @@
 | `career/*.md` | 회사 경력 하나. 앞부분은 요약, 본문은 '경력 상세' 펼침 목록 |
 | `impact.yml` | 성과 지표 그래프 |
 | `spatial-audio.yml` | 공간음향 차폐 데모: 설명, 와이즈 공간음향 대신 직접 계산한 이유(`realtime`), 부하를 줄인 방법(`optimizations`), 층별 3D 배치도(`layers`, 적는 법은 파일 맨 위 주석) |
+| `prasia-lab.yml` | 프라시아 전기 툴 데모: 렌더링 지표 미니맵(웨이포인트, 기준값), 크래시 → 담당자 흐름(단계 글) |
 | `projects.yml` | 학생 시절 작품 |
 | `activities.yml` | 학력, 수상, 교육, 동아리 |
 
@@ -175,6 +176,7 @@
 | `assets/js/portfolio/spatial-audio-voxel.js` | 데모 계산: 복셀 그리드, 직선 레이, A\*, 밀폐도 |
 | `assets/js/portfolio/spatial-audio-demo.js` | 결과 패널, WebGL2 가 없을 때 쓰는 2D 단면 화면 |
 | `assets/js/portfolio/spatial-audio-sound.js` | 데모 소리: 계산한 수치를 Web Audio 로 소리에 입힘 (거리, 차폐, 밀폐도, 방향) |
+| `assets/js/portfolio/prasia-lab.js` | 프라시아 전기 툴 데모: 미니맵 순회(Canvas), 크래시 → 담당자 흐름 |
 | `assets/js/portfolio/markdown.js`, `content.js` | Markdown, YAML 읽기 |
 | `assets/js/main.js` | 템플릿 인터랙션 (스크롤스파이, 등장 효과, spotlights) |
 | `assets/css/portfolio.css` | 이 포트폴리오 전용 스타일 (`main.css` 는 템플릿 스타일) |

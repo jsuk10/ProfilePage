@@ -2294,6 +2294,294 @@
 
 	}
 
+/* Prasia lab (프라시아 전기 툴 데모) */
+
+	.pf-toollab {
+		display: grid;
+		gap: 2.5em;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		margin: 0 0 1.5em 0;
+	}
+
+		.pf-toollab__item {
+			min-width: 0;
+		}
+
+		.pf-toollab__item h3 {
+			font-size: 1.15em;
+			margin: 0 0 0.5em 0;
+		}
+
+		.pf-toollab__item > p {
+			font-size: 0.92em;
+			margin: 0 0 1em 0;
+		}
+
+	.pf-toollab__demo {
+		--pf-lab-surface: #1e0d42;
+		--pf-lab-grid: rgba(246, 241, 255, 0.06);
+		--pf-lab-warn: #e9b84a;
+	}
+
+	/* 미니맵 */
+	.pf-minimap__view {
+		position: relative;
+	}
+
+	.pf-minimap__canvas {
+		aspect-ratio: 16 / 10;
+		background: var(--pf-lab-surface);
+		border-radius: var(--pf-radius-m);
+		cursor: crosshair;
+		display: block;
+		touch-action: pan-y;
+		width: 100%;
+	}
+
+	.pf-minimap__tip {
+		background: rgba(30, 13, 66, 0.92);
+		border-radius: var(--pf-radius-s);
+		box-shadow: inset 0 0 0 1px var(--pf-line-strong);
+		color: var(--pf-ink);
+		font-size: 0.75em;
+		font-weight: 600;
+		left: 0;
+		padding: 0.3em 0.6em;
+		pointer-events: none;
+		position: absolute;
+		top: 0;
+		transform: translate(-50%, -150%);
+		white-space: nowrap;
+	}
+
+	.pf-minimap__bar {
+		align-items: center;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6em 1em;
+		margin-top: 0.85em;
+	}
+
+		.pf-minimap__threshold output {
+			color: var(--pf-ink);
+			font-variant-numeric: tabular-nums;
+			min-width: 3em;
+		}
+
+	.pf-lab__key--ok,
+	.pf-lab__key--warn,
+	.pf-lab__key--over {
+		border-radius: 50%;
+	}
+
+	.pf-lab__key--ok {
+		background: var(--pf-after);
+	}
+
+	.pf-lab__key--warn {
+		background: var(--pf-lab-warn);
+	}
+
+	.pf-lab__key--over {
+		background: var(--pf-before);
+	}
+
+	.pf-minimap__rank {
+		margin-top: 0.85em;
+		min-height: 1em;
+	}
+
+		.pf-minimap__rank-title {
+			color: var(--pf-ink);
+			font-size: 0.9em;
+			font-weight: 600;
+			margin: 0 0 0.35em 0;
+		}
+
+		.pf-minimap__rank ol {
+			counter-reset: pf-rank;
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+
+		.pf-minimap__rank li {
+			border-top: solid 1px var(--pf-line);
+			counter-increment: pf-rank;
+			display: flex;
+			font-size: 0.9em;
+			gap: 0.75em;
+			padding: 0.4em 0;
+		}
+
+			.pf-minimap__rank li::before {
+				color: var(--pf-text-muted);
+				content: counter(pf-rank);
+				font-variant-numeric: tabular-nums;
+			}
+
+			.pf-minimap__rank li > span:first-of-type {
+				color: var(--pf-ink);
+				flex: 1 1 auto;
+			}
+
+		.pf-minimap__value {
+			font-variant-numeric: tabular-nums;
+			white-space: nowrap;
+		}
+
+			.pf-minimap__rank .is-over .pf-minimap__value {
+				color: #ff9bb0;
+			}
+
+			.pf-minimap__rank .is-warn .pf-minimap__value {
+				color: var(--pf-lab-warn);
+			}
+
+			.pf-minimap__rank .is-ok .pf-minimap__value {
+				color: var(--pf-after);
+			}
+
+	/* 크래시 → 담당자 흐름 */
+	.pf-crash__controls {
+		align-items: center;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5em 0.75em;
+		margin-bottom: 1em;
+	}
+
+	.pf-crash__flow {
+		background: var(--pf-lab-surface);
+		border-radius: var(--pf-radius-m);
+		padding: 1.1em 1.25em;
+	}
+
+	.pf-crash__event {
+		align-items: center;
+		display: flex;
+		flex-wrap: wrap;
+		font-size: 0.85em;
+		gap: 0.4em 0.75em;
+		margin-bottom: 1em;
+	}
+
+		.pf-crash__event[hidden] {
+			display: none;
+		}
+
+		.pf-crash__event code {
+			font-size: 0.85em;
+		}
+
+	.pf-crash__badge {
+		background: var(--pf-before);
+		border-radius: var(--pf-radius-s);
+		color: #fff;
+		font-size: 0.8em;
+		font-weight: 700;
+		padding: 0.1em 0.5em;
+	}
+
+	.pf-crash__steps {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+		.pf-crash__steps li {
+			display: grid;
+			gap: 0 0.85em;
+			grid-template-columns: 1.1em minmax(0, 1fr);
+			opacity: 0.45;
+			padding: 0.45em 0;
+			transition: opacity 240ms ease;
+		}
+
+			.pf-crash__steps li.is-active,
+			.pf-crash__steps li.is-done {
+				opacity: 1;
+			}
+
+		.pf-crash__dot {
+			background: var(--pf-line-strong);
+			border-radius: 50%;
+			height: 0.8em;
+			margin-top: 0.35em;
+			transition: background-color 240ms ease, box-shadow 240ms ease;
+			width: 0.8em;
+		}
+
+			.pf-crash__steps li.is-active .pf-crash__dot {
+				background: var(--pf-accent);
+				box-shadow: 0 0 0 4px rgba(242, 165, 214, 0.25);
+			}
+
+			.pf-crash__steps li.is-done .pf-crash__dot {
+				background: var(--pf-after);
+			}
+
+		.pf-crash__steps strong {
+			color: var(--pf-ink);
+			display: block;
+			font-size: 0.95em;
+		}
+
+		.pf-crash__steps p {
+			font-size: 0.85em;
+			margin: 0;
+		}
+
+		.pf-crash__detail {
+			color: var(--pf-ink);
+			font-weight: 600;
+			min-height: 1.3em;
+		}
+
+	.pf-crash__card {
+		animation: pf-card-in 400ms var(--pf-ease-out) both;
+		background: rgba(255, 255, 255, 0.06);
+		border-left: solid 3px var(--pf-accent);
+		border-radius: var(--pf-radius-s);
+		font-size: 0.85em;
+		margin-top: 1em;
+		padding: 0.75em 1em;
+	}
+
+		.pf-crash__card p {
+			margin: 0 0 0.3em 0;
+		}
+
+		.pf-crash__card-head {
+			color: var(--pf-ink);
+			font-weight: 700;
+		}
+
+		.pf-crash__app {
+			background: var(--pf-accent);
+			border-radius: 4px;
+			color: var(--pf-accent-ink);
+			display: inline-block;
+			font-weight: 800;
+			height: 1.4em;
+			line-height: 1.4em;
+			margin-right: 0.5em;
+			text-align: center;
+			width: 1.4em;
+		}
+
+		.pf-crash__card-foot {
+			color: var(--pf-text-muted);
+		}
+
+	@media screen and (max-width: 980px) {
+
+		.pf-toollab {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+	}
+
 /* Student works (spotlights) */
 
 	.pf-works__stack {
@@ -2683,6 +2971,9 @@
 		.pf-screen__window,
 		.pf-card,
 		.pf-card__dots,
+		.pf-crash__card,
+		.pf-crash__steps li,
+		.pf-crash__dot,
 		.pf-detail__chevron,
 		.pf-meter__fill,
 		.pf-switch__thumb,

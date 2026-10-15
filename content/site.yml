@@ -4,7 +4,7 @@
 #
 #   id      주소 뒤에 붙는 이름입니다. 예) index.html#like-or-die  (영문 소문자, 숫자, - 만 쓰세요)
 #   nav     메뉴에 보일 이름입니다. 지우면 메뉴에서 빠집니다.
-#   type    섹션 모양입니다. intro, skills, career, impact, spatial-audio, projects, activities 중 하나.
+#   type    섹션 모양입니다. intro, skills, career, impact, spatial-audio, prasia-lab, projects, activities 중 하나.
 #   source  내용 파일 경로입니다. (content/ 기준)
 #   style   배경색입니다. style1(가장 어두움), alt, style4, style2, style3(가장 밝음)
 #
@@ -47,6 +47,12 @@ sections:
     type: career
     source: career/nexon-prasia.md
     style: alt
+
+  - id: prasia-lab
+    nav: Prasia Lab
+    type: prasia-lab
+    source: prasia-lab.yml
+    style: style4
 
   - id: student-works
     nav: Student Works

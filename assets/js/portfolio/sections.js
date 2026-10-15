@@ -8,6 +8,7 @@ import { markdown, inline, escapeHtml as esc, escapeAttr as attr, linkAttrs } fr
 import { mountSpatialAudioDemo } from './spatial-audio-demo.js';
 import { mountSpatialAudio3D, supportsWebGL2 } from './spatial-audio-3d.js';
 import { parseVoxelPreset, sliceAtListener } from './spatial-audio-voxel.js';
+import { mountMinimap, mountCrashFlow } from './prasia-lab.js';
 
 const CHEVRON =
   '<svg class="pf-detail__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
@@ -500,6 +501,36 @@ function spatialAudio(data) {
   };
 }
 
+/* Prasia lab (프라시아 전기 툴 데모) ------------------------------------------ */
+
+function prasiaLab(data) {
+  const block = (key) => {
+    const item = data[key];
+    if (!item || !has(item.title)) return '';
+    return `
+          <article class="pf-toollab__item">
+            <h3>${inline(item.title)}</h3>
+            ${has(item.text) ? `<p>${inline(item.text)}</p>` : ''}
+            <div class="pf-toollab__demo" data-demo="${key}"></div>
+          </article>`;
+  };
+  return {
+    className: 'fade-up',
+    html: `
+      <div class="inner">
+        <h2>${esc(data.title)}</h2>
+        ${lead(data.lead)}
+        <div class="pf-toollab">${block('minimap')}${block('crash')}</div>
+      </div>`,
+    mount(element) {
+      const minimap = element.querySelector('[data-demo="minimap"]');
+      if (minimap) mountMinimap(minimap, data.minimap);
+      const crash = element.querySelector('[data-demo="crash"]');
+      if (crash) mountCrashFlow(crash, data.crash);
+    },
+  };
+}
+
 /* Projects (spotlights) --------------------------------------------------- */
 
 function projects(data, section) {
@@ -594,6 +625,7 @@ export const renderers = {
   career,
   impact,
   'spatial-audio': spatialAudio,
+  'prasia-lab': prasiaLab,
   projects,
   activities,
 };
