@@ -3,6 +3,7 @@
 //   차폐 계수  → 볼륨 + 로우패스 컷오프
 //   밀폐도     → 리버브 센드 = 1 − 밀폐도² (청취자가 있는 공간의 울림. 바닥 아래로 나간 레이가 열린 것으로 잡혀 밀폐도가 0.5 아래로는 잘 안 내려가므로 제곱으로 당깁니다)
 //   방향       → HRTF 패닝. 화면을 보는 방향이 청취자가 보는 방향입니다. (화면 오른쪽 = 오른쪽 귀)
+//               직선이 막혔으면 우회 경로에서 청취자에게 보이는 마지막 점(문, 벽 끝) 쪽에서 경로 길이만큼 떨어져 들립니다.
 // 소리는 파일 없이 합성합니다. (비트 루프, 바흐 프렐류드, 시냇물, 리버브 임펄스)
 
 export const REF_DISTANCE = 1.5; // m. 이 안에서는 거리 감쇠 없음
@@ -353,10 +354,15 @@ function orient(listener, [x, y, z], set) {
   }
 }
 
-// 수치 하나를 소리 값으로. frame: { listener, source, straight, forward, occlusion, openness }
-export function soundValues(frame) {
+// 수치 하나를 소리 값으로. frame: { listener, source, straight, apparent, pathLength, blocked, forward, occlusion, openness }
+export function soundValues(frame, usePortal) {
+  const viaPath = usePortal && Boolean(frame.apparent);
+  const distance = viaPath ? frame.pathLength : frame.straight;
   return {
-    attenuation: distanceGain(frame.straight),
+    viaPath,
+    position: viaPath ? frame.apparent : frame.source,
+    distance,
+    attenuation: distanceGain(distance),
     db: occlusionDb(frame.occlusion),
     cutoff: occlusionCutoff(frame.occlusion),
     reverb: reverbAmount(frame.openness),
@@ -364,6 +370,8 @@ export function soundValues(frame) {
 }
 
 /* 화면 ------------------------------------------------------------------- */
+
+const SWITCH = '<span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>';
 
 // 장면 위에 덮는 안내 창. 섹션에 들어오면 뜨고 누르면 소리가 납니다.
 export function soundGateMarkup() {
@@ -373,7 +381,7 @@ export function soundGateMarkup() {
           <button type="button" class="pf-button pf-lab__gate-card" data-sound-start>
             <strong class="pf-lab__gate-title">소리가 나는 데모입니다</strong>
             <span class="pf-lab__gate-text">누르면 음원 자리에서 소리가 납니다. 음량을 먼저 확인하고 이어폰을 권합니다. 섹션을 벗어나면 꺼집니다.</span>
-            <span class="pf-lab__gate-action">누르면 소리 켜기</span>
+            <span class="pf-lab__gate-action">소리 켜서 보기</span>
           </button>
           <button type="button" class="pf-button pf-lab__gate-skip" data-sound-skip>소리 없이 보기</button>
         </div>`;
@@ -388,6 +396,7 @@ export function soundControlsMarkup() {
           <button type="button" class="pf-button pf-segmented__item" data-sound-source="classic" aria-pressed="false">클래식</button>
           <button type="button" class="pf-button pf-segmented__item" data-sound-source="water" aria-pressed="false">물소리</button>
         </div>
+        <button type="button" class="pf-button pf-switch" role="switch" aria-checked="true" data-sound-portal>${SWITCH}우회 방향에서 듣기</button>
         <label class="pf-lab__volume">음량<input type="range" min="0" max="100" value="70" data-sound-volume></label>
       </div>`;
 }
@@ -397,6 +406,7 @@ const SOUND_READOUT = [
   ['occlusion', '차폐 볼륨'],
   ['cutoff', '로우패스'],
   ['reverb', '리버브 센드'],
+  ['direction', '들리는 방향'],
 ];
 
 export function soundReadoutMarkup() {
@@ -411,7 +421,7 @@ export function soundReadoutMarkup() {
 
 export function soundHelpMarkup() {
   if (!supportsWebAudio()) return '';
-  return '<p>안내 창을 누르면 음원 자리에서 소리가 나고 섹션을 벗어나면 꺼집니다. 차폐 계수는 볼륨과 로우패스로, 밀폐도는 리버브로, 거리는 감쇠로 들리고 방향은 화면을 보는 방향 기준입니다. (화면 오른쪽 = 오른쪽 귀) 이어폰이나 헤드폰으로 들으면 방향이 또렷합니다.</p>';
+  return '<p>안내 창을 누르면 음원 자리에서 소리가 나고 섹션을 벗어나면 꺼집니다. 차폐 계수는 볼륨과 로우패스로, 밀폐도는 리버브로, 거리는 감쇠로 들리고 방향은 화면을 보는 방향 기준입니다. (화면 오른쪽 = 오른쪽 귀) 직선이 막혔을 때는 우회 경로가 보이는 마지막 점(문, 벽 끝) 쪽에서 들립니다. 이어폰이나 헤드폰으로 들으면 방향이 또렷합니다.</p>';
 }
 
 const SOURCES = { loop: renderLoop, classic: renderClassic, water: renderWater };
@@ -425,6 +435,7 @@ export function bindSound(container, { live } = {}) {
 
   const startButton = container.querySelector('[data-sound-start]');
   const skipButton = container.querySelector('[data-sound-skip]');
+  const portalSwitch = container.querySelector('[data-sound-portal]');
   const sourceButtons = [...container.querySelectorAll('[data-sound-source]')];
   const volume = container.querySelector('[data-sound-volume]');
   const outputs = Object.fromEntries(
@@ -436,6 +447,7 @@ export function bindSound(container, { live } = {}) {
   let active = false;
   let dismissed = false;
   let kind = 'loop';
+  let usePortal = true;
   let level = Number(volume.value) / 100;
   let frame = null;
   let generation = 0;
@@ -496,11 +508,12 @@ export function bindSound(container, { live } = {}) {
 
   function apply(next, immediate = false) {
     frame = next;
-    const values = soundValues(next);
-    outputs.distance.textContent = `${formatDb(gainToDb(values.attenuation))} · ${next.straight.toFixed(1)}m`;
+    const values = soundValues(next, usePortal);
+    outputs.distance.textContent = `${formatDb(gainToDb(values.attenuation))} · ${values.distance.toFixed(1)}m`;
     outputs.occlusion.textContent = formatDb(values.db);
     outputs.cutoff.textContent = formatHz(values.cutoff);
     outputs.reverb.textContent = `${Math.round(values.reverb * 100)} %`;
+    outputs.direction.textContent = values.viaPath ? '우회 경로 쪽' : next.blocked ? '직선 (벽 너머)' : '직선';
 
     if (!engine) return;
     const { context, graph } = engine;
@@ -515,7 +528,7 @@ export function bindSound(container, { live } = {}) {
     set(graph.occlusion.gain, dbToGain(values.db));
     set(graph.distance.gain, values.attenuation);
     set(graph.send.gain, values.reverb * REVERB_MAX);
-    place(graph.panner, next.source, set);
+    place(graph.panner, values.position, set);
     place(context.listener, next.listener, set);
     orient(context.listener, next.forward, set);
   }
@@ -551,6 +564,12 @@ export function bindSound(container, { live } = {}) {
   skipButton.addEventListener('click', () => {
     dismissed = true;
     refreshGate();
+  });
+
+  portalSwitch.addEventListener('click', () => {
+    usePortal = !usePortal;
+    portalSwitch.setAttribute('aria-checked', String(usePortal));
+    if (frame) apply(frame);
   });
 
   sourceButtons.forEach((button) => {

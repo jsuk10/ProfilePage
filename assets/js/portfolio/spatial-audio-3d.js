@@ -16,6 +16,7 @@ import {
   parseVoxelPreset,
   cloneVoxelScene,
   evaluate,
+  apparentSource,
   VoxelPathFinder,
   cellOf,
   pick,
@@ -972,11 +973,15 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
 
   // 소리는 청취자 자리에서 화면을 보는 방향으로 듣습니다. (카메라 방향을 바닥에 눕힌 것)
   function soundFrame() {
+    const via = apparentSource(scene, result);
     const forward = camera ? camera.forward : [0, 0, -1];
     return {
       listener: center(scene.listener),
       source: center(scene.source),
       straight: result.straight,
+      apparent: via?.position ?? null,
+      pathLength: via?.distance ?? result.straight,
+      blocked: result.los.blocked,
       forward: [forward[0], 0, forward[2]],
       occlusion: result.occlusion,
       openness: result.enclosure.openness,
