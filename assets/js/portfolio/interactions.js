@@ -193,7 +193,7 @@ function onBeforeMatch(event) {
 let slideObserver = null;
 
 function replay(item) {
-  item.classList.remove('is-shown');
+  item.classList.remove('is-shown', 'is-open');
   void item.offsetWidth;
   item.classList.add('is-shown');
 }
@@ -201,7 +201,10 @@ function replay(item) {
 function watchSlides(root) {
   const items = [...root.querySelectorAll('.pf-media--slide, .pf-media--toast')];
   if (!items.length) return;
-  items.forEach((item) => item.querySelector('[data-replay]')?.addEventListener('click', () => replay(item)));
+  items.forEach((item) => {
+    item.querySelector('[data-replay]')?.addEventListener('click', () => replay(item));
+    item.querySelector('[data-toast-open]')?.addEventListener('click', () => item.classList.add('is-open'));
+  });
   if (!('IntersectionObserver' in window)) {
     items.forEach((item) => item.classList.add('is-shown'));
     return;
@@ -210,7 +213,7 @@ function watchSlides(root) {
     (entries) => {
       for (const entry of entries) {
         if (entry.intersectionRatio >= 0.6) entry.target.classList.add('is-shown');
-        else if (!entry.isIntersecting) entry.target.classList.remove('is-shown');
+        else if (!entry.isIntersecting) entry.target.classList.remove('is-shown', 'is-open');
       }
     },
     { threshold: [0, 0.6] },

@@ -1272,18 +1272,71 @@
 			width: 100%;
 		}
 
-			.pf-screen img {
+			.pf-screen__toast {
 				bottom: 5%;
-				margin: 0;
+				display: block;
+				padding: 0;
 				position: absolute;
 				right: 2.5%;
 				transform: translateX(130%);
 				width: 58%;
 			}
 
-			.pf-media--toast.is-shown .pf-screen img {
+				.pf-screen__toast img {
+					display: block;
+					margin: 0;
+					width: 100%;
+				}
+
+			.pf-media--toast.is-shown .pf-screen__toast {
 				transform: none;
 				transition: transform 720ms var(--pf-ease-out) 240ms;
+			}
+
+			/* 알림을 누르면 알림은 오른쪽으로 나가고 게임 창이 앞으로 옵니다. (is-open 은 interactions.js) */
+			.pf-media--toast.is-open .pf-screen__toast {
+				transform: translateX(130%);
+				transition: transform 360ms ease-in;
+			}
+
+			.pf-screen__window {
+				background: #000;
+				border-radius: 4px;
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+				display: flex;
+				flex-direction: column;
+				inset: 7% 6% 6% 6%;
+				opacity: 0;
+				overflow: hidden;
+				position: absolute;
+				transform: translateY(6%) scale(0.97);
+			}
+
+				.pf-screen__bar {
+					background: #1c1c1c;
+					color: #bdbdbd;
+					flex: none;
+					font-size: 0.65em;
+					letter-spacing: 0.35em;
+					line-height: 1.9;
+					padding: 0 0.5em;
+					text-align: right;
+				}
+
+				.pf-screen__window img {
+					display: block;
+					flex: 1 1 auto;
+					height: 100%;
+					margin: 0;
+					min-height: 0;
+					object-fit: cover;
+					width: 100%;
+				}
+
+			.pf-media--toast.is-open .pf-screen__window {
+				opacity: 1;
+				transform: none;
+				transition: opacity 260ms ease-out 120ms, transform 420ms var(--pf-ease-out) 120ms;
 			}
 
 		.pf-media__foot {
@@ -2510,7 +2563,8 @@
 		.pf-bar__after,
 		.pf-bar__after::before,
 		.pf-media--slide img,
-		.pf-screen img,
+		.pf-screen__toast,
+		.pf-screen__window,
 		.pf-detail__chevron,
 		.pf-meter__fill,
 		.pf-switch__thumb,
@@ -2527,7 +2581,7 @@
 		}
 
 		.pf-media--slide img,
-		.pf-screen img {
+		.pf-screen__toast {
 			opacity: 1;
 			transform: none;
 		}

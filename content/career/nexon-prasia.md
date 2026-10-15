@@ -169,11 +169,12 @@ links:
 
 - 트레이 아이콘 메뉴의 **Show Game / Hide Game / Exit** 로 게임 창을 보이거나 숨기고 끝냅니다.
 - 풍선 메시지는 Windows 기본 알림이라 OS 알림과 같은 모양으로 화면 오른쪽 아래에 뜹니다. 예: 파티 초대.
+- 풍선 메시지를 누르면(`NIN_BALLOONUSERCLICK`) 숨겨 둔 게임 창을 다시 보이게 하고 **포그라운드로 전환**합니다.
 - 이 경험을 Like Or Die 에서 [게임 전용 Slate 배너](#like-or-die--background-notify)로 발전시켰습니다.
 
 ![윈도우 트레이 아이콘 메뉴. Show Game, Hide Game, Exit 항목이 보입니다.](images/work/nexon-tray-menu.png "트레이 아이콘 메뉴")
 
-![프라시아 전기 제목 아래 파티에 초대되었습니다 라고 적힌 Windows 풍선 알림 예시](images/work/nexon-tray-balloon.png#toast "풍선 메시지 예시 (Windows 10 기본 알림에서 글자만 바꾼 것)")
+![프라시아 전기 제목 아래 파티에 초대되었습니다 라고 적힌 Windows 풍선 알림 예시](images/work/nexon-tray-balloon.png#toast=images/warofprasia.jpg "풍선 메시지 예시 (Windows 10 기본 알림에서 글자만 바꾼 것). 알림을 누르면 게임 창이 앞으로 옵니다.")
 
 ## 보안/암호화 {#security}
 
