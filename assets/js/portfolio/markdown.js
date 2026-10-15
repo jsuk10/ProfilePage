@@ -81,7 +81,7 @@ marked.use({
           ? `<button type="button" class="pf-button pf-screen__toast" data-toast-open>${img}</button>`
           : `<span class="pf-screen__toast">${img}</span>`;
         const replay = '<button type="button" class="pf-button pf-media__replay" data-replay>다시 재생</button>';
-        return `<span class="pf-media pf-media--toast"><span class="pf-screen">${window}${toast}</span><span class="pf-media__foot">${caption}${replay}</span></span>`;
+        return `<span class="pf-media pf-media--toast"><span class="pf-screen">${window}${toast}${replay}</span>${caption}</span>`;
       }
       const media = effect === 'slide' ? `<span class="pf-media__frame">${img}</span>` : img;
       return `<span class="pf-media${effect === 'slide' ? ' pf-media--slide' : ''}">${media}${caption}</span>`;

@@ -1339,31 +1339,22 @@
 				transition: opacity 260ms ease-out 120ms, transform 420ms var(--pf-ease-out) 120ms;
 			}
 
-		.pf-media__foot {
-			align-items: center;
-			display: flex;
-			flex-wrap: wrap;
-			gap: 0 1em;
-			justify-content: space-between;
-			max-width: 32em;
-		}
-
-			.pf-media__foot .pf-media__caption {
-				flex: 1 1 12em;
-			}
-
+		/* 다시 재생: 상자 안 왼쪽 아래 */
 		.pf-media__replay {
 			align-items: center;
+			background: rgba(30, 13, 66, 0.82);
 			border: solid 1px var(--pf-line-strong) !important;
+			bottom: 0.6em;
 			color: var(--pf-ink) !important;
 			display: inline-flex;
-			flex: none;
 			font-size: 0.8em;
 			font-weight: 600;
-			margin-top: 0.75em;
+			left: 0.6em;
 			min-height: 2.1em;
 			padding: 0 0.75em;
+			position: absolute;
 			transition: background-color 160ms var(--pf-ease-out), border-color 160ms var(--pf-ease-out), color 160ms var(--pf-ease-out);
+			z-index: 3;
 		}
 
 			.pf-media__replay:hover {
