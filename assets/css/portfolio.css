@@ -2694,14 +2694,6 @@
 			white-space: nowrap;
 		}
 
-		@media screen and (max-width: 736px) {
-
-			.pf-win__banner {
-				width: min(80%, 300px);
-			}
-
-		}
-
 		@media screen and (max-width: 480px) {
 
 			.pf-win__taskbar {
@@ -2979,6 +2971,14 @@
 				line-height: 1.4;
 				margin-top: 0.15em;
 			}
+
+		@media screen and (max-width: 736px) {
+
+			.pf-win__banner {
+				width: min(82%, 300px);
+			}
+
+		}
 
 	@media screen and (max-width: 980px) {
 
