@@ -2830,6 +2830,15 @@
 		display: none;
 	}
 
+	.pf-win__window.is-minimizing {
+		animation: pf-win-minimize 240ms ease-in forwards;
+		pointer-events: none;
+	}
+
+	@keyframes pf-win-minimize {
+		to { opacity: 0; transform: translateY(45%) scale(0.5); }
+	}
+
 	.pf-win__blank {
 		align-items: center;
 		aspect-ratio: 16 / 9;

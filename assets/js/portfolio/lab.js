@@ -596,6 +596,7 @@ export function mountTray(container, config) {
 /* Slate 백그라운드 알림 ------------------------------------------------------ */
 
 const BANNER_MS = 5000;
+const MINIMIZE_MS = 240;
 const PERSON_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6" fill="currentColor"/></svg>';
 
 export function mountNotify(container, config) {
@@ -652,6 +653,7 @@ export function mountNotify(container, config) {
   const tasks = Object.fromEntries([...container.querySelectorAll('[data-task]')].map((node) => [node.dataset.task, node]));
   let front = 'editor';
   let bannerTimer = 0;
+  let showTimer = 0;
 
   const say = (message) => {
     status.textContent = message;
@@ -675,10 +677,19 @@ export function mountNotify(container, config) {
     setFront(which);
   }
   function minimize(which) {
-    windows[which].classList.add('is-minimized');
-    windows[which].classList.remove('is-front');
+    const win = windows[which];
+    win.classList.remove('is-front');
     tasks[which].classList.remove('is-active');
     if (front === which) front = '';
+    if (reduceMotion.matches) {
+      win.classList.add('is-minimized');
+      return;
+    }
+    win.classList.add('is-minimizing');
+    window.setTimeout(() => {
+      win.classList.remove('is-minimizing');
+      win.classList.add('is-minimized');
+    }, MINIMIZE_MS);
   }
   function hideBanner() {
     window.clearTimeout(bannerTimer);
@@ -696,20 +707,24 @@ export function mountNotify(container, config) {
     bannerTimer = window.setTimeout(hideBanner, BANNER_MS);
   }
 
+  // 알림은 게임이 뒤에 있을 때 뜨는 것이라, 데모에서는 게임 창을 먼저 최소화한 뒤 띄웁니다.
   container.querySelectorAll('[data-event]').forEach((button) => {
     button.addEventListener('click', () => {
       const event = events[Number(button.dataset.event)];
-      if (front === 'game' && !event.always) {
-        hideBanner();
-        say(`${event.label}: 게임이 앞에 있어 알림을 띄우지 않습니다. (게임이 뒤에 있거나 최소화됐을 때만 뜹니다)`);
-        return;
-      }
-      showBanner(event);
-      say(event.always ? `${event.label}: 에디터가 앞에 있어도 알림을 띄웁니다. 5초 뒤 저절로 닫힙니다.` : `${event.label}: 게임이 ${minimized('game') ? '최소화돼 있어' : '뒤에 있어'} 알림을 띄웠습니다. 5초 뒤 저절로 닫힙니다.`);
+      const wasOpen = !minimized('game');
+      if (wasOpen) minimize('game');
+      hideBanner();
+      window.clearTimeout(showTimer);
+      showTimer = window.setTimeout(() => {
+        showBanner(event);
+        const how = wasOpen ? '게임 창을 최소화한 뒤' : '게임이 최소화돼 있어';
+        say(event.always ? `${event.label}: ${how} 알림을 띄웠습니다. 이 알림은 에디터가 앞에 있어도 뜹니다. 5초 뒤 저절로 닫힙니다.` : `${event.label}: ${how} 알림을 띄웠습니다. 5초 뒤 저절로 닫힙니다.`);
+      }, wasOpen && !reduceMotion.matches ? MINIMIZE_MS + 60 : 0);
     });
   });
   bannerButton.addEventListener('click', (event) => {
     event.stopPropagation();
+    window.clearTimeout(showTimer);
     hideBanner();
     const wasMinimized = minimized('game');
     restore('game');
