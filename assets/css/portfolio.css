@@ -2841,35 +2841,54 @@
 		letter-spacing: 0.1em;
 	}
 
-	/* 알림 상자: 커마 캐릭터 캡처 섬네일 + 제목 + 본문 (가로 카드) */
+	/* 알림 상자(세로 카드): 위에 게임 섬네일, 아래에 둥근 커마 캐릭터 캡처 + 제목 + 본문 */
 	.pf-win__banner {
-		align-items: center;
 		background: #141018;
 		border: solid 1px rgba(255, 255, 255, 0.14);
-		border-left: solid 3px var(--pf-accent);
 		border-radius: 8px;
 		box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
 		color: var(--pf-ink);
-		display: grid;
+		display: block;
 		font-size: 0.78em;
-		gap: 0.75em;
-		grid-template-columns: 4em minmax(0, 1fr) auto;
-		padding: 0.75em 0.9em;
+		overflow: hidden;
 		text-align: left;
-		width: min(64%, 420px);
+		width: min(48%, 300px);
 	}
+
+		.pf-win__banner-cover {
+			aspect-ratio: 5 / 2;
+			background: #2a1d4a;
+			display: block;
+		}
+
+			.pf-win__banner-cover img {
+				display: block;
+				height: 100%;
+				object-fit: cover;
+				width: 100%;
+			}
+
+		.pf-win__banner-row {
+			align-items: center;
+			display: grid;
+			gap: 0.7em;
+			grid-template-columns: 2.8em minmax(0, 1fr);
+			padding: 0.7em 0.9em 0.85em 0.9em;
+		}
 
 		.pf-win__banner-thumb {
 			align-items: center;
 			aspect-ratio: 1;
 			background: radial-gradient(circle at 50% 30%, #6c4fa3, #2a1d4a 70%);
-			border-radius: 6px;
+			border: solid 2px rgba(246, 241, 255, 0.25);
+			border-radius: 50%;
+			box-sizing: border-box;
 			color: rgba(246, 241, 255, 0.85);
 			display: flex;
 			justify-content: center;
 			overflow: hidden;
 			position: relative;
-			width: 4em;
+			width: 2.8em;
 		}
 
 			.pf-win__banner-thumb img {
@@ -2880,14 +2899,14 @@
 			}
 
 			.pf-win__banner-thumb svg {
-				height: 60%;
-				width: 60%;
+				height: 62%;
+				width: 62%;
 			}
 
 			.pf-win__banner-thumb i {
-				bottom: 0.2em;
-				color: rgba(246, 241, 255, 0.7);
-				font-size: 0.55em;
+				bottom: 0.1em;
+				color: rgba(246, 241, 255, 0.75);
+				font-size: 0.5em;
 				font-style: normal;
 				left: 0;
 				position: absolute;
@@ -2898,6 +2917,17 @@
 		.pf-win__banner-text {
 			min-width: 0;
 		}
+
+			.pf-win__banner-app {
+				color: var(--pf-accent);
+				display: block;
+				font-size: 0.68em;
+				font-style: normal;
+				font-weight: 700;
+				letter-spacing: 0.08em;
+				margin-bottom: 0.15em;
+				text-transform: uppercase;
+			}
 
 			.pf-win__banner-text strong {
 				color: var(--pf-ink);
@@ -2912,15 +2942,6 @@
 				line-height: 1.4;
 				margin-top: 0.15em;
 			}
-
-		.pf-win__banner-app {
-			align-self: start;
-			color: var(--pf-accent);
-			font-size: 0.7em;
-			font-weight: 700;
-			letter-spacing: 0.08em;
-			text-transform: uppercase;
-		}
 
 	@media screen and (max-width: 980px) {
 

@@ -602,6 +602,8 @@ export function mountNotify(container, config) {
   const text = (value) => String(value ?? '').trim();
   const app = text(config?.app) || '게임';
   const editor = text(config?.editor) || 'Unreal Editor';
+  const cover = text(config?.cover);
+  const windowImage = text(config?.window);
   const thumb = text(config?.thumb);
   const thumbAlt = text(config?.thumb_alt) || '플레이어가 커스터마이징한 캐릭터 캡처';
   const events = (Array.isArray(config?.events) ? config.events : [])
@@ -622,12 +624,14 @@ export function mountNotify(container, config) {
       </div>
       <div class="pf-win__window pf-win__window--game is-minimized" data-window="game">
         <div class="pf-win__title"><span class="pf-win__app-icon" aria-hidden="true"></span>${escapeHtml(app)}<span class="pf-win__title-buttons" aria-hidden="true">− □ ×</span></div>
-        <div class="pf-win__blank">게임 프로세스</div>
+        ${windowImage ? `<img src="${escapeHtml(windowImage)}" alt="${escapeHtml(app)} 게임 화면" loading="lazy" decoding="async">` : '<div class="pf-win__blank">게임 프로세스</div>'}
       </div>
       <button type="button" class="pf-button pf-win__balloon pf-win__banner" data-banner hidden>
-        <span class="pf-win__banner-thumb">${thumb ? `<img src="${escapeHtml(thumb)}" alt="${escapeHtml(thumbAlt)}" decoding="async">` : `${PERSON_ICON}<i>캐릭터 캡처</i>`}</span>
-        <span class="pf-win__banner-text"><strong data-banner-title></strong><span data-banner-body></span></span>
-        <span class="pf-win__banner-app">${escapeHtml(app)}</span>
+        ${cover ? `<span class="pf-win__banner-cover"><img src="${escapeHtml(cover)}" alt="" loading="lazy" decoding="async"></span>` : ''}
+        <span class="pf-win__banner-row">
+          <span class="pf-win__banner-thumb">${thumb ? `<img src="${escapeHtml(thumb)}" alt="${escapeHtml(thumbAlt)}" decoding="async">` : `${PERSON_ICON}<i>캡처</i>`}</span>
+          <span class="pf-win__banner-text"><em class="pf-win__banner-app">${escapeHtml(app)}</em><strong data-banner-title></strong><span data-banner-body></span></span>
+        </span>
       </button>
       <div class="pf-win__taskbar">
         <span class="pf-win__start" aria-hidden="true"></span>
