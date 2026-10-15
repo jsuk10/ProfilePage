@@ -452,10 +452,9 @@ export function mountTray(container, config) {
       <button type="button" class="pf-button pf-lab__reset" data-notify>${escapeHtml(eventName)} 알림 보내기</button>
       <button type="button" class="pf-button pf-lab__reset" data-menu-open aria-haspopup="menu" aria-expanded="false">트레이 메뉴 열기</button>
       <button type="button" class="pf-button pf-lab__reset" data-relaunch hidden>게임 다시 실행</button>
-      <span class="pf-tray__status" data-status aria-live="polite"></span>
     </div>
     <div class="pf-win" data-desktop>
-      <div class="pf-win__window" data-window hidden>
+      <div class="pf-win__window" data-window title="누르면 작업 표시줄로 최소화합니다" hidden>
         <div class="pf-win__title"><span class="pf-win__app-icon" aria-hidden="true"></span>${escapeHtml(app)}<span class="pf-win__title-buttons" aria-hidden="true">− □ ×</span></div>
         ${windowImage ? `<img src="${escapeHtml(windowImage)}" alt="${escapeHtml(app)} 게임 화면" loading="lazy" decoding="async">` : ''}
       </div>
@@ -476,7 +475,8 @@ export function mountTray(container, config) {
           <span class="pf-win__clock" aria-hidden="true">오후 9:41</span>
         </span>
       </div>
-    </div>`;
+    </div>
+    <p class="pf-tray__status pf-tray__status--below" data-status aria-live="polite"></p>`;
 
   const pick = (selector) => container.querySelector(selector);
   const desktop = pick('[data-desktop]');
@@ -490,9 +490,11 @@ export function mountTray(container, config) {
   const relaunch = pick('[data-relaunch]');
   const status = pick('[data-status]');
   let running = true;
-  let shown = false;
+  let shown = false; // 창이 떠 있음 (최소화 포함)
+  let minimized = false; // 작업 표시줄에만 있음
   let front = false;
   let balloonTimer = 0;
+  let minimizeTimer = 0;
 
   const say = (text) => {
     status.textContent = text;
@@ -503,19 +505,41 @@ export function mountTray(container, config) {
     task.classList.toggle('is-active', front);
   }
   function showWindow() {
+    window.clearTimeout(minimizeTimer);
+    win.classList.remove('is-minimizing');
     win.hidden = false;
     task.hidden = false;
     shown = true;
+    minimized = false;
     setFront(true);
     win.classList.remove('is-restoring');
     void win.offsetWidth;
     win.classList.add('is-restoring');
   }
   function hideWindow() {
+    window.clearTimeout(minimizeTimer);
+    win.classList.remove('is-minimizing');
     win.hidden = true;
     task.hidden = true;
     shown = false;
+    minimized = false;
     setFront(false);
+  }
+  // 창을 작업 표시줄로 내립니다. 작업 표시줄 버튼은 남습니다.
+  function minimizeWindow() {
+    if (!shown || minimized) return;
+    minimized = true;
+    setFront(false);
+    win.classList.remove('is-restoring');
+    if (reduceMotion.matches) {
+      win.hidden = true;
+      return;
+    }
+    win.classList.add('is-minimizing');
+    minimizeTimer = window.setTimeout(() => {
+      win.classList.remove('is-minimizing');
+      win.hidden = true;
+    }, MINIMIZE_MS);
   }
   function hideBalloon() {
     window.clearTimeout(balloonTimer);
@@ -574,7 +598,7 @@ export function mountTray(container, config) {
       say('Show Game: 게임 창을 보이고 앞으로 가져왔습니다.');
     } else if (item.dataset.menuItem === 'hide') {
       hideWindow();
-      say('Hide Game: 게임 창을 숨겼습니다. 트레이 아이콘만 남습니다.');
+      say('Hide Game: 작업 표시줄에서 게임을 숨겼습니다. 이제 트레이 아이콘(트레이 메뉴 열기)으로만 제어하고 Show Game 으로 다시 띄웁니다.');
     } else {
       hideWindow();
       hideBalloon();
@@ -586,13 +610,26 @@ export function mountTray(container, config) {
       say('Exit: 게임을 끝냈습니다.');
     }
   });
+  // 작업 표시줄 버튼: 최소화돼 있으면 복원, 앞에 있으면 최소화, 뒤에 있으면 앞으로
   task.addEventListener('click', (event) => {
     event.stopPropagation();
-    setFront(true);
+    closeMenu();
+    if (minimized) {
+      showWindow();
+      say('작업 표시줄 버튼을 눌러 게임 창을 복원했습니다.');
+    } else if (front) {
+      minimizeWindow();
+      say('게임 창을 최소화했습니다. 작업 표시줄 버튼이나 트레이 메뉴의 Show Game 으로 다시 띄웁니다.');
+    } else {
+      setFront(true);
+      say('게임 창을 앞으로 가져왔습니다.');
+    }
   });
   win.addEventListener('click', (event) => {
     event.stopPropagation();
-    setFront(true);
+    closeMenu();
+    minimizeWindow();
+    say('게임 창을 눌러 최소화했습니다. 작업 표시줄 버튼이나 트레이 메뉴의 Show Game 으로 다시 띄웁니다.');
   });
   desktop.addEventListener('click', () => {
     closeMenu();
