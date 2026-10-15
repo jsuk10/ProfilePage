@@ -2736,7 +2736,7 @@
 		justify-content: center;
 		padding: 1.5em;
 		position: fixed;
-		transition: opacity 360ms ease, visibility 360ms, background-color 420ms ease;
+		transition: opacity 360ms ease, visibility 360ms;
 		z-index: 10000;
 	}
 
@@ -2746,19 +2746,9 @@
 			visibility: hidden;
 		}
 
-		/* 명함이 첫 화면 자리로 날아가는 동안 배경만 걷힙니다. (app.js) */
-		.pf-splash.is-landing {
-			background-color: transparent;
-			pointer-events: none;
-		}
-
-			.pf-splash.is-landing .pf-splash__status {
-				opacity: 0;
-			}
-
 		/* 템플릿은 로드가 끝날 때까지 모든 움직임을 끄지만 명함은 그 전에 뜨고 사라집니다. */
 		body.is-preload .pf-splash {
-			transition: opacity 360ms ease, visibility 360ms, background-color 420ms ease !important;
+			transition: opacity 360ms ease, visibility 360ms !important;
 		}
 
 		.pf-splash__status {
