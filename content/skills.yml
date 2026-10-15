@@ -73,7 +73,7 @@ rows:
     summary: 크래시 수집 도구를 도입부터 운영까지 맡고 플랫폼 이슈를 대응합니다.
     detail: >-
       Backtrace 도입과 운영(심볼 태깅, ANR / OOM 지표, SDK 소스 분석으로 네이티브 에러 핸들링),
-      Vivox, iOS Privacy Manifest / 프로비저닝, Android OOM 사후 관리, 게임패드 진동
+      Vivox, iOS 프로비저닝 / 스토어 정책, Android OOM 사후 관리, 게임패드 진동
     projects:
       - name: 넥슨
         ref: prasia#backtrace
@@ -87,25 +87,6 @@ rows:
       PyTorch → ONNX → UE NNE 에디터 인퍼런스 파이프라인
     projects:
       - name: 넥슨
-        ref: prasia#automation
+        ref: prasia#ci-cd
       - name: NC
         ref: like-or-die#ml-notify
-
-tools:
-  title: 사용 도구
-  groups:
-    - name: Unreal Engine 4.27 / 5
-      meta: '{total} (2021.11 ~ 현재)'
-      items:
-        - NC Like Or Die 신작 개발 (Unreal Engine 5)
-        - 넥슨 프라시아 전기 신작 제작 (Unreal Engine 4.27), 미출시 개발 1년 + 라이브 3년
-    - name: 모바일 / 플랫폼
-      items:
-        - Android Studio
-        - Xcode / 앱스토어 정책 대응
-    - name: 협업 / 운영
-      items:
-        - Perforce
-        - Jenkins / TeamCity
-        - Confluence / Jira
-        - Teams 자동화 (Power Automate)

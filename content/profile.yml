@@ -30,12 +30,11 @@ card:
     logo: images/logos/nexon.png
 
 summary: |-
-  **넥슨 · [프라시아 전기](https://wp.nexon.com/main) - 기술(엔진) 파트** (Unreal Engine 4.27)
-  출시 전 1년부터 라이브 3년까지 함께했습니다.
-  퍼포먼스 개선, 플러그인 도입과 유지보수, CI/CD 자동화를 맡았습니다.
+  **넥슨 · [프라시아 전기](https://wp.nexon.com/main)** (Unreal Engine 4.27, 기술(엔진) 파트)
+  엔진·툴 개발, 퍼포먼스 최적화, 플러그인/빌드 시스템 운영, 자동화
 
-  **NC · [Like Or Die](https://likeordie.plaync.com/ko-kr/conts/260826_teasing) - 클라이언트 파트** (Unreal Engine 5, 신작 FPS)
-  사운드와 공간음향, 리플레이, 로드 최적화, 에디터 툴과 ML R&D 를 맡고 있습니다.
+  **NC · [Like Or Die](https://likeordie.plaync.com/ko-kr/conts/260826_teasing)** (Unreal Engine 5, 클라이언트 파트)
+  클라이언트 개발, 사운드/공간음향, 리플레이, 퍼포먼스 최적화, 에디터 툴/ML R&D
 
 # 소개 아래 칸들입니다. logo 에 그림 주소를 적으면 값 왼쪽에 작은 로고가 붙습니다. (비우면 글자만)
 # 로고 파일은 images/logos/ 에 배경이 투명한 PNG 로 넣습니다. (경력은 위 명함에 있으니 여기서는 뺐습니다)
