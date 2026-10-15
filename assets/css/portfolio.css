@@ -66,7 +66,9 @@
 /* Base */
 
 	html {
+		/* 내용이 그려져 스크롤바가 생길 때 로딩 명함이 옆으로 밀리지 않게 자리를 미리 비워 둡니다. */
 		scrollbar-color: #5b4297 #1e0d42;
+		scrollbar-gutter: stable;
 	}
 
 	body, input, select, textarea, button {
@@ -2734,7 +2736,7 @@
 		gap: 1.25em;
 		inset: 0;
 		justify-content: center;
-		padding: 1.5em;
+		padding: 1.5em 2em;
 		position: fixed;
 		transition: opacity 360ms ease, visibility 360ms;
 		z-index: 10000;
@@ -2779,6 +2781,7 @@
 		max-width: 34em;
 		padding: 1.75em 2em;
 		width: 100%;
+		will-change: transform;
 	}
 
 		body.is-preload .pf-card {

@@ -50,8 +50,9 @@ function readSections(site) {
 }
 
 // 불러오는 동안 보이던 명함(index.html 의 #pf-splash)을 치웁니다. 너무 빨리 지나가 깜빡이지 않게 1.2초는 보여 줍니다.
-// 로딩 화면이 걷히는 동안 첫 화면 맨 위의 명함이 로딩 명함 자리에서 제자리로 미끄러져 들어가서 끊김 없이 이어집니다.
-// (복제본을 옮기는 대신 진짜 명함을 움직이므로 끝난 뒤 바꿔치기가 없습니다) 명함이 화면 밖이거나 움직임 줄이기 설정이면 그냥 사라집니다.
+// 로딩 화면이 옅어지는 동안 첫 화면 맨 위의 명함이 로딩 명함 자리에서 제자리로 미끄러져 들어가고, 로딩 명함은 같은 길을
+// 따라가며 배경과 함께 사라집니다. 두 명함이 늘 겹쳐 있어 크로스페이드로 이어지고 끝 상태는 실제 레이아웃 그대로입니다.
+// 명함이 화면 밖이거나 움직임 줄이기 설정이면 그냥 사라집니다. 글꼴이 늦게 오면 자리가 바뀔 수 있어 (최대 1.5초) 기다렸다가 잽니다.
 const SPLASH_HOLD_MS = 1200;
 const SPLASH_FLIGHT_MS = 640;
 
@@ -60,35 +61,42 @@ function hideSplash() {
   if (!splash) return;
   const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const wait = reduce ? 0 : Math.max(0, SPLASH_HOLD_MS - performance.now());
-  window.setTimeout(() => {
+  const fontsReady = Promise.race([document.fonts?.ready, new Promise((resolve) => window.setTimeout(resolve, 1500))]);
+  window.setTimeout(() => fontsReady.then(() => {
     const card = splash.querySelector('.pf-card');
     const target = document.querySelector('#wrapper .pf-card--intro');
     const from = card?.getBoundingClientRect();
     const to = target?.getBoundingClientRect();
     const onScreen = to && to.width > 0 && to.bottom > 0 && to.top < window.innerHeight;
-    splash.classList.add('is-leaving');
-    if (!reduce && from && onScreen) {
-      // 템플릿이 로드 전에는 transition 을 !important 로 끄므로 인라인에도 !important 를 붙입니다.
-      const style = target.style;
-      const set = (name, value) => style.setProperty(name, value, 'important');
-      set('transform-origin', '0 0');
-      set('transition', 'none');
-      set('will-change', 'transform');
-      set('transform', `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.width / to.width}, ${from.height / to.height})`);
-      void target.offsetWidth;
-      card.style.visibility = 'hidden';
-      window.requestAnimationFrame(() => {
-        set('transition', `transform ${SPLASH_FLIGHT_MS}ms cubic-bezier(0.23, 1, 0.32, 1)`);
-        set('transform', 'none');
-      });
-      window.setTimeout(() => {
-        splash.remove();
-        ['transform-origin', 'transition', 'will-change', 'transform'].forEach((name) => style.removeProperty(name));
-      }, SPLASH_FLIGHT_MS + 60);
+    if (reduce || !from || !onScreen) {
+      splash.classList.add('is-leaving');
+      window.setTimeout(() => splash.remove(), 400);
       return;
     }
-    window.setTimeout(() => splash.remove(), 400);
-  }, wait);
+    // 템플릿이 로드 전에는 transition 을 !important 로 끄므로 인라인에도 !important 를 붙입니다.
+    // 로딩 명함은 등장 애니메이션이 transform 을 쥐고 있는 동안 transition 이 걸리지 않으므로 애니메이션부터 뗍니다.
+    // 배경 페이드와 두 명함의 이동은 같은 프레임에서 시작해야 어긋나지 않으므로 한 rAF 안에서 함께 켭니다.
+    const set = (element, name, value) => element.style.setProperty(name, value, 'important');
+    const shift = (a, b) => `translate(${a.left - b.left}px, ${a.top - b.top}px) scale(${a.width / b.width}, ${a.height / b.height})`;
+    const flight = `transform ${SPLASH_FLIGHT_MS}ms cubic-bezier(0.23, 1, 0.32, 1)`;
+    for (const element of [target, card]) {
+      set(element, 'transform-origin', '0 0');
+      set(element, 'transition', 'none');
+    }
+    set(card, 'animation', 'none');
+    set(target, 'transform', shift(from, to));
+    void target.offsetWidth;
+    window.requestAnimationFrame(() => {
+      splash.classList.add('is-leaving');
+      for (const element of [target, card]) set(element, 'transition', flight);
+      set(target, 'transform', 'none');
+      set(card, 'transform', shift(to, from));
+      window.setTimeout(() => {
+        splash.remove();
+        for (const name of ['transform-origin', 'transition', 'transform']) target.style.removeProperty(name);
+      }, SPLASH_FLIGHT_MS + 60);
+    });
+  }), wait);
 }
 
 function createSection(section, output) {
@@ -171,9 +179,11 @@ async function main() {
 
   enhance(wrapper);
   document.documentElement.classList.add('is-rendered');
-  hideSplash();
   document.dispatchEvent(new CustomEvent('portfolio:rendered'));
-  window.requestAnimationFrame(openInitialHash);
+  window.requestAnimationFrame(() => {
+    openInitialHash();
+    hideSplash();
+  });
 }
 
 main();
