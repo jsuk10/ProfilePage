@@ -1,19 +1,16 @@
-# Like Or Die 툴 데모 (type: lab). 적는 법은 prasia-lab.yml 맨 위 주석과 같습니다.
+# Slate 백그라운드 알림 데모 (type: lab, 데모 하나라 섹션 제목이 곧 데모 제목). 적는 법은 prasia-lab.yml 맨 위 주석과 같습니다.
 #   notify  Slate 백그라운드 알림. app(게임 이름), editor(앞에 있는 다른 창 이름), window(게임 창에 보일 그림),
 #           cover(알림 상자 위에 깔리는 게임 섬네일), thumb(글 왼쪽 둥근 자리에 들어갈 커마 캐릭터 캡처, 비우면 자리표시), thumb_alt(그림 설명)
 #           events 는 버튼 목록. label 은 버튼 글, title / body 는 알림 상자의 제목 / 본문, always: true 면 게임이 앞에 있어도 띄웁니다.
 
-title: Like Or Die 툴 데모
+title: Slate 백그라운드 알림
 lead: >-
-  Like Or Die 에서 만든 Slate 백그라운드 알림을 데모로 옮겼습니다. 공간음향 차폐 계산은 위 [Spatial Audio](#spatial-audio) 섹션에 따로 있습니다.
+  게임이 뒤에 있거나 최소화됐을 때 매칭·로딩 완료 같은 이벤트를 포커스를 뺏지 않는 topmost Slate 창으로 알리고, 알림을 누르면 게임 창을 복원해 앞으로 가져옵니다.
+  알림에는 플레이어가 커스터마이징한 캐릭터를 캡처한 섬네일이 들어가 플레이어마다 다른 알림이 뜹니다.
+  게임이 이미 앞에 있으면 띄우지 않고, 라이브 코딩이 끝난 알림은 에디터가 앞에 있어도 띄웁니다. 데모에서는 버튼을 누르면 게임 창을 최소화한 뒤 알림을 띄웁니다.
 
 demos:
   - kind: notify
-    title: Slate 백그라운드 알림
-    text: >-
-      게임이 뒤에 있거나 최소화됐을 때 매칭·로딩 완료 같은 이벤트를 포커스를 뺏지 않는 topmost Slate 창으로 알리고, 알림을 누르면 게임 창을 복원해 앞으로 가져옵니다.
-      알림에는 플레이어가 커스터마이징한 캐릭터를 캡처한 섬네일이 들어가 플레이어마다 다른 알림이 뜹니다.
-      게임이 이미 앞에 있으면 띄우지 않고, 라이브 코딩이 끝난 알림은 에디터가 앞에 있어도 띄웁니다. 데모에서는 버튼을 누르면 게임 창을 최소화한 뒤 알림을 띄웁니다.
     app: Like Or Die
     editor: Unreal Editor
     window: images/likeordie.webp

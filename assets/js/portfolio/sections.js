@@ -526,11 +526,11 @@ function spatialAudio(data) {
 const labDemos = { nevercook: mountNeverCook, tray: mountTray, notify: mountNotify, minimap: mountMinimap };
 
 function lab(data, section) {
-  const demos = toList(data.demos).filter((demo) => demo && has(demo.title) && has(demo.kind) && Object.hasOwn(labDemos, String(demo.kind).trim()));
+  const demos = toList(data.demos).filter((demo) => demo && has(demo.kind) && Object.hasOwn(labDemos, String(demo.kind).trim()));
   const kind = (demo) => String(demo.kind).trim();
   const block = (demo) => `
           <article class="pf-toollab__item${demo.wide ? ' pf-toollab__item--wide' : ''}" id="${attr(`${section?.id ?? 'lab'}--${kind(demo)}`)}">
-            <h3>${inline(demo.title)}</h3>
+            ${has(demo.title) ? `<h3>${inline(demo.title)}</h3>` : ''}
             ${has(demo.text) ? `<p>${inline(demo.text)}</p>` : ''}
             <div class="pf-toollab__demo" data-demo="${attr(kind(demo))}"></div>
           </article>`;

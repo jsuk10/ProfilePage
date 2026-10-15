@@ -130,7 +130,7 @@ links:
 
 [이전 프로젝트에서 만든 트레이 아이콘 풍선 알림](#prasia--tray-notify)을 **게임 전용 Slate 배너**로 발전시킨 것이기도 합니다.
 
-데모: [Like Or Die Lab 의 백그라운드 알림](#like-or-die-lab--notify)에서 알림을 띄우고 눌러 볼 수 있습니다.
+[백그라운드 알림 데모](#like-or-die-lab--notify)
 
 ### 포그라운드 정책 우회
 

@@ -2237,7 +2237,7 @@
 		}
 
 			.pf-toollab--single .pf-toollab__item {
-				max-width: 44em;
+				max-width: 30em;
 			}
 
 		.pf-toollab__item h3 {
@@ -2254,6 +2254,7 @@
 		--pf-lab-surface: #1e0d42;
 		--pf-lab-grid: rgba(246, 241, 255, 0.06);
 		--pf-lab-warn: #e9b84a;
+		container-type: inline-size;
 	}
 
 	/* 미니맵 */
@@ -2527,8 +2528,10 @@
 		font-size: 0.85em;
 	}
 
+	/* 바탕화면 안의 창, 알림, 작업 표시줄 글자는 바탕화면 폭에 비례합니다 */
 	.pf-win {
 		aspect-ratio: 16 / 10;
+		font-size: clamp(0.62em, 2.4cqw, 1em);
 		background: radial-gradient(circle at 30% 20%, #2d5a9e, #0f2650 60%, #091632);
 		border: solid 1px rgba(255, 255, 255, 0.12);
 		border-radius: var(--pf-radius-m);
@@ -2876,7 +2879,7 @@
 		font-size: 0.7em;
 		overflow: hidden;
 		text-align: left;
-		width: min(34%, 230px);
+		width: min(40%, 230px);
 	}
 
 		.pf-win__banner-cover {

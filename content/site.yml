@@ -43,7 +43,7 @@ sections:
     style: style4
 
   - id: like-or-die-lab
-    nav: Like Or Die Lab
+    nav: Background Notify
     type: lab
     source: like-or-die-lab.yml
     style: style1
