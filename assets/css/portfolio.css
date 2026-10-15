@@ -2694,6 +2694,14 @@
 			white-space: nowrap;
 		}
 
+		@media screen and (max-width: 736px) {
+
+			.pf-win__banner {
+				width: min(80%, 300px);
+			}
+
+		}
+
 		@media screen and (max-width: 480px) {
 
 			.pf-win__taskbar {
@@ -2702,6 +2710,10 @@
 
 			.pf-win__clock {
 				display: none;
+			}
+
+			.pf-win--notify .pf-win__window--game {
+				bottom: 1.56em;
 			}
 
 		}
@@ -2791,11 +2803,22 @@
 		width: 60%;
 	}
 
+	/* 게임 창은 전체 화면(작업 표시줄 위까지), 제목 줄 없음 */
 	.pf-win--notify .pf-win__window--game {
-		left: 30%;
-		top: 18%;
-		width: 60%;
+		border: 0;
+		border-radius: 0;
+		inset: 0 0 1.87em 0;
+		width: auto;
 	}
+
+		.pf-win--notify .pf-win__window--game .pf-win__title {
+			display: none;
+		}
+
+		.pf-win--notify .pf-win__window--game img {
+			aspect-ratio: auto;
+			height: 100%;
+		}
 
 	.pf-win__app-icon--editor {
 		background: linear-gradient(135deg, #e8e8e8, #8a8a8a);
@@ -2925,7 +2948,12 @@
 
 		.pf-win__banner-text {
 			min-width: 0;
+			word-break: keep-all;
 		}
+
+			.pf-win__banner-text span span {
+				display: block;
+			}
 
 			.pf-win__banner-app {
 				color: var(--pf-accent);

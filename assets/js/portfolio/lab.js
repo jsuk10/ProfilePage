@@ -696,9 +696,14 @@ export function mountNotify(container, config) {
     bannerButton.classList.remove('is-shown');
     bannerButton.hidden = true;
   }
+  // 본문은 문장마다 줄을 바꿔 보여 줍니다. (문장 중간에서 끊기지 않게)
   function showBanner(event) {
     bannerTitle.textContent = event.title;
-    bannerBody.textContent = event.body;
+    bannerBody.innerHTML = event.body
+      .split(/(?<=[.!?])\s+/)
+      .filter(Boolean)
+      .map((sentence) => `<span>${escapeHtml(sentence)}</span>`)
+      .join('');
     bannerBody.hidden = !event.body;
     bannerButton.hidden = false;
     void bannerButton.offsetWidth;
