@@ -19,6 +19,16 @@ brief: 넥슨에서 4년, NC에서 근무 중인 Unreal 클라이언트/엔진 �
 photo: images/frofile.png
 photo_alt: 이정석 프로필 사진
 
+# 첫 화면 맨 위 명함의 경력 줄입니다. (사진, 이름은 위 값을 씁니다)
+# 불러오는 동안 먼저 보이는 명함은 index.html 의 pf-splash 블록에 같은 내용이 직접 적혀 있으니 바꾸면 거기도 고치세요.
+card:
+  - value: NC · Like Or Die
+    meta: 2025.10 ~ 현재
+    logo: images/logos/nc.png
+  - value: 넥슨 · 프라시아 전기
+    meta: 2021.11 ~ 2025.09
+    logo: images/logos/nexon.png
+
 summary: |-
   **넥슨 · [프라시아 전기](https://wp.nexon.com/main) - 기술(엔진) 파트** (Unreal Engine 4.27)
   출시 전 1년부터 라이브 3년까지 함께했습니다.
@@ -27,17 +37,9 @@ summary: |-
   **NC · [Like Or Die](https://likeordie.plaync.com/ko-kr/conts/260826_teasing) - 클라이언트 파트** (Unreal Engine 5, 신작 FPS)
   사운드와 공간음향, 리플레이, 로드 최적화, 에디터 툴과 ML R&D 를 맡고 있습니다.
 
-# 소개 아래 네 칸입니다. logo 에 그림 주소를 적으면 값 왼쪽에 작은 로고가 붙습니다. (비우면 글자만)
-# 로고 파일은 images/logos/ 에 배경이 투명한 PNG 로 넣습니다.
+# 소개 아래 칸들입니다. logo 에 그림 주소를 적으면 값 왼쪽에 작은 로고가 붙습니다. (비우면 글자만)
+# 로고 파일은 images/logos/ 에 배경이 투명한 PNG 로 넣습니다. (경력은 위 명함에 있으니 여기서는 뺐습니다)
 facts:
-  - label: 현재
-    value: NC Like Or Die
-    meta: 2025.10 ~ 현재
-    logo: images/logos/nc.png
-  - label: 이전
-    value: 넥슨 프라시아 전기
-    meta: 2021.11 ~ 2025.09
-    logo: images/logos/nexon.png
   - label: 엔진
     value: Unreal Engine 4.27 / 5
     meta: Windows · iOS · Android

@@ -49,8 +49,10 @@ function readSections(site) {
   });
 }
 
-// 불러오는 동안 보이던 명함(index.html 의 #pf-splash)을 치웁니다. 너무 빨리 사라져 깜빡이지 않게 1.2초는 보여 줍니다.
+// 불러오는 동안 보이던 명함(index.html 의 #pf-splash)을 첫 화면 맨 위의 같은 명함 자리로 날려 보낸 뒤 치웁니다.
+// 너무 빨리 지나가 깜빡이지 않게 1.2초는 보여 주고, 목표 명함이 화면 밖이거나 움직임 줄이기 설정이면 그냥 사라집니다.
 const SPLASH_HOLD_MS = 1200;
+const SPLASH_FLIGHT_MS = 620;
 
 function hideSplash() {
   const splash = document.getElementById('pf-splash');
@@ -58,6 +60,24 @@ function hideSplash() {
   const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const wait = reduce ? 0 : Math.max(0, SPLASH_HOLD_MS - performance.now());
   window.setTimeout(() => {
+    const card = splash.querySelector('.pf-card');
+    const target = document.querySelector('#wrapper .pf-card--intro');
+    const from = card?.getBoundingClientRect();
+    const to = target?.getBoundingClientRect();
+    const onScreen = to && to.width > 0 && to.bottom > 0 && to.top < window.innerHeight;
+    if (!reduce && from && onScreen) {
+      // 템플릿이 로드 전에는 transition 을 !important 로 끄므로 인라인에도 !important 를 붙입니다.
+      card.style.setProperty('transform-origin', '0 0', 'important');
+      card.style.setProperty('transition', `transform ${SPLASH_FLIGHT_MS}ms cubic-bezier(0.23, 1, 0.32, 1)`, 'important');
+      card.style.setProperty(
+        'transform',
+        `translate(${to.left - from.left}px, ${to.top - from.top}px) scale(${to.width / from.width}, ${to.height / from.height})`,
+        'important',
+      );
+      splash.classList.add('is-landing');
+      window.setTimeout(() => splash.remove(), SPLASH_FLIGHT_MS + 40);
+      return;
+    }
     splash.classList.add('is-leaving');
     window.setTimeout(() => splash.remove(), 400);
   }, wait);

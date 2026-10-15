@@ -57,20 +57,20 @@
 		</div>
 	</section>
 
-	<!-- Splash: 불러오는 동안 보이는 명함. 내용 파일보다 먼저 떠야 해서 여기 직접 적습니다. 이름이나 경력이 바뀌면 함께 고치세요. -->
+	<!-- Splash: 불러오는 동안 먼저 보이는 명함. 내용을 다 그리면 첫 화면 맨 위의 같은 명함 자리로 날아가 이어집니다.
+	     내용 파일보다 먼저 떠야 해서 여기 직접 적습니다. content/profile.yml 의 name / name_en / photo / card 와 똑같이 맞추세요. -->
 	<div class="pf-splash" id="pf-splash">
 		<div class="pf-card">
 			<img class="pf-card__photo" src="images/frofile.png" alt="" width="509" height="634" decoding="async" fetchpriority="high">
 			<div class="pf-card__body">
-				<p class="pf-card__name">이정석 <span class="pf-card__name-en">Lee JeongSeok</span></p>
-				<p class="pf-card__role">Unreal Engine 클라이언트 / 엔진 프로그래머</p>
+				<p class="pf-card__name">이정석 <span class="pf-card__name-en" lang="en">Lee JeongSeok</span></p>
 				<ul class="pf-card__career">
-					<li><img src="images/logos/nc.png" alt=""><span>NC · Like Or Die</span><span class="pf-card__meta">2025.10 ~ 현재</span></li>
-					<li><img src="images/logos/nexon.png" alt=""><span>넥슨 · 프라시아 전기</span><span class="pf-card__meta">2021.11 ~ 2025.09</span></li>
+					<li><img src="images/logos/nc.png" alt=""><span>NC · Like Or Die</span><span class="pf-card__meta">2025.10&nbsp;~&nbsp;현재</span></li>
+					<li><img src="images/logos/nexon.png" alt=""><span>넥슨 · 프라시아 전기</span><span class="pf-card__meta">2021.11&nbsp;~&nbsp;2025.09</span></li>
 				</ul>
-				<p class="pf-card__status" role="status">포트폴리오를 불러오는 중입니다<span class="pf-card__dots" aria-hidden="true">…</span></p>
 			</div>
 		</div>
+		<p class="pf-splash__status" role="status">포트폴리오를 불러오는 중입니다<span class="pf-card__dots" aria-hidden="true">…</span></p>
 	</div>
 
 	<!-- Wrapper: 섹션이 여기에 그려집니다. -->

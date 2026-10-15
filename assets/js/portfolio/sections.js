@@ -47,8 +47,27 @@ const lead = (value) => (has(value) ? `<div class="pf-lead">${markdown(value)}</
 
 /* Intro ------------------------------------------------------------------ */
 
+// 명함: 첫 화면 맨 위에 그리고, 불러오는 동안 먼저 보이는 index.html 의 #pf-splash 도 같은 모양입니다. (그쪽은 손으로 맞춥니다)
+function profileCard(data) {
+  const nameEn = has(data.name_en) ? ` <span class="pf-card__name-en" lang="en">${esc(data.name_en)}</span>` : '';
+  const career = toList(data.card)
+    .filter((item) => item && has(item.value))
+    .map(
+      (item) =>
+        `<li>${has(item.logo) ? `<img src="${attr(item.logo)}" alt="" decoding="async">` : ''}<span>${inline(glue(item.value))}</span>${has(item.meta) ? `<span class="pf-card__meta">${inline(glue(item.meta))}</span>` : ''}</li>`,
+    )
+    .join('');
+  return `
+        <div class="pf-card pf-card--intro">
+          ${has(data.photo) ? `<img class="pf-card__photo" src="${attr(data.photo)}" alt="${attr(data.photo_alt)}" width="509" height="634" decoding="async">` : ''}
+          <div class="pf-card__body">
+            <h1 class="pf-card__name">${esc(data.name)}${nameEn}</h1>
+            ${career ? `<ul class="pf-card__career">${career}</ul>` : ''}
+          </div>
+        </div>`;
+}
+
 function intro(data) {
-  const nameEn = has(data.name_en) ? ` <span class="pf-intro__name-en" lang="en">${esc(data.name_en)}</span>` : '';
 
   // logo 를 적으면 값 왼쪽에 작은 로고를 붙입니다. 바로 옆 글자가 이름을 말해 주니 대체 텍스트는 비웁니다.
   const facts = toList(data.facts)
@@ -64,10 +83,6 @@ function intro(data) {
           </div>`,
     )
     .join('');
-
-  const photo = has(data.photo)
-    ? `<figure class="pf-intro__photo"><img src="${attr(data.photo)}" alt="${attr(data.photo_alt)}" decoding="async"></figure>`
-    : '';
 
   // 연락처: 주소를 글자 그대로 보여 주고(드래그로도 복사), 누르면 메일 앱이 열립니다. 옆 버튼은 주소를 복사합니다.
   const contact = toList(data.contact)
@@ -91,21 +106,19 @@ function intro(data) {
     ? `<p class="pf-motto">${has(data.motto.avatar) ? `<img class="pf-motto__avatar" src="${attr(data.motto.avatar)}" alt="" decoding="async">` : ''}<span>${inline(data.motto.text)}</span></p>`
     : '';
 
+  // 명함이 로딩 화면에서 그대로 이어지도록 첫 섹션은 템플릿의 fade-up 을 쓰지 않습니다.
   return {
-    className: 'fullscreen fade-up',
+    className: 'fullscreen',
     html: `
       <div class="inner">
+        ${profileCard(data)}
         <div class="pf-intro">
-          <div class="pf-intro__main">
-            <h1 class="pf-intro__name">${esc(data.name)}${nameEn}</h1>
-            ${has(data.role) ? `<p class="pf-intro__role">${inline(data.role)}</p>` : ''}
-            ${has(data.brief) ? `<p class="pf-intro__brief">${inline(data.brief)}</p>` : ''}
-            ${has(data.summary) ? `<div class="pf-intro__summary">${markdown(keepParens(data.summary))}</div>` : ''}
-            ${facts ? `<dl class="pf-facts">${facts}</dl>` : ''}
-            ${actions(data.links)}
-            ${contact ? `<ul class="pf-contact" aria-label="연락처">${contact}</ul>` : ''}
-          </div>
-          ${photo}
+          ${has(data.role) ? `<p class="pf-intro__role">${inline(data.role)}</p>` : ''}
+          ${has(data.brief) ? `<p class="pf-intro__brief">${inline(data.brief)}</p>` : ''}
+          ${has(data.summary) ? `<div class="pf-intro__summary">${markdown(keepParens(data.summary))}</div>` : ''}
+          ${facts ? `<dl class="pf-facts">${facts}</dl>` : ''}
+          ${actions(data.links)}
+          ${contact ? `<ul class="pf-contact" aria-label="연락처">${contact}</ul>` : ''}
         </div>
         ${motto}
       </div>`,

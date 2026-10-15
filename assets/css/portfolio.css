@@ -346,27 +346,10 @@
 			font-size: 1.15em;
 		}
 
+	/* 명함 아래 소개 글 */
 	.pf-intro {
-		align-items: center;
-		display: grid;
-		gap: 3em 4em;
-		grid-template-columns: minmax(0, 1fr) minmax(11em, 19em);
+		margin-top: 2.5em;
 	}
-
-	.pf-intro__name {
-		font-size: 2.75em;
-		line-height: 1.15;
-		margin: 0 0 0.3em 0;
-	}
-
-		.pf-intro__name-en {
-			color: var(--pf-text-muted);
-			display: block;
-			font-size: 0.4em;
-			font-weight: 600;
-			letter-spacing: 0.01em;
-			margin-top: 0.4em;
-		}
 
 	.pf-intro__role {
 		color: var(--pf-ink);
@@ -545,18 +528,6 @@
 
 			}
 
-	.pf-intro__photo {
-		margin: 0;
-	}
-
-		.pf-intro__photo img {
-			aspect-ratio: 4 / 5;
-			border-radius: var(--pf-radius-m);
-			display: block;
-			object-fit: cover;
-			width: 100%;
-		}
-
 	.pf-motto {
 		align-items: center;
 		border-top: solid 1px var(--pf-line);
@@ -573,27 +544,6 @@
 			object-fit: contain;
 			width: 3.25em;
 		}
-
-	@media screen and (max-width: 980px) {
-
-		.pf-intro {
-			grid-template-columns: minmax(0, 1fr);
-		}
-
-		.pf-intro__photo {
-			max-width: 13em;
-			order: -1;
-		}
-
-	}
-
-	@media screen and (max-width: 736px) {
-
-		.pf-intro__name {
-			font-size: 2.1em;
-		}
-
-	}
 
 /* Skills */
 
@@ -2492,11 +2442,13 @@
 		align-items: center;
 		background: var(--pf-surface);
 		display: flex;
+		flex-direction: column;
+		gap: 1.25em;
 		inset: 0;
 		justify-content: center;
 		padding: 1.5em;
 		position: fixed;
-		transition: opacity 360ms ease, visibility 360ms;
+		transition: opacity 360ms ease, visibility 360ms, background-color 420ms ease;
 		z-index: 10000;
 	}
 
@@ -2506,10 +2458,31 @@
 			visibility: hidden;
 		}
 
+		/* 명함이 첫 화면 자리로 날아가는 동안 배경만 걷힙니다. (app.js) */
+		.pf-splash.is-landing {
+			background-color: transparent;
+			pointer-events: none;
+		}
+
+			.pf-splash.is-landing .pf-splash__status {
+				opacity: 0;
+			}
+
 		/* 템플릿은 로드가 끝날 때까지 모든 움직임을 끄지만 명함은 그 전에 뜨고 사라집니다. */
 		body.is-preload .pf-splash {
-			transition: opacity 360ms ease, visibility 360ms !important;
+			transition: opacity 360ms ease, visibility 360ms, background-color 420ms ease !important;
 		}
+
+		.pf-splash__status {
+			color: var(--pf-text-muted);
+			font-size: 0.85em;
+			margin: 0;
+			transition: opacity 200ms ease;
+		}
+
+			body.is-preload .pf-splash__status {
+				transition: opacity 200ms ease !important;
+			}
 
 		.is-file-protocol .pf-splash,
 		.is-legacy-browser .pf-splash {
@@ -2534,6 +2507,13 @@
 			animation: pf-card-in 600ms var(--pf-ease-out) both !important;
 		}
 
+		/* 첫 화면 맨 위의 명함: 로딩 명함이 내려앉는 자리라 움직이지 않습니다. */
+		.pf-card--intro,
+		body.is-preload .pf-card--intro {
+			animation: none !important;
+			margin: 0;
+		}
+
 		.pf-card__photo {
 			aspect-ratio: 509 / 634;
 			border-radius: var(--pf-radius-m);
@@ -2547,12 +2527,15 @@
 			min-width: 0;
 		}
 
-		.pf-card__name {
+		.pf-card__name,
+		#intro .pf-card__name {
 			color: var(--pf-ink);
 			font-size: 1.6em;
 			font-weight: 700;
+			letter-spacing: 0;
 			line-height: 1.2;
 			margin: 0;
+			text-transform: none;
 		}
 
 		.pf-card__name-en {
@@ -2561,13 +2544,6 @@
 			font-weight: 500;
 			letter-spacing: 0.04em;
 			margin-left: 0.5em;
-		}
-
-		.pf-card__role {
-			color: var(--pf-accent);
-			font-size: 0.95em;
-			font-weight: 600;
-			margin: 0.35em 0 0.9em 0;
 		}
 
 		.pf-card__career {
@@ -2594,12 +2570,6 @@
 		.pf-card__meta {
 			color: var(--pf-text-muted);
 			font-variant-numeric: tabular-nums;
-		}
-
-		.pf-card__status {
-			color: var(--pf-text-muted);
-			font-size: 0.8em;
-			margin: 1em 0 0 0;
 		}
 
 		.pf-card__dots {
