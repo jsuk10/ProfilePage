@@ -162,9 +162,18 @@ links:
 - **iOS**: Privacy Manifest 적용, **프로비저닝 자동 갱신/만료 알림, Device Profile, Memory Budget** 측정 및 관리.
 - **Android**: Android exitinfo 를 활용한 OOM 사후 관리와 버짓 조절로 OOM 크래시 완화, Backtrace 전용 코드 개발 및 적용.
 - **Windows**: WinDist/Windows Binary Only 배포, PC 디버깅 환경·Dev 로그 개선.
-  - 윈도우 트레이 아이콘과 말풍선 팝업 제작(Win API `Shell_NotifyIcon` 사용, R&D).
 
-![윈도우 트레이 아이콘 메뉴. Show Game, Hide Game, Exit 항목이 보입니다.](images/work/nexon-tray-menu.png)
+## 윈도우 트레이 알림 + 풍선 메시지 (R&D) {#tray-notify}
+
+게임 창을 숨겨 두고도 중요한 이벤트를 놓치지 않도록 Win API `Shell_NotifyIcon` 으로 **트레이 아이콘**과 **풍선 메시지**를 만들었습니다.
+
+- 트레이 아이콘 메뉴의 **Show Game / Hide Game / Exit** 로 게임 창을 보이거나 숨기고 끝냅니다.
+- 풍선 메시지는 Windows 기본 알림이라 OS 알림과 같은 모양으로 화면 오른쪽 아래에 뜹니다. 예: 파티 초대.
+- 이 경험을 Like Or Die 에서 [게임 전용 Slate 배너](#like-or-die--background-notify)로 발전시켰습니다.
+
+![윈도우 트레이 아이콘 메뉴. Show Game, Hide Game, Exit 항목이 보입니다.](images/work/nexon-tray-menu.png "트레이 아이콘 메뉴")
+
+![파티에 초대되었습니다 라고 적힌 Windows 풍선 알림 예시](images/work/nexon-tray-balloon.png#toast "풍선 메시지 예시 (Windows 알림 모양으로 다시 그린 것)")
 
 ## 보안/암호화 {#security}
 
