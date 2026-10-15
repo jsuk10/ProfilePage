@@ -173,7 +173,7 @@ links:
 
 ![윈도우 트레이 아이콘 메뉴. Show Game, Hide Game, Exit 항목이 보입니다.](images/work/nexon-tray-menu.png "트레이 아이콘 메뉴")
 
-![파티에 초대되었습니다 라고 적힌 Windows 풍선 알림 예시](images/work/nexon-tray-balloon.png#toast "풍선 메시지 예시 (Windows 알림 모양으로 다시 그린 것)")
+![파티에 초대되었습니다 라고 적힌 Windows 풍선 알림 예시](images/work/nexon-tray-balloon.png#toast "풍선 메시지 예시 (Windows 10 기본 알림에서 글자만 바꾼 것)")
 
 ## 보안/암호화 {#security}
 
