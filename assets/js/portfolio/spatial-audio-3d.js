@@ -935,6 +935,8 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
     renderer.thickLines('path', { color: alpha(colors.accent, 0.6), width: 3 });
     renderer.thickLines('clear', { color: alpha(colors.accent, 0.6), width: 2.5 });
     renderer.thickLines('los', { color: alpha(colors.ink, 0.25), width: 1.5 });
+    renderer.thickLines('dashes', { color: alpha(colors.ink, 0.3), width: 1.5 });
+    renderer.dots('hit', { color: alpha(colors.ink, 0.45), size: 7 });
 
     // 음원 파동
     renderer.mode('blend');
