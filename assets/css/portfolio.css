@@ -1259,7 +1259,7 @@
 				transition: transform 560ms var(--pf-ease-out), opacity 320ms ease-out;
 			}
 
-		/* 경로 끝 #toast: 모니터 모양 상자의 오른쪽 아래, 보이지 않는 곳에서 알림처럼 들어옵니다. (is-shown 은 interactions.js) */
+		/* 경로 끝 #toast: 모니터 모양 상자의 오른쪽 아래 자리로, 오른쪽 밖에서 왼쪽으로 알림처럼 들어옵니다. (is-shown 은 interactions.js) */
 		.pf-screen {
 			aspect-ratio: 16 / 9;
 			background: linear-gradient(160deg, #1b1133 0%, #0b0716 100%);
@@ -1277,7 +1277,7 @@
 				margin: 0;
 				position: absolute;
 				right: 2.5%;
-				transform: translate(130%, 130%);
+				transform: translateX(130%);
 				width: 58%;
 			}
 

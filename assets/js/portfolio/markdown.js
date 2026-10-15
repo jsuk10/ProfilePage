@@ -8,7 +8,7 @@ const STRIKETHROUGH = /^~~(?=\S)([\s\S]*?\S)~~(?!~)/;
 const NEW_TAB = /^https?:\/\/|\.pdf(?:[?#]|$)/i;
 // 이미지 주소 끝의 효과 표시 (움직임은 interactions.js)
 //   #slide  화면에 들어올 때 왼쪽에서 오른쪽으로 미끄러져 들어옵니다.
-//   #toast  모니터 모양 상자의 오른쪽 아래, 보이지 않는 곳에서 알림처럼 들어오고 다시 재생 버튼이 붙습니다.
+//   #toast  모니터 모양 상자의 오른쪽 아래 자리로 오른쪽 밖에서 왼쪽으로 알림처럼 들어오고 다시 재생 버튼이 붙습니다.
 const EFFECT = /#(slide|toast)$/i;
 
 export function escapeHtml(value) {
