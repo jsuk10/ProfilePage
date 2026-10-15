@@ -8,6 +8,7 @@
 
 import { escapeHtml } from './markdown.js';
 import { panelMarkup, bindPanel } from './spatial-audio-demo.js';
+import { soundControlsMarkup, soundReadoutMarkup, soundHelpMarkup, bindSound } from './spatial-audio-sound.js';
 import {
   OPEN,
   WALL,
@@ -15,6 +16,7 @@ import {
   parseVoxelPreset,
   cloneVoxelScene,
   evaluate,
+  apparentSource,
   VoxelPathFinder,
   cellOf,
   pick,
@@ -565,7 +567,7 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
           <span class="pf-lab__label" data-label="source">${NAMES.source}</span>
         </div>
         <p class="pf-lab__hint" aria-hidden="true" data-hint>3D · 끌어서 돌려 보기</p>
-      </div>
+      </div>${soundControlsMarkup()}
       <ul class="pf-lab__legend" aria-label="장면 보는 법">
         <li><span class="pf-lab__key pf-lab__key--wall" aria-hidden="true"></span>블록</li>
         <li><span class="pf-lab__key pf-lab__key--dot" aria-hidden="true"></span>A* 가 우회 경로를 찾으며 살펴본 칸</li>
@@ -575,9 +577,10 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
       <div class="pf-lab__help" id="${helpId}">
         <p>화면을 끌면 시점이 돌아가고 청취자와 음원은 끌어서 옮깁니다. 블록 놓기를 고른 뒤 바닥이나 블록 면을 누르면 그 자리에 블록이 생기고 블록 지우기를 고른 뒤 누르면 지워집니다. 벽에 가린 점과 경로는 흐리게 비쳐 보입니다.</p>
         <p>키보드로는 방향키로 선택한 점을 옮기고 PageUp / PageDown 으로 높이를 바꿉니다. Space 로 청취자 / 음원을 바꾸고 [ ] 로 시점을 돌립니다. 확대는 Ctrl + 휠이나 두 손가락으로 합니다.</p>
+        ${soundHelpMarkup()}
       </div>
     </div>
-    <div class="pf-lab__panel">${panelMarkup(curveTitleId)}</div>
+    <div class="pf-lab__panel">${panelMarkup(curveTitleId, soundReadoutMarkup())}</div>
     <p class="pf-visually-hidden" aria-live="polite" data-live></p>`;
 
   const canvas = container.querySelector('canvas');
@@ -589,6 +592,7 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
     source: container.querySelector('[data-label="source"]'),
   };
   const renderPanel = bindPanel(container);
+  const sound = bindSound(container, { live });
   const presetButtons = [...container.querySelectorAll('[data-preset]')];
   const toolButtons = [...container.querySelectorAll('[data-tool]')];
   const raysSwitch = container.querySelector('[data-rays]');
@@ -688,6 +692,7 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
       aspect,
       viewProj: multiply(projection, lookAt(eye, target, [0, 1, 0])),
     };
+    if (result) sound.update(soundFrame());
   }
 
   function rayFromPointer(event) {
@@ -966,9 +971,27 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
 
   /* 수치 */
 
+  // 소리는 청취자 자리에서 화면을 보는 방향으로 듣습니다. (카메라 방향을 바닥에 눕힌 것)
+  function soundFrame() {
+    const via = apparentSource(scene, result);
+    const forward = camera ? camera.forward : [0, 0, -1];
+    return {
+      listener: center(scene.listener),
+      source: center(scene.source),
+      straight: result.straight,
+      apparent: via?.position ?? null,
+      pathLength: via?.distance ?? result.straight,
+      blocked: result.los.blocked,
+      forward: [forward[0], 0, forward[2]],
+      occlusion: result.occlusion,
+      openness: result.enclosure.openness,
+    };
+  }
+
   function update() {
     result = evaluate(scene, finder);
     renderPanel(result);
+    sound.update(soundFrame());
     rebuildResult();
     requestDraw();
   }
@@ -1258,13 +1281,18 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
   if ('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas);
   else window.addEventListener('resize', resize);
 
+  const syncSound = () => sound.setActive(visible && !document.hidden);
   if ('IntersectionObserver' in window) {
     new IntersectionObserver((entries) => {
       visible = entries[entries.length - 1].isIntersecting;
+      syncSound();
       if (visible) requestDraw();
     }).observe(canvas);
   }
-  document.addEventListener('visibilitychange', requestDraw);
+  document.addEventListener('visibilitychange', () => {
+    syncSound();
+    requestDraw();
+  });
   reduceMotion.addEventListener?.('change', requestDraw);
 
   readColors();

@@ -9,6 +9,7 @@
 // 계수는 시연용 값입니다.
 
 import { escapeHtml } from './markdown.js';
+import { soundControlsMarkup, soundReadoutMarkup, soundHelpMarkup, bindSound } from './spatial-audio-sound.js';
 
 export const OCCLUSION_K = 1.6;
 export const SATURATION = 0.98; // 이 값에 닿으면 포화로 보고 탐색을 멈춥니다.
@@ -312,6 +313,25 @@ function evaluate(scene, finder) {
   return result;
 }
 
+// 직선이 막혔을 때 소리가 들려오는 자리 (3D 의 apparentSource 와 같음)
+function apparentSource(scene, result) {
+  if (!result.los.blocked || result.search?.status !== 'found') return null;
+  const { grid, listener } = scene;
+  const ox = listener.x + 0.5;
+  const oy = listener.y + 0.5;
+  let seen = null;
+  for (const index of result.search.path.slice(1)) {
+    const x = (index % grid.cols) + 0.5;
+    const y = Math.floor(index / grid.cols) + 0.5;
+    if (traverse(grid, ox, oy, x - ox, y - oy, 1).blocked) break;
+    seen = [x, y];
+  }
+  if (!seen) return null;
+  const length = Math.hypot(seen[0] - ox, seen[1] - oy) || 1;
+  const distance = result.search.length;
+  return { position: [ox + ((seen[0] - ox) / length) * distance, oy + ((seen[1] - oy) / length) * distance], distance };
+}
+
 /* 표시 ------------------------------------------------------------------- */
 
 const CURVE = { left: 30, right: 232, top: 12, bottom: 108 };
@@ -367,7 +387,7 @@ const READOUT = [
   ['near', '근접 보정'],
 ];
 
-export function panelMarkup(titleId) {
+export function panelMarkup(titleId, extra = '') {
   const rows = READOUT.map(
     ([key, label]) => `<div class="pf-readout__row"><dt>${label}</dt><dd data-out="${key}"></dd></div>`,
   ).join('');
@@ -385,6 +405,7 @@ export function panelMarkup(titleId) {
       ${meter('occlusion', '차폐 계수')}
       ${meter('enclosure', '밀폐도', '1 = 개방')}
     </dl>
+    ${extra}
     ${curveMarkup(titleId)}`;
 }
 
@@ -491,25 +512,27 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
           <button type="button" class="pf-button pf-lab__reset" data-reset>배치 되돌리기</button>
         </div>
       </div>
-      <canvas class="pf-lab__canvas" tabindex="0" role="application" aria-label="공간음향 차폐 데모 그리드" aria-describedby="${helpId}"></canvas>
+      <canvas class="pf-lab__canvas" tabindex="0" role="application" aria-label="공간음향 차폐 데모 그리드" aria-describedby="${helpId}"></canvas>${soundControlsMarkup()}
       <ul class="pf-lab__legend" aria-label="그리드 보는 법">
         <li><span class="pf-lab__key pf-lab__key--wall" aria-hidden="true"></span>벽</li>
         <li><span class="pf-lab__key pf-lab__key--explored" aria-hidden="true"></span>A* 가 우회 경로를 찾으며 살펴본 칸</li>
         <li><span class="pf-lab__key pf-lab__key--path" aria-hidden="true"></span>우회 경로</li>
         <li><span class="pf-lab__key pf-lab__key--blocked" aria-hidden="true"></span>막힌 직선 레이</li>
       </ul>
-      <p class="pf-lab__help" id="${helpId}">
-        청취자와 음원 점을 끌어 옮기고, 빈 칸을 누르거나 끌면 벽을 세우고 벽을 누르면 지웁니다.
-        키보드로는 방향키로 선택한 점을 옮기고, Space 로 청취자 / 음원을 바꿉니다.
-      </p>
+      <div class="pf-lab__help" id="${helpId}">
+        <p>청취자와 음원 점을 끌어 옮기고, 빈 칸을 누르거나 끌면 벽을 세우고 벽을 누르면 지웁니다.
+        키보드로는 방향키로 선택한 점을 옮기고, Space 로 청취자 / 음원을 바꿉니다.</p>
+        ${soundHelpMarkup()}
+      </div>
     </div>
-    <div class="pf-lab__panel">${panelMarkup(curveTitleId)}</div>
+    <div class="pf-lab__panel">${panelMarkup(curveTitleId, soundReadoutMarkup())}</div>
     <p class="pf-visually-hidden" aria-live="polite" data-live></p>`;
 
   const canvas = container.querySelector('canvas');
   const context = canvas.getContext('2d');
   const live = container.querySelector('[data-live]');
   const render = bindPanel(container);
+  const sound = bindSound(container, { live });
   const presetButtons = [...container.querySelectorAll('[data-preset]')];
   const raysSwitch = container.querySelector('[data-rays]');
 
@@ -763,9 +786,27 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
     drawLabel(NAMES.source, sx, sy, radius);
   }
 
+  // 단면이라 높이는 없습니다. 화면 위쪽이 청취자가 보는 방향입니다.
+  function soundFrame() {
+    const via = apparentSource(scene, result);
+    const point = ([x, y]) => [x, 0.5, y];
+    return {
+      listener: point([scene.listener.x + 0.5, scene.listener.y + 0.5]),
+      source: point([scene.source.x + 0.5, scene.source.y + 0.5]),
+      straight: result.straight,
+      apparent: via ? point(via.position) : null,
+      pathLength: via?.distance ?? result.straight,
+      blocked: result.los.blocked,
+      forward: [0, 0, -1],
+      occlusion: result.occlusion,
+      openness: result.enclosure.openness,
+    };
+  }
+
   function update() {
     result = evaluate(scene, finder);
     render(result);
+    sound.update(soundFrame());
     requestDraw();
   }
 
@@ -911,13 +952,18 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
   if ('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas);
   else window.addEventListener('resize', resize);
 
+  const syncSound = () => sound.setActive(visible && !document.hidden);
   if ('IntersectionObserver' in window) {
     new IntersectionObserver((entries) => {
       visible = entries[entries.length - 1].isIntersecting;
+      syncSound();
       if (visible) requestDraw();
     }).observe(canvas);
   }
-  document.addEventListener('visibilitychange', requestDraw);
+  document.addEventListener('visibilitychange', () => {
+    syncSound();
+    requestDraw();
+  });
   reduceMotion.addEventListener?.('change', requestDraw);
   document.fonts?.ready.then(requestDraw);
 

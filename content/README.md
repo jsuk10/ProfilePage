@@ -169,6 +169,7 @@
 | `assets/js/portfolio/spatial-audio-3d.js` | 공간음향 차폐 데모 3D 화면 (WebGL2) |
 | `assets/js/portfolio/spatial-audio-voxel.js` | 데모 계산: 복셀 그리드, 직선 레이, A\*, 밀폐도 |
 | `assets/js/portfolio/spatial-audio-demo.js` | 결과 패널, WebGL2 가 없을 때 쓰는 2D 단면 화면 |
+| `assets/js/portfolio/spatial-audio-sound.js` | 데모 소리: 계산한 수치를 Web Audio 로 소리에 입힘 (거리, 차폐, 밀폐도, 방향) |
 | `assets/js/portfolio/markdown.js`, `content.js` | Markdown, YAML 읽기 |
 | `assets/js/main.js` | 템플릿 인터랙션 (스크롤스파이, 등장 효과, spotlights) |
 | `assets/css/portfolio.css` | 이 포트폴리오 전용 스타일 (`main.css` 는 템플릿 스타일) |
