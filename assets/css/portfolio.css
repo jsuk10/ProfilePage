@@ -1259,6 +1259,70 @@
 				transition: transform 560ms var(--pf-ease-out), opacity 320ms ease-out;
 			}
 
+		/* 경로 끝 #toast: 모니터 모양 상자의 오른쪽 아래, 보이지 않는 곳에서 알림처럼 들어옵니다. (is-shown 은 interactions.js) */
+		.pf-screen {
+			aspect-ratio: 16 / 9;
+			background: linear-gradient(160deg, #1b1133 0%, #0b0716 100%);
+			border: solid 1px var(--pf-line-strong);
+			border-radius: var(--pf-radius-m);
+			display: block;
+			max-width: 32em;
+			overflow: hidden;
+			position: relative;
+			width: 100%;
+		}
+
+			.pf-screen img {
+				bottom: 5%;
+				margin: 0;
+				position: absolute;
+				right: 2.5%;
+				transform: translate(130%, 130%);
+				width: 58%;
+			}
+
+			.pf-media--toast.is-shown .pf-screen img {
+				transform: none;
+				transition: transform 720ms var(--pf-ease-out) 240ms;
+			}
+
+		.pf-media__foot {
+			align-items: center;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0 1em;
+			justify-content: space-between;
+			max-width: 32em;
+		}
+
+			.pf-media__foot .pf-media__caption {
+				flex: 1 1 12em;
+			}
+
+		.pf-media__replay {
+			align-items: center;
+			border: solid 1px var(--pf-line-strong) !important;
+			color: var(--pf-ink) !important;
+			display: inline-flex;
+			flex: none;
+			font-size: 0.8em;
+			font-weight: 600;
+			margin-top: 0.75em;
+			min-height: 2.1em;
+			padding: 0 0.75em;
+			transition: background-color 160ms var(--pf-ease-out), border-color 160ms var(--pf-ease-out), color 160ms var(--pf-ease-out);
+		}
+
+			.pf-media__replay:hover {
+				background: var(--pf-accent);
+				border-color: var(--pf-accent) !important;
+				color: var(--pf-accent-ink) !important;
+			}
+
+			.pf-media__replay:active {
+				transform: scale(0.97);
+			}
+
 		.pf-detail__content details {
 			background: rgba(0, 0, 0, 0.14);
 			border: solid 1px var(--pf-line);
@@ -2109,8 +2173,8 @@
 	.pf-steps {
 		counter-reset: pf-step;
 		display: grid;
-		gap: 1.5em 2em;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 1.5em 1.5em;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
 		list-style: none;
 		margin: 0 0 2em 0;
 		padding: 0;
@@ -2211,11 +2275,19 @@
 		}
 
 		.pf-steps {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
+			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}
 
 		.pf-spatial__context {
 			grid-template-columns: minmax(0, 1fr);
+		}
+
+	}
+
+	@media screen and (max-width: 736px) {
+
+		.pf-steps {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 
 	}
@@ -2438,6 +2510,7 @@
 		.pf-bar__after,
 		.pf-bar__after::before,
 		.pf-media--slide img,
+		.pf-screen img,
 		.pf-detail__chevron,
 		.pf-meter__fill,
 		.pf-switch__thumb,
@@ -2453,7 +2526,8 @@
 			opacity: 0;
 		}
 
-		.pf-media--slide img {
+		.pf-media--slide img,
+		.pf-screen img {
 			opacity: 1;
 			transform: none;
 		}

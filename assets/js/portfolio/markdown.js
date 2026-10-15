@@ -6,8 +6,10 @@ import { Marked } from '../vendor/marked.esm.js';
 // ~~두 개~~ 로 감쌀 때만 취소선입니다. "2021.11~현재" 같은 기간 표기의 ~ 는 글자 그대로 둡니다.
 const STRIKETHROUGH = /^~~(?=\S)([\s\S]*?\S)~~(?!~)/;
 const NEW_TAB = /^https?:\/\/|\.pdf(?:[?#]|$)/i;
-// 이미지 주소 끝의 #slide: 화면에 들어올 때 왼쪽에서 오른쪽으로 미끄러져 들어옵니다. (interactions.js)
-const SLIDE = /#slide$/i;
+// 이미지 주소 끝의 효과 표시 (움직임은 interactions.js)
+//   #slide  화면에 들어올 때 왼쪽에서 오른쪽으로 미끄러져 들어옵니다.
+//   #toast  모니터 모양 상자의 오른쪽 아래, 보이지 않는 곳에서 알림처럼 들어오고 다시 재생 버튼이 붙습니다.
+const EFFECT = /#(slide|toast)$/i;
 
 export function escapeHtml(value) {
   return String(value ?? '')
@@ -62,14 +64,18 @@ marked.use({
     // ![대체 글](경로 "설명") 의 "설명" 은 이미지 아래 작은 글씨로 나옵니다.
     image({ href, title, text, tokens }) {
       const alt = tokens ? this.parser.parseInline(tokens, this.parser.textRenderer) : text;
-      const slide = SLIDE.test(String(href ?? ''));
-      const url = safeUrl(String(href ?? '').replace(SLIDE, ''));
+      const effect = EFFECT.exec(String(href ?? ''))?.[1].toLowerCase() ?? '';
+      const url = safeUrl(String(href ?? '').replace(EFFECT, ''));
       if (url === null) return escapeHtml(alt);
       const img = `<img src="${escapeAttr(url)}" alt="${escapeAttr(alt)}" loading="lazy" decoding="async">`;
-      if (!slide && !title) return img;
-      const media = slide ? `<span class="pf-media__frame">${img}</span>` : img;
+      if (!effect && !title) return img;
       const caption = title ? `<span class="pf-media__caption">${escapeHtml(title)}</span>` : '';
-      return `<span class="pf-media${slide ? ' pf-media--slide' : ''}">${media}${caption}</span>`;
+      if (effect === 'toast') {
+        const replay = '<button type="button" class="pf-button pf-media__replay" data-replay>다시 재생</button>';
+        return `<span class="pf-media pf-media--toast"><span class="pf-screen">${img}</span><span class="pf-media__foot">${caption}${replay}</span></span>`;
+      }
+      const media = effect === 'slide' ? `<span class="pf-media__frame">${img}</span>` : img;
+      return `<span class="pf-media${effect === 'slide' ? ' pf-media--slide' : ''}">${media}${caption}</span>`;
     },
     // `코드` 안의 긴 이름은 ::, ., ( 뒤에서 줄을 바꿀 수 있게 합니다. 좁은 화면에서 글자 중간이 잘리지 않습니다.
     codespan({ text }) {
