@@ -1,6 +1,7 @@
 // 프라시아 전기 툴 데모 (content/prasia-lab.yml)
+//   NeverCook: 콘텐츠 브라우저 섬네일을 누르면 NeverCook 아이콘이 붙고 떨어집니다. (DOM)
+//   트레이: 트레이 아이콘 메뉴와 풍선 메시지, 풍선을 누르면 게임 창이 앞으로 옵니다. (DOM)
 //   미니맵: 웨이포인트를 순회하며 노드마다 DrawCall / Primitive 를 재고 색으로 표시합니다. (Canvas 2D)
-//   크래시: Backtrace 에 들어온 크래시가 담당자 멘션까지 가는 흐름을 단계별로 보여 줍니다. (DOM)
 // 지도, 수치, 이름은 데모용입니다.
 
 import { escapeHtml } from './markdown.js';
@@ -330,153 +331,246 @@ export function mountMinimap(container, config) {
   resize();
 }
 
-/* 크래시 흐름 ------------------------------------------------------------- */
+/* NeverCook 콘텐츠 브라우저 ------------------------------------------------- */
 
-const PLATFORMS = {
-  Windows: { type: '크래시', detail: 'Access Violation', arch: 'Win64' },
-  iOS: { type: 'OOM', detail: '메모리 종료', arch: 'arm64' },
-  Android: { type: 'ANR', detail: '응답 없음 8.2초', arch: 'arm64-v8a' },
-};
-const FRAMES = ['UAnimInstance::NativeUpdateAnimation', 'FStreamingManager::UpdateResourceStreaming', 'UGameplayStatics::SpawnEmitterAtLocation'];
-const STEP_MS = 850;
+const NEVERCOOK_ICON = `<svg class="pf-cb__badge" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+  <rect x="1" y="1" width="22" height="22" rx="5" fill="rgba(16, 16, 22, 0.9)" stroke="rgba(255, 255, 255, 0.2)"/>
+  <g stroke="#f4f4f4" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3.8l7 3.6v8.6l-7 3.6-7-3.6V7.4z"/><path d="M5 7.4l7 3.6 7-3.6M12 11V19.6"/>
+  </g>
+  <path d="M4.5 4.5l15 15" stroke="rgba(10, 10, 14, 0.9)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M4.5 4.5l15 15" stroke="#ff4747" stroke-width="2.6" stroke-linecap="round"/>
+</svg>`;
 
-export function mountCrashFlow(container, config) {
-  const steps = (Array.isArray(config?.steps) ? config.steps : []).filter((step) => step && String(step.title ?? '').trim());
-  if (!steps.length) return;
+export function mountNeverCook(container, config) {
+  const assets = (Array.isArray(config?.assets) ? config.assets : []).map((name) => String(name ?? '').trim()).filter(Boolean);
+  if (!assets.length) return;
+  const columns = Math.max(1, Math.round(num(config?.columns, 6)));
+  const rows = Math.ceil(assets.length / columns);
+  const marked = new Set((Array.isArray(config?.marked) ? config.marked : []).map((name) => String(name ?? '').trim()));
+  const sprite = String(config?.sprite ?? '').trim();
+  const path = String(config?.path ?? 'Content').trim();
+
+  const tile = (name, index) => {
+    const col = index % columns;
+    const row = Math.floor(index / columns);
+    const position = `${columns > 1 ? (col / (columns - 1)) * 100 : 0}% ${rows > 1 ? (row / (rows - 1)) * 100 : 0}%`;
+    const style = sprite ? ` style="background-image: url('${escapeHtml(sprite)}'); background-size: ${columns * 100}% ${rows * 100}%; background-position: ${position};"` : '';
+    const on = marked.has(name);
+    return `
+        <li${on ? '' : ' class="is-off"'}>
+          <button type="button" class="pf-button pf-cb__tile${on ? ' is-nevercook' : ''}" data-asset="${escapeHtml(name)}" aria-pressed="${on}">
+            <span class="pf-cb__thumb"${style}>${NEVERCOOK_ICON}</span>
+            <span class="pf-cb__name">${escapeHtml(name)}</span>
+            <span class="pf-cb__type">Material</span>
+          </button>
+        </li>`;
+  };
 
   container.innerHTML = `
-    <div class="pf-crash__controls">
-      <div class="pf-segmented" role="group" aria-label="플랫폼">
-        ${Object.keys(PLATFORMS)
-          .map((name, index) => `<button type="button" class="pf-button pf-segmented__item" data-platform="${name}" aria-pressed="${index === 0}">${name}</button>`)
-          .join('')}
+    <div class="pf-cb">
+      <div class="pf-cb__bar">
+        <span class="pf-cb__path">${escapeHtml(path)}</span>
+        <button type="button" class="pf-button pf-switch pf-cb__filter" role="switch" aria-checked="false" data-filter>
+          <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>NeverCook 만 보기
+        </button>
+        <span class="pf-cb__count" data-count></span>
       </div>
-      <button type="button" class="pf-button pf-switch" role="switch" aria-checked="false" data-live>
-        <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>라이브 빌드
-      </button>
-      <button type="button" class="pf-button pf-lab__reset pf-crash__fire" data-fire>크래시 발생</button>
-    </div>
-    <div class="pf-crash__flow">
-      <div class="pf-crash__event" data-event hidden></div>
-      <ol class="pf-crash__steps">
-        ${steps
-          .map(
-            (step) => `
-          <li data-step>
-            <span class="pf-crash__dot" aria-hidden="true"></span>
-            <div>
-              <strong>${escapeHtml(step.title)}</strong>
-              <p data-text></p>
-              <p class="pf-crash__detail" data-detail></p>
-            </div>
-          </li>`,
-          )
-          .join('')}
-      </ol>
-      <div class="pf-crash__card" data-card hidden></div>
-    </div>
-    <p class="pf-visually-hidden" aria-live="polite" data-live-text></p>`;
+      <ul class="pf-cb__grid" style="--pf-cb-columns: ${columns}">${assets.map(tile).join('')}
+      </ul>
+      <p class="pf-cb__hint">섬네일을 누르면 NeverCook 에 넣거나 뺍니다. 아이콘이 붙은 에셋은 쿠킹(패키징)에서 빠집니다.</p>
+      <p class="pf-cb__list" data-list aria-live="polite"></p>
+    </div>`;
 
-  const platformButtons = [...container.querySelectorAll('[data-platform]')];
-  const liveSwitch = container.querySelector('[data-live]');
-  const fire = container.querySelector('[data-fire]');
-  const event = container.querySelector('[data-event]');
-  const items = [...container.querySelectorAll('[data-step]')];
-  const card = container.querySelector('[data-card]');
-  const liveText = container.querySelector('[data-live-text]');
-
-  let platform = 'Windows';
-  let live = false;
-  let run = 0;
-  let build = 12480;
-  const timers = [];
-
-  function stepText(step) {
-    if (step.dev || step.live) return String(live ? step.live ?? step.dev : step.dev ?? step.live);
-    return String(step.text ?? '');
-  }
+  const tiles = [...container.querySelectorAll('[data-asset]')];
+  const filter = container.querySelector('[data-filter]');
+  const count = container.querySelector('[data-count]');
+  const list = container.querySelector('[data-list]');
+  let filtered = false;
 
   function render() {
-    items.forEach((item, index) => {
-      item.querySelector('[data-text]').textContent = stepText(steps[index]);
+    const names = tiles.filter((button) => button.classList.contains('is-nevercook')).map((button) => button.dataset.asset);
+    count.textContent = `NeverCook ${names.length} / ${tiles.length}`;
+    list.textContent = names.length ? `NeverCook 목록 (${names.length}): ${names.join(', ')}` : 'NeverCook 목록이 비어 있습니다.';
+    tiles.forEach((button) => {
+      button.parentElement.classList.toggle('is-off', !button.classList.contains('is-nevercook'));
     });
+    container.querySelector('.pf-cb__grid').classList.toggle('is-filtered', filtered);
   }
 
-  function reset() {
-    timers.splice(0).forEach((id) => window.clearTimeout(id));
-    items.forEach((item) => {
-      item.classList.remove('is-active', 'is-done');
-      item.querySelector('[data-detail]').textContent = '';
-    });
-    event.hidden = true;
-    card.hidden = true;
-    fire.textContent = '크래시 발생';
-  }
-
-  function details(info, frame) {
-    const buildText = `#${build} (${platform} ${info.arch}, ${live ? '라이브' : '개발'})`;
-    return [
-      `심볼 매칭 완료 · 빌드 ${buildText}`,
-      `${info.type} · ${info.detail} · ${frame}`,
-      live ? `소스 컨트롤 수정 내역 조사 → 최근 수정자 찾음 (CL ${build * 10 + 7})` : `IP 추적 → 크래시 발생자: 개발 기기 ${(run % 7) + 2}번`,
-      `Teams 카드 발송 · ${live ? '최근 수정자' : '크래시 발생자'} 멘션`,
-    ];
-  }
-
-  function trigger() {
-    reset();
-    run += 1;
-    build += 1;
-    const info = PLATFORMS[platform];
-    const frame = FRAMES[run % FRAMES.length];
-    const lines = details(info, frame);
-    event.hidden = false;
-    event.innerHTML = `
-      <span class="pf-crash__badge">${escapeHtml(info.type)}</span>
-      <span><strong>${escapeHtml(platform)}</strong> · 빌드 #${build} · ${live ? '라이브' : '개발'} 빌드</span>
-      <code>${escapeHtml(frame)}</code>`;
-    fire.textContent = '처리 중…';
-    const instant = reduceMotion.matches;
-    const at = (index, fn) => {
-      if (instant) fn();
-      else timers.push(window.setTimeout(fn, index));
-    };
-    items.forEach((item, index) => {
-      at(STEP_MS * index + 200, () => {
-        item.classList.add('is-active');
-      });
-      at(STEP_MS * (index + 1), () => {
-        item.classList.remove('is-active');
-        item.classList.add('is-done');
-        item.querySelector('[data-detail]').textContent = lines[index] ?? '';
-      });
-    });
-    at(STEP_MS * (items.length + 1), () => {
-      card.hidden = false;
-      card.innerHTML = `
-        <p class="pf-crash__card-head"><span class="pf-crash__app" aria-hidden="true">B</span>Backtrace 알림 <span class="pf-readout__hint">Teams</span></p>
-        <p><strong>@${live ? '최근 수정자' : '크래시 발생자'}</strong> ${escapeHtml(info.type)} 1건 · ${escapeHtml(platform)} · 빌드 #${build}</p>
-        <p><code>${escapeHtml(frame)}</code></p>
-        <p class="pf-crash__card-foot">${live ? `CL ${build * 10 + 7} 수정 내역 기준` : `개발 기기 ${(run % 7) + 2}번에서 발생`} · Backtrace 에서 열기 →</p>`;
-      fire.textContent = '다시 보기';
-      liveText.textContent = `${info.type} 알림이 ${live ? '최근 수정자' : '크래시 발생자'}에게 갔습니다.`;
-    });
-  }
-
-  platformButtons.forEach((button) => {
+  tiles.forEach((button) => {
     button.addEventListener('click', () => {
-      platform = button.dataset.platform;
-      platformButtons.forEach((other) => other.setAttribute('aria-pressed', String(other === button)));
-      reset();
+      const on = !button.classList.contains('is-nevercook');
+      button.classList.toggle('is-nevercook', on);
+      button.setAttribute('aria-pressed', String(on));
+      render();
     });
   });
-  liveSwitch.addEventListener('click', () => {
-    live = !live;
-    liveSwitch.setAttribute('aria-checked', String(live));
+  filter.addEventListener('click', () => {
+    filtered = !filtered;
+    filter.setAttribute('aria-checked', String(filtered));
     render();
-    reset();
   });
-  fire.addEventListener('click', trigger);
-
   render();
+}
+
+/* 윈도우 트레이 알림 + 풍선 메시지 ------------------------------------------- */
+
+const BALLOON_MS = 7000;
+const SYS_ICONS = `
+          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 10l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 6h3l3-3v10l-3-3H2z" fill="currentColor"/><path d="M10.5 5.5a3.5 3.5 0 0 1 0 5M12.5 3.5a6 6 0 0 1 0 9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 6.5a9 9 0 0 1 12 0M4.5 9a5.5 5.5 0 0 1 7 0" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="12" r="1.3" fill="currentColor"/></svg>`;
+
+export function mountTray(container, config) {
+  const app = String(config?.app ?? '게임').trim();
+  const balloon = String(config?.balloon ?? '').trim();
+  const windowImage = String(config?.window ?? '').trim();
+  const eventName = String(config?.event ?? '알림').trim();
+  if (!balloon) return;
+
+  container.innerHTML = `
+    <div class="pf-tray__controls">
+      <button type="button" class="pf-button pf-lab__reset" data-notify>${escapeHtml(eventName)} 알림 보내기</button>
+      <button type="button" class="pf-button pf-lab__reset" data-relaunch hidden>게임 다시 실행</button>
+      <span class="pf-tray__status" data-status aria-live="polite"></span>
+    </div>
+    <div class="pf-win" data-desktop>
+      <div class="pf-win__window" data-window hidden>
+        <div class="pf-win__title"><span class="pf-win__app-icon" aria-hidden="true"></span>${escapeHtml(app)}<span class="pf-win__title-buttons" aria-hidden="true">− □ ×</span></div>
+        ${windowImage ? `<img src="${escapeHtml(windowImage)}" alt="${escapeHtml(app)} 게임 화면" loading="lazy" decoding="async">` : ''}
+      </div>
+      <button type="button" class="pf-button pf-win__balloon" data-balloon hidden>
+        <img src="${escapeHtml(balloon)}" alt="${escapeHtml(app)} 풍선 메시지: 파티에 초대되었습니다. 누르면 게임 창이 앞으로 옵니다." decoding="async">
+      </button>
+      <ul class="pf-win__menu" data-menu role="menu" hidden>
+        <li><button type="button" class="pf-button" role="menuitem" data-menu-item="show">Show Game</button></li>
+        <li><button type="button" class="pf-button" role="menuitem" data-menu-item="hide">Hide Game</button></li>
+        <li><button type="button" class="pf-button" role="menuitem" data-menu-item="exit">Exit</button></li>
+      </ul>
+      <div class="pf-win__taskbar">
+        <span class="pf-win__start" aria-hidden="true"></span>
+        <button type="button" class="pf-button pf-win__task" data-task hidden><span class="pf-win__app-icon" aria-hidden="true"></span>${escapeHtml(app)}</button>
+        <span class="pf-win__tray">
+          <span class="pf-win__sys" aria-hidden="true">${SYS_ICONS}</span>
+          <button type="button" class="pf-button pf-win__tray-icon" data-tray aria-label="${escapeHtml(app)} 트레이 아이콘 메뉴" aria-haspopup="menu" aria-expanded="false"><span class="pf-win__app-icon" aria-hidden="true"></span></button>
+          <span class="pf-win__clock" aria-hidden="true">오후 9:41</span>
+        </span>
+      </div>
+    </div>`;
+
+  const pick = (selector) => container.querySelector(selector);
+  const desktop = pick('[data-desktop]');
+  const win = pick('[data-window]');
+  const balloonButton = pick('[data-balloon]');
+  const menu = pick('[data-menu]');
+  const task = pick('[data-task]');
+  const tray = pick('[data-tray]');
+  const notify = pick('[data-notify]');
+  const relaunch = pick('[data-relaunch]');
+  const status = pick('[data-status]');
+  let running = true;
+  let shown = false;
+  let front = false;
+  let balloonTimer = 0;
+
+  const say = (text) => {
+    status.textContent = text;
+  };
+  function setFront(value) {
+    front = value && shown;
+    win.classList.toggle('is-front', front);
+    task.classList.toggle('is-active', front);
+  }
+  function showWindow() {
+    win.hidden = false;
+    task.hidden = false;
+    shown = true;
+    setFront(true);
+    win.classList.remove('is-restoring');
+    void win.offsetWidth;
+    win.classList.add('is-restoring');
+  }
+  function hideWindow() {
+    win.hidden = true;
+    task.hidden = true;
+    shown = false;
+    setFront(false);
+  }
+  function hideBalloon() {
+    window.clearTimeout(balloonTimer);
+    balloonButton.classList.remove('is-shown');
+    balloonButton.hidden = true;
+  }
+  function showBalloon() {
+    if (!running) return;
+    balloonButton.hidden = false;
+    void balloonButton.offsetWidth;
+    balloonButton.classList.add('is-shown');
+    window.clearTimeout(balloonTimer);
+    balloonTimer = window.setTimeout(hideBalloon, BALLOON_MS);
+    say(`${eventName} 풍선 메시지가 떴습니다. 눌러 보세요.`);
+  }
+  function closeMenu() {
+    menu.hidden = true;
+    tray.setAttribute('aria-expanded', 'false');
+  }
+
+  notify.addEventListener('click', showBalloon);
+  balloonButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    hideBalloon();
+    showWindow();
+    say('풍선 메시지를 눌러 숨겨 둔 게임 창을 복원하고 포그라운드로 가져왔습니다.');
+  });
+  tray.addEventListener('click', (event) => {
+    event.stopPropagation();
+    menu.hidden = !menu.hidden;
+    tray.setAttribute('aria-expanded', String(!menu.hidden));
+  });
+  menu.addEventListener('click', (event) => {
+    const item = event.target.closest('[data-menu-item]');
+    if (!item) return;
+    event.stopPropagation();
+    closeMenu();
+    if (item.dataset.menuItem === 'show') {
+      showWindow();
+      say('Show Game: 게임 창을 보이고 앞으로 가져왔습니다.');
+    } else if (item.dataset.menuItem === 'hide') {
+      hideWindow();
+      say('Hide Game: 게임 창을 숨겼습니다. 트레이 아이콘만 남습니다.');
+    } else {
+      hideWindow();
+      hideBalloon();
+      running = false;
+      tray.hidden = true;
+      notify.disabled = true;
+      relaunch.hidden = false;
+      say('Exit: 게임을 끝냈습니다.');
+    }
+  });
+  task.addEventListener('click', (event) => {
+    event.stopPropagation();
+    setFront(true);
+  });
+  win.addEventListener('click', (event) => {
+    event.stopPropagation();
+    setFront(true);
+  });
+  desktop.addEventListener('click', () => {
+    closeMenu();
+    if (front) {
+      setFront(false);
+      say('바탕화면을 눌렀습니다. 게임 창이 뒤로 갔습니다.');
+    }
+  });
+  relaunch.addEventListener('click', () => {
+    running = true;
+    tray.hidden = false;
+    notify.disabled = false;
+    relaunch.hidden = true;
+    hideWindow();
+    say('게임을 다시 실행했습니다. 창은 트레이로 숨겨 둔 상태입니다.');
+  });
+  say('게임은 켜져 있지만 창은 트레이로 숨겨 둔 상태입니다.');
 }

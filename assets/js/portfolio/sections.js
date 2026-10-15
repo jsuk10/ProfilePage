@@ -8,7 +8,7 @@ import { markdown, inline, escapeHtml as esc, escapeAttr as attr, linkAttrs } fr
 import { mountSpatialAudioDemo } from './spatial-audio-demo.js';
 import { mountSpatialAudio3D, supportsWebGL2 } from './spatial-audio-3d.js';
 import { parseVoxelPreset, sliceAtListener } from './spatial-audio-voxel.js';
-import { mountMinimap, mountCrashFlow } from './prasia-lab.js';
+import { mountMinimap, mountNeverCook, mountTray } from './prasia-lab.js';
 
 const CHEVRON =
   '<svg class="pf-detail__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
@@ -63,6 +63,7 @@ function profileCard(data) {
           ${has(data.photo) ? `<img class="pf-card__photo" src="${attr(data.photo)}" alt="${attr(data.photo_alt)}" width="509" height="634" decoding="async">` : ''}
           <div class="pf-card__body">
             <h1 class="pf-card__name">${esc(data.name)}${nameEn}</h1>
+            ${has(data.role) ? `<p class="pf-card__role">${inline(data.role)}</p>` : ''}
             ${career ? `<ul class="pf-card__career">${career}</ul>` : ''}
           </div>
         </div>`;
@@ -107,16 +108,34 @@ function intro(data) {
     ? `<p class="pf-motto">${has(data.motto.avatar) ? `<img class="pf-motto__avatar" src="${attr(data.motto.avatar)}" alt="" decoding="async">` : ''}<span>${inline(data.motto.text)}</span></p>`
     : '';
 
-  // 명함이 로딩 화면에서 그대로 이어지도록 첫 섹션은 템플릿의 fade-up 을 쓰지 않습니다.
+  // 경력 요약: 목록이면 로고 + 회사 줄 + 역할 줄, 글이면 Markdown 그대로입니다.
+  const summary = Array.isArray(data.summary)
+    ? `<ul class="pf-intro__summary pf-intro__summary--list">${toList(data.summary)
+        .filter((item) => item && has(item.value))
+        .map(
+          (item) => `
+            <li>
+              ${has(item.logo) ? `<img class="pf-intro__logo" src="${attr(item.logo)}" alt="" decoding="async">` : ''}
+              <div>
+                <p class="pf-intro__company">${inline(keepParens(glue(item.value)))}</p>
+                ${has(item.text) ? `<p class="pf-intro__work">${inline(glue(item.text))}</p>` : ''}
+              </div>
+            </li>`,
+        )
+        .join('')}</ul>`
+    : has(data.summary)
+      ? `<div class="pf-intro__summary">${markdown(keepParens(data.summary))}</div>`
+      : '';
+
+  // 명함이 로딩 화면에서 그대로 이어지도록 첫 섹션은 템플릿의 fade-up 을 쓰지 않습니다. 역할은 명함 안에 있습니다.
   return {
     className: 'fullscreen',
     html: `
       <div class="inner">
         ${profileCard(data)}
         <div class="pf-intro">
-          ${has(data.role) ? `<p class="pf-intro__role">${inline(data.role)}</p>` : ''}
           ${has(data.brief) ? `<p class="pf-intro__brief">${inline(data.brief)}</p>` : ''}
-          ${has(data.summary) ? `<div class="pf-intro__summary">${markdown(keepParens(data.summary))}</div>` : ''}
+          ${summary}
           ${facts ? `<dl class="pf-facts">${facts}</dl>` : ''}
           ${actions(data.links)}
           ${contact ? `<ul class="pf-contact" aria-label="연락처">${contact}</ul>` : ''}
@@ -504,11 +523,11 @@ function spatialAudio(data) {
 /* Prasia lab (프라시아 전기 툴 데모) ------------------------------------------ */
 
 function prasiaLab(data) {
-  const block = (key) => {
+  const block = (key, wide = false) => {
     const item = data[key];
     if (!item || !has(item.title)) return '';
     return `
-          <article class="pf-toollab__item">
+          <article class="pf-toollab__item${wide ? ' pf-toollab__item--wide' : ''}" id="prasia-lab--${key}">
             <h3>${inline(item.title)}</h3>
             ${has(item.text) ? `<p>${inline(item.text)}</p>` : ''}
             <div class="pf-toollab__demo" data-demo="${key}"></div>
@@ -520,13 +539,14 @@ function prasiaLab(data) {
       <div class="inner">
         <h2>${esc(data.title)}</h2>
         ${lead(data.lead)}
-        <div class="pf-toollab">${block('minimap')}${block('crash')}</div>
+        <div class="pf-toollab">${block('nevercook', true)}${block('tray')}${block('minimap')}</div>
       </div>`,
     mount(element) {
-      const minimap = element.querySelector('[data-demo="minimap"]');
-      if (minimap) mountMinimap(minimap, data.minimap);
-      const crash = element.querySelector('[data-demo="crash"]');
-      if (crash) mountCrashFlow(crash, data.crash);
+      const demos = { nevercook: mountNeverCook, tray: mountTray, minimap: mountMinimap };
+      for (const [key, mountDemo] of Object.entries(demos)) {
+        const demo = element.querySelector(`[data-demo="${key}"]`);
+        if (demo) mountDemo(demo, data[key]);
+      }
     },
   };
 }

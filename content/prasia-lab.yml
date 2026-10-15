@@ -1,15 +1,55 @@
-# 프라시아 전기 툴 데모 (경력 섹션 뒤에 붙는 인터랙티브 데모 두 개)
+# 프라시아 전기 툴 데모 (경력 섹션 뒤에 붙는 인터랙티브 데모 세 개: NeverCook, 트레이 알림, 미니맵)
 #
+# nevercook: NeverCook 비주얼 툴. 콘텐츠 브라우저 섬네일 위에 NeverCook 아이콘을 붙입니다.
+#   sprite   섬네일을 가로 columns 칸으로 이어 붙인 그림 (지금은 6 x 2, 한 칸 105px)
+#   assets   섬네일 순서대로 에셋 이름. marked 는 처음부터 NeverCook 에 들어 있는 것
+# tray: 윈도우 트레이 아이콘 + 풍선 메시지. balloon 은 풍선 그림, window 는 게임 창에 보일 그림, event 는 알림 이름
 # minimap: 렌더링 지표 자동 측정 툴. 웨이포인트를 순회하며 노드마다 DrawCall / Primitive 를 재고 미니맵에 색으로 표시합니다.
 #   threshold  DrawCall 기준값. 이 값 이상이면 빨강, 70% 이상이면 노랑, 그 아래는 초록입니다. (슬라이더로 바꿀 수 있음)
 #   zones      지도 위 장식 영역. x y w h 는 0 ~ 1 비율, kind 는 water / forest / town 중 하나
 #   waypoints  순회 순서대로 적습니다. x y 는 0 ~ 1 비율, draw 는 DrawCall 수, prims 는 Primitive 수 (단위 M)
-# crash: Backtrace 크래시가 담당자 멘션까지 가는 흐름. steps 는 순서대로 켜지고 3번째 단계는 개발 / 라이브 빌드에 따라 글이 다릅니다.
-# 지도, 수치, 이름은 데모용입니다.
+# 지도, 수치, 에셋 이름은 데모용입니다.
 
 title: 프라시아 전기 툴 데모
 lead: >-
-  프라시아 전기에서 만든 툴과 자동화 두 가지를 데모로 옮겼습니다. 지도, 수치, 이름은 데모용입니다.
+  프라시아 전기에서 만든 툴 세 가지를 데모로 옮겼습니다. 눌러 보세요. 지도, 수치, 에셋 이름은 데모용입니다.
+
+nevercook:
+  title: NeverCook 비주얼 툴
+  text: >-
+    쿠킹(패키징)에서 빼는 NeverCook 에셋을 콘텐츠 브라우저 섬네일 위에 아이콘으로 보여 주는 에디터 확장입니다.
+    섬네일을 누르면 NeverCook 에 넣거나 빼고, 필터로 NeverCook 에셋만 모아 볼 수 있습니다.
+  sprite: images/work/nexon-nevercook-thumbs.png
+  columns: 6
+  path: Content › Materials
+  assets:
+    - M_AssetPlatform
+    - M_Basic_Floor
+    - M_Basic_Wall
+    - M_Brick_Clay_Beveled
+    - M_Brick_Clay_New
+    - M_Brick_Clay_Old
+    - M_Brick_Cut_Stone
+    - M_Brick_Hewn_Stone
+    - M_Ceramic_Tile_Checker
+    - M_CobbleStone_Pebble
+    - M_CobbleStone_Rough
+    - M_CobbleStone_Smooth
+  marked:
+    - M_AssetPlatform
+    - M_Brick_Clay_Beveled
+    - M_Brick_Hewn_Stone
+    - M_CobbleStone_Rough
+
+tray:
+  title: 윈도우 트레이 알림 + 풍선 메시지
+  text: >-
+    게임 창을 트레이로 숨겨 두어도 파티 초대 같은 이벤트를 놓치지 않게 Win API 로 트레이 아이콘과 풍선 메시지를 붙였습니다.
+    알림을 보내 풍선 메시지를 눌러 보고, 트레이 아이콘의 Show Game / Hide Game / Exit 메뉴도 눌러 보세요.
+  app: 프라시아 전기
+  event: 파티 초대
+  balloon: images/work/nexon-tray-balloon.png
+  window: images/warofprasia.jpg
 
 minimap:
   title: 렌더링 지표 미니맵
@@ -35,19 +75,3 @@ minimap:
     - { name: 전장 중앙, x: 0.56, y: 0.74, draw: 2050, prims: 3.3 }
     - { name: 농경지, x: 0.4, y: 0.86, draw: 690, prims: 0.9 }
     - { name: 폐광 입구, x: 0.34, y: 0.58, draw: 1120, prims: 1.7 }
-
-crash:
-  title: 크래시 → 담당자 자동 연결
-  text: >-
-    Backtrace 에 크래시가 들어오면 심볼을 맞추고 지표를 나눈 뒤 담당자를 찾아 Teams 로 부릅니다.
-    개발 빌드는 IP 추적으로 발생자를, 라이브 빌드는 소스 컨트롤 수정 내역으로 최근 수정자를 찾습니다. 알림을 받는 사람이 곧 처리할 사람입니다.
-  steps:
-    - title: 수집
-      text: 심볼 자동 업로드와 빌드 태깅으로 스택을 바로 읽을 수 있게 합니다.
-    - title: 분류
-      text: 크래시 / ANR / OOM 지표로 나누고 플랫폼과 빌드 번호를 붙입니다.
-    - title: 담당자 추적
-      dev: 개발 빌드는 IP 추적으로 크래시 발생자를 바로 찾습니다.
-      live: 라이브 빌드는 소스 컨트롤 수정 내역을 조사해 최근 수정자를 찾습니다.
-    - title: Teams 멘션
-      text: 일간 리포트와 함께 담당자를 멘션합니다. 채널 전체 공지 대신 처리할 사람에게 바로 갑니다.

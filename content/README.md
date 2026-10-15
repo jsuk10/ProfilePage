@@ -2,7 +2,7 @@
 
 이 사이트는 `content/` 폴더의 글 파일(.yml, .md)을 읽어서 화면을 그립니다.
 문장, 경력, 작품을 바꿀 때는 이 폴더의 파일만 고치면 되고, `index.html` 은 건드리지 않아도 됩니다.
-예외 하나: 첫 화면 맨 위 명함(사진, 이름, 경력 두 줄)은 `profile.yml` 의 `name` / `name_en` / `photo` / `card` 로 그려지는데, 불러오는 동안 먼저 보이는 같은 명함은 내용 파일보다 먼저 떠야 해서 `index.html` 의 `pf-splash` 블록에 직접 적혀 있습니다. 이름이나 회사가 바뀌면 거기도 똑같이 고치세요.
+예외 하나: 첫 화면 맨 위 명함(사진, 이름, 역할, 경력 두 줄)은 `profile.yml` 의 `name` / `name_en` / `role` / `photo` / `card` 로 그려지는데, 불러오는 동안 먼저 보이는 같은 명함은 내용 파일보다 먼저 떠야 해서 `index.html` 의 `pf-splash` 블록에 직접 적혀 있습니다. 이름이나 회사가 바뀌면 거기도 똑같이 고치세요.
 
 ## 미리 보기
 
@@ -18,12 +18,12 @@
 | 파일 | 화면에서 맡는 곳 |
 | --- | --- |
 | `site.yml` | 섹션 순서, 메뉴 이름, 배경색 |
-| `profile.yml` | 첫 화면: 명함(이름, 사진, 경력 `card`), 한 줄 소개, 요약, 칸(facts)과 로고, 링크, 연락처 |
+| `profile.yml` | 첫 화면: 명함(이름, 사진, 역할, 경력 `card`), 한 줄 소개, 경력 요약(`summary`: 로고 + 회사 줄 + 역할 줄), 칸(facts)과 로고, 링크, 연락처 |
 | `skills.yml` | 업무 숙련도 표와 사용 도구 |
 | `career/*.md` | 회사 경력 하나. 앞부분은 요약, 본문은 '경력 상세' 펼침 목록 |
 | `impact.yml` | 성과 지표 그래프 |
 | `spatial-audio.yml` | 공간음향 차폐 데모: 설명, 와이즈 공간음향 대신 직접 계산한 이유(`realtime`), 부하를 줄인 방법(`optimizations`), 층별 3D 배치도(`layers`, 적는 법은 파일 맨 위 주석) |
-| `prasia-lab.yml` | 프라시아 전기 툴 데모: 렌더링 지표 미니맵(웨이포인트, 기준값), 크래시 → 담당자 흐름(단계 글) |
+| `prasia-lab.yml` | 프라시아 전기 툴 데모: NeverCook 콘텐츠 브라우저(에셋 이름, 처음 표시할 것), 트레이 알림 + 풍선 메시지(그림), 렌더링 지표 미니맵(웨이포인트, 기준값) |
 | `projects.yml` | 학생 시절 작품 |
 | `activities.yml` | 학력, 수상, 교육, 동아리 |
 
@@ -176,7 +176,7 @@
 | `assets/js/portfolio/spatial-audio-voxel.js` | 데모 계산: 복셀 그리드, 직선 레이, A\*, 밀폐도 |
 | `assets/js/portfolio/spatial-audio-demo.js` | 결과 패널, WebGL2 가 없을 때 쓰는 2D 단면 화면 |
 | `assets/js/portfolio/spatial-audio-sound.js` | 데모 소리: 계산한 수치를 Web Audio 로 소리에 입힘 (거리, 차폐, 밀폐도, 방향) |
-| `assets/js/portfolio/prasia-lab.js` | 프라시아 전기 툴 데모: 미니맵 순회(Canvas), 크래시 → 담당자 흐름 |
+| `assets/js/portfolio/prasia-lab.js` | 프라시아 전기 툴 데모: NeverCook 콘텐츠 브라우저, 트레이 알림 + 풍선 메시지, 미니맵 순회(Canvas) |
 | `assets/js/portfolio/markdown.js`, `content.js` | Markdown, YAML 읽기 |
 | `assets/js/main.js` | 템플릿 인터랙션 (스크롤스파이, 등장 효과, spotlights) |
 | `assets/css/portfolio.css` | 이 포트폴리오 전용 스타일 (`main.css` 는 템플릿 스타일) |

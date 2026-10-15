@@ -27,13 +27,14 @@ highlights:
   - title: 품질 관측 / 플러그인 관리
     text: |-
       **Backtrace** 를 도입하고 전 플랫폼에 표준화했습니다.
-      - 심볼 태깅, 일간 리포트, ANR / OOM 지표로 원인 파악과 담당자 지정 시간 단축
+      - 심볼 태깅, 일간 리포트, ANR / OOM 지표로 원인 파악 시간 단축
       - **SDK 소스(GitHub)를 분석해 네이티브 에러 핸들링 보강**
       - Wwise, Vivox 유지보수
   - title: CI/CD / 정책 대응
     text: |-
       빌드 검증과 스토어 정책 대응을 자동화했습니다.
       - **Jenkins / Perforce 검증 자동화**
+      - **빌드 실패 알림**: 담당자에게 알리고 바이너리 변경은 최근 수정자를 멘션
       - **iOS / Android 스토어 정책 대응**
   - title: 개발 편의성 개선
     text: |-
@@ -85,7 +86,10 @@ links:
 
 - Unreal Session Frontend 기반 **히치 구간 계측·원인 분석 문서화** 및 모바일 **PSO 캐시** 테스트·도입으로 심리스 구간 끊김 완화.
 - [**Animation Budget Allocator**](https://dev.epicgames.com/documentation/ko-kr/unreal-engine/animation-budget-allocator-in-unreal-engine) **기준 수립·튜닝**으로 화면 기여도 기반 계산 최적화.
-- **SkeletalMesh 형태 전환 단일화**(투구/헤어/수염 플래그, Vertex Color 사용) 및 **투구 시스템 폴리싱**(후드 On/Off, 파츠 관통 방지).
+- **투구 On/Off 메시 단일화**: 투구를 쓴 버전과 벗은 버전의 SkeletalMesh 를 두 벌로 관리하던 것을, **Vertex Color 에 썼을 때 / 벗었을 때 정보를 담아 메시 하나**로 두 상태를 표현하게 했습니다.
+  - 몸체 메시 2벌 → 1벌, 얼굴(수염)·머리카락 메시도 2벌 → 1벌로 관리
+  - 에셋 수가 줄어 **런타임 메모리 절감**, 중복 관리가 없어져 **에셋 관리 비용 절감**
+  - 이어서 **투구 시스템 폴리싱**(후드 On/Off, 파츠 관통 방지)
 - **Shader Cache**: 패치 타입별 정책 수립·문서화, 패키지 타임 생성 캐시 파일 **자동 배포 파이프라인**으로 배포 일관성과 리드타임 개선.
 - **렌더링 지표 자동 측정 툴**: 웨이포인트를 순회하며 노드별 DP(DrawCall, Primitive)를 미니맵에 색으로 시각화하고 프로파일 데이터와 최적화 가이드라인을 주기적으로 제공.
 
@@ -95,10 +99,8 @@ links:
 
 - **SDK 소스 분석과 네이티브 에러 핸들링**
   문제가 생기면 Backtrace GitHub 저장소의 소스를 직접 읽고 어디가 문제인지, 어떻게 고치면 될지 분석해서 **네이티브 환경에서도 잘 동작하도록 에러 핸들링**을 보강했습니다.
-- **수집과 담당자 지정 자동화**
-  AOS / iOS / Windows 전반에 **심볼 자동 업로드와 태깅**, **일간 리포트와 Teams 멘션**을 붙였습니다.
-  개발 빌드에서는 **IP 추적으로 크래시 발생자를 자동 연결**합니다.
-  **소스 컨트롤 수정 내역을 조사해 담당자까지 자동 연결**합니다.
+- **수집 자동화**
+  AOS / iOS / Windows 전반에 **심볼 자동 업로드와 태깅**, **일간 리포트**를 붙여 플랫폼별 크래시를 한곳에서 봅니다.
 - **ANR / OOM**
   ANR, OOM 수집 이슈를 추적하고 **Attribute 누락과 끊김 보정**을 체계화했습니다. iOS OOM 지표와 리포트도 자동화했습니다.
 - **운영**
@@ -112,7 +114,7 @@ links:
 
 ## 에디터/툴링·데이터 파이프라인 (R&D) {#editor-tooling}
 
-- **NeverCook 비주얼 툴** 고도화(아이콘·필터·Dev 예외/경고) 및 **블랙리스트 수기 업데이트 자동화 툴** 제작.
+- **NeverCook 비주얼 툴** 고도화(아이콘·필터·Dev 예외/경고) 및 **블랙리스트 수기 업데이트 자동화 툴** 제작. [데모 보기](#prasia-lab--nevercook)
 - **Excel Import/Export 단독 실행 스크립트**, 에러 핸들링·메시지 보강, **중복 메시지/정렬/예외 처리 개선**, DataValidate 강화.
 - **Unreal Slate·Python 확장 유틸**: Config Sheet Import All, CuidForClient.csv 뷰어, Text CUID 추적, 파티클 레퍼런싱 검증, Missing Bone 검사, Sector 문자열 일괄 수정 등.
 - **보안/암호화**: UAsset/Text 이중 암호화와 개별·전량 해제 기능, DataDecrypt 개선, 텍스트 암호화 키 정기 갱신 알림 운영.
@@ -127,7 +129,7 @@ links:
 
 - **Jenkins**: 스트림별 **교차 빌드**, **빌드 번호/패키지 타입 검증 유틸**, 권한 부재 시 대응용 Jenkins Job, 스크립트 기반 **심볼 자동 백업**.
 - **Iterative 쿠킹 검증** 및 검증 로그 표준화.
-- **알림 자동화 (Power Automate)**: 빌드 실패/서버 검증 오류/크래시/용량 부족 시 로그와 Perforce 수정 내역으로 **최근 작업자를 찾아 Teams 멘션**.
+- **알림 자동화 (Power Automate)**: 빌드 실패 / 서버 검증 오류 / 용량 부족을 Teams 로 알립니다. 빌드 실패는 담당자에게 가고, 코드가 아닌 바이너리(에셋) 변경이 원인이면 Perforce 수정 내역으로 **최근 수정자를 멘션**해 이터레이션을 줄였습니다.
 - **Python EXE 유틸**: 엑셀 기반 데이터 탐색 자동화, 실행 경로 기반 **Perforce Workspace 자동 세팅**, 에셋 경로 기반 **최근 히스토리/CL 추적**.
 - **Windows**: WinDist/Windows Binary Only 배포, PC 디버깅 환경 구축·문서화, Dev 로그 개선.
 
@@ -146,7 +148,4 @@ links:
 - 풍선 메시지는 Windows 기본 알림이라 OS 알림과 같은 모양으로 화면 오른쪽 아래에 뜹니다. 예: 파티 초대.
 - 풍선 메시지를 누르면(`NIN_BALLOONUSERCLICK`) 숨겨 둔 게임 창을 다시 보이게 하고 **포그라운드로 전환**합니다.
 - 이 경험을 Like Or Die 에서 [게임 전용 Slate 배너](#like-or-die--background-notify)로 발전시켰습니다.
-
-![윈도우 트레이 아이콘 메뉴. Show Game, Hide Game, Exit 항목이 보입니다.](images/work/nexon-tray-menu.png "트레이 아이콘 메뉴")
-
-![프라시아 전기 제목 아래 파티에 초대되었습니다 라고 적힌 Windows 풍선 알림 예시](images/work/nexon-tray-balloon.png#toast=images/warofprasia.jpg "풍선 메시지 예시 (Windows 10 기본 알림에서 글자만 바꾼 것). 알림을 누르면 게임 창이 앞으로 옵니다.")
+- 데모: [Prasia Lab 의 트레이 알림](#prasia-lab--tray)에서 풍선 메시지와 트레이 메뉴를 눌러 볼 수 있습니다.

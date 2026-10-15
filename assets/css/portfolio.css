@@ -343,7 +343,6 @@
 	}
 
 		/* 위 규칙이 id 선택자라서, 크기를 따로 정한 문단은 같은 무게로 한 번 더 적습니다. */
-		#intro .pf-intro__role,
 		#intro .pf-intro__brief {
 			font-size: 1.15em;
 		}
@@ -353,18 +352,11 @@
 		margin-top: 2.5em;
 	}
 
-	.pf-intro__role {
-		color: var(--pf-ink);
-		font-size: 1.15em;
-		font-weight: 600;
-		margin: 0 0 1.25em 0;
-	}
-
 	.pf-intro__brief {
 		color: var(--pf-ink);
 		font-size: 1.15em;
 		line-height: 1.6;
-		margin: -0.75em 0 1.25em 0;
+		margin: 0 0 1.25em 0;
 		text-wrap: pretty;
 	}
 
@@ -375,6 +367,41 @@
 	.pf-intro__summary p {
 		margin: 0 0 1em 0;
 	}
+
+		/* 회사 로고 + 회사 줄 + 역할 줄 */
+		.pf-intro__summary--list {
+			list-style: none;
+			margin: 0 0 1em 0;
+			padding: 0;
+		}
+
+			.pf-intro__summary--list li {
+				align-items: flex-start;
+				display: flex;
+				gap: 0.7em;
+				margin: 0 0 1em 0;
+			}
+
+			.pf-intro__summary--list p,
+			#intro .pf-intro__summary--list p {
+				margin: 0;
+			}
+
+			.pf-intro__logo {
+				background: var(--pf-ink);
+				border-radius: var(--pf-radius-s);
+				box-sizing: border-box;
+				flex: none;
+				height: 1.6em;
+				margin-top: 0.1em;
+				object-fit: contain;
+				padding: 0.18em;
+				width: 1.6em;
+			}
+
+			.pf-intro__company {
+				color: var(--pf-ink);
+			}
 
 		/* 템플릿은 980px 이하에서 #intro p 의 줄바꿈을 숨깁니다. 요약의 줄바꿈은 제목 줄과 설명 줄을 나누는 것이라 그대로 둡니다.
 		   숨기면 띄어쓰기 없이 "4.27)출시", "함께했습니다.퍼포먼스" 처럼 붙어 버립니다. */
@@ -2309,6 +2336,10 @@
 			min-width: 0;
 		}
 
+		.pf-toollab__item--wide {
+			grid-column: 1 / -1;
+		}
+
 		.pf-toollab__item h3 {
 			font-size: 1.15em;
 			margin: 0 0 0.5em 0;
@@ -2444,8 +2475,133 @@
 				color: var(--pf-after);
 			}
 
-	/* 크래시 → 담당자 흐름 */
-	.pf-crash__controls {
+	/* NeverCook 콘텐츠 브라우저 */
+	.pf-cb {
+		background: #1b1b1b;
+		border: solid 1px rgba(255, 255, 255, 0.08);
+		border-radius: var(--pf-radius-m);
+		color: #d8d8d8;
+		overflow: hidden;
+	}
+
+		.pf-cb__bar {
+			align-items: center;
+			background: #262626;
+			display: flex;
+			flex-wrap: wrap;
+			font-size: 0.8em;
+			gap: 0.5em 1em;
+			padding: 0.55em 0.9em;
+		}
+
+		.pf-cb__path {
+			color: #9a9a9a;
+		}
+
+		.pf-cb__filter {
+			color: #d8d8d8;
+		}
+
+		.pf-cb__count {
+			color: #f4f4f4;
+			font-weight: 700;
+			margin-left: auto;
+		}
+
+		.pf-cb__grid {
+			display: grid;
+			gap: 0.6em;
+			grid-template-columns: repeat(var(--pf-cb-columns, 6), minmax(0, 1fr));
+			list-style: none;
+			margin: 0;
+			padding: 0.9em;
+		}
+
+			.pf-cb__grid.is-filtered .is-off {
+				display: none;
+			}
+
+		.pf-cb__tile {
+			background: #333;
+			border: solid 1px transparent;
+			border-radius: 4px;
+			color: inherit;
+			cursor: pointer;
+			display: block;
+			font: inherit;
+			line-height: 1.25;
+			padding: 0 0 0.5em 0;
+			text-align: left;
+			transition: background-color 120ms ease, border-color 120ms ease;
+			width: 100%;
+		}
+
+			.pf-cb__tile:hover,
+			.pf-cb__tile:focus-visible {
+				background: #3d3d3d;
+				border-color: rgba(255, 255, 255, 0.35);
+			}
+
+			.pf-cb__tile.is-nevercook {
+				border-color: rgba(255, 71, 71, 0.55);
+			}
+
+		.pf-cb__thumb {
+			aspect-ratio: 1;
+			background-color: #4a4a4a;
+			border-bottom: solid 3px #35a848;
+			border-radius: 4px 4px 0 0;
+			display: block;
+			position: relative;
+		}
+
+		/* 섬네일 폭 기준 42% (105px 섬네일에서 44px, 처음 22px 의 2배), 구석에서 6% 띄움 */
+		.pf-cb__badge {
+			height: 42%;
+			opacity: 0;
+			position: absolute;
+			right: 6%;
+			top: 6%;
+			transform: scale(0.5);
+			transition: transform 220ms var(--pf-ease-out), opacity 160ms ease;
+			width: 42%;
+		}
+
+			.pf-cb__tile.is-nevercook .pf-cb__badge {
+				opacity: 1;
+				transform: none;
+			}
+
+		.pf-cb__name {
+			color: #f0f0f0;
+			display: block;
+			font-size: 0.72em;
+			overflow-wrap: anywhere;
+			padding: 0.5em 0.5em 0.1em 0.5em;
+		}
+
+		.pf-cb__type {
+			color: #8f8f8f;
+			display: block;
+			font-size: 0.62em;
+			padding: 0.1em 0.6em 0 0.6em;
+		}
+
+		.pf-cb__hint,
+		.pf-cb__list {
+			color: #9a9a9a;
+			font-size: 0.85em;
+			margin: 0;
+			padding: 0 1.1em 0.6em 1.1em;
+		}
+
+		.pf-cb__list {
+			color: #d8d8d8;
+			padding-bottom: 1em;
+		}
+
+	/* 트레이 알림 + 풍선 메시지 (윈도우 바탕화면 모양) */
+	.pf-tray__controls {
 		align-items: center;
 		display: flex;
 		flex-wrap: wrap;
@@ -2453,128 +2609,269 @@
 		margin-bottom: 1em;
 	}
 
-	.pf-crash__flow {
-		background: var(--pf-lab-surface);
+	.pf-tray__status {
+		color: var(--pf-text-muted);
+		font-size: 0.85em;
+	}
+
+	.pf-win {
+		aspect-ratio: 16 / 10;
+		background: radial-gradient(circle at 30% 20%, #2d5a9e, #0f2650 60%, #091632);
+		border: solid 1px rgba(255, 255, 255, 0.12);
 		border-radius: var(--pf-radius-m);
-		padding: 1.1em 1.25em;
+		overflow: hidden;
+		position: relative;
+		user-select: none;
 	}
 
-	.pf-crash__event {
-		align-items: center;
-		display: flex;
-		flex-wrap: wrap;
-		font-size: 0.85em;
-		gap: 0.4em 0.75em;
-		margin-bottom: 1em;
-	}
-
-		.pf-crash__event[hidden] {
-			display: none;
+		.pf-win__window {
+			background: #1e1e1e;
+			border: solid 1px rgba(255, 255, 255, 0.2);
+			border-radius: 6px;
+			box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+			left: 8%;
+			opacity: 0.8;
+			position: absolute;
+			top: 9%;
+			transition: opacity 200ms ease;
+			width: 62%;
 		}
 
-		.pf-crash__event code {
-			font-size: 0.85em;
-		}
+			.pf-win__window[hidden] {
+				display: none;
+			}
 
-	.pf-crash__badge {
-		background: var(--pf-before);
-		border-radius: var(--pf-radius-s);
-		color: #fff;
-		font-size: 0.8em;
-		font-weight: 700;
-		padding: 0.1em 0.5em;
-	}
-
-	.pf-crash__steps {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-		.pf-crash__steps li {
-			display: grid;
-			gap: 0 0.85em;
-			grid-template-columns: 1.1em minmax(0, 1fr);
-			opacity: 0.45;
-			padding: 0.45em 0;
-			transition: opacity 240ms ease;
-		}
-
-			.pf-crash__steps li.is-active,
-			.pf-crash__steps li.is-done {
+			.pf-win__window.is-front {
 				opacity: 1;
+				z-index: 2;
 			}
 
-		.pf-crash__dot {
-			background: var(--pf-line-strong);
-			border-radius: 50%;
-			height: 0.8em;
-			margin-top: 0.35em;
-			transition: background-color 240ms ease, box-shadow 240ms ease;
-			width: 0.8em;
+			.pf-win__window.is-restoring {
+				animation: pf-win-restore 360ms var(--pf-ease-out);
+			}
+
+			.pf-win__window img {
+				aspect-ratio: 16 / 9;
+				display: block;
+				object-fit: cover;
+				width: 100%;
+			}
+
+		.pf-win__title {
+			align-items: center;
+			background: #2b2b2b;
+			color: #bbb;
+			display: flex;
+			font-size: 0.72em;
+			gap: 0.5em;
+			padding: 0.35em 0.6em;
 		}
 
-			.pf-crash__steps li.is-active .pf-crash__dot {
-				background: var(--pf-accent);
-				box-shadow: 0 0 0 4px rgba(242, 165, 214, 0.25);
+			.pf-win__window.is-front .pf-win__title {
+				background: #3a3a3a;
+				color: #fff;
 			}
 
-			.pf-crash__steps li.is-done .pf-crash__dot {
-				background: var(--pf-after);
-			}
-
-		.pf-crash__steps strong {
-			color: var(--pf-ink);
-			display: block;
-			font-size: 0.95em;
+		.pf-win__title-buttons {
+			letter-spacing: 0.5em;
+			margin-left: auto;
 		}
 
-		.pf-crash__steps p {
-			font-size: 0.85em;
+		.pf-win__app-icon {
+			background: linear-gradient(135deg, #f2a5d6, #7050a1);
+			border-radius: 3px;
+			display: inline-block;
+			flex: none;
+			height: 1em;
+			width: 1em;
+		}
+
+		.pf-win__taskbar {
+			align-items: center;
+			background: rgba(12, 12, 20, 0.92);
+			bottom: 0;
+			display: flex;
+			font-size: 0.72em;
+			gap: 0.5em;
+			height: 2.6em;
+			left: 0;
+			padding: 0 0.6em;
+			position: absolute;
+			right: 0;
+			z-index: 3;
+		}
+
+		.pf-win__start {
+			background: #4cc2ff;
+			background-image: linear-gradient(#0c0c14, #0c0c14), linear-gradient(#0c0c14, #0c0c14);
+			background-position: center;
+			background-repeat: no-repeat;
+			background-size: 2px 100%, 100% 2px;
+			border-radius: 2px;
+			flex: none;
+			height: 1.1em;
+			margin-right: 0.3em;
+			width: 1.1em;
+		}
+
+		.pf-win__task {
+			align-items: center;
+			background: rgba(255, 255, 255, 0.08);
+			border: 0;
+			border-bottom: solid 2px transparent;
+			border-radius: 3px;
+			color: #ddd;
+			cursor: pointer;
+			display: inline-flex;
+			font: inherit;
+			gap: 0.4em;
+			padding: 0.3em 0.7em;
+		}
+
+			.pf-win__task[hidden] {
+				display: none;
+			}
+
+			.pf-win__task.is-active {
+				background: rgba(255, 255, 255, 0.16);
+				border-bottom-color: #4cc2ff;
+				color: #fff;
+			}
+
+		.pf-win__tray {
+			align-items: center;
+			display: inline-flex;
+			gap: 0.5em;
+			margin-left: auto;
+		}
+
+		.pf-win__sys {
+			color: #ccc;
+			display: inline-flex;
+			gap: 0.45em;
+		}
+
+			.pf-win__sys svg {
+				height: 1em;
+				width: 1em;
+			}
+
+		.pf-win__tray-icon {
+			background: none;
+			border: 0;
+			border-radius: 3px;
+			cursor: pointer;
+			display: inline-flex;
+			padding: 0.25em;
+		}
+
+			.pf-win__tray-icon:hover,
+			.pf-win__tray-icon:focus-visible,
+			.pf-win__tray-icon[aria-expanded="true"] {
+				background: rgba(255, 255, 255, 0.14);
+			}
+
+			.pf-win__tray-icon[hidden] {
+				display: none;
+			}
+
+		.pf-win__clock {
+			color: #ddd;
+		}
+
+		.pf-win__balloon {
+			background: none;
+			border: 0;
+			bottom: 2.2em;
+			cursor: pointer;
+			opacity: 0;
+			padding: 0;
+			position: absolute;
+			right: 0.6em;
+			transform: translateX(110%);
+			transition: transform 420ms var(--pf-ease-out), opacity 240ms ease;
+			width: min(48%, 364px);
+			z-index: 4;
+		}
+
+			.pf-win__balloon[hidden] {
+				display: none;
+			}
+
+			.pf-win__balloon.is-shown {
+				opacity: 1;
+				transform: none;
+			}
+
+			.pf-win__balloon img {
+				border-radius: 3px;
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+				display: block;
+				width: 100%;
+			}
+
+		.pf-win__menu {
+			background: #2b2b2b;
+			border: solid 1px rgba(255, 255, 255, 0.2);
+			bottom: 2.1em;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+			font-size: 0.75em;
+			list-style: none;
 			margin: 0;
+			min-width: 9em;
+			padding: 0.3em 0;
+			position: absolute;
+			right: 2.6em;
+			z-index: 5;
 		}
 
-		.pf-crash__detail {
-			color: var(--pf-ink);
-			font-weight: 600;
-			min-height: 1.3em;
-		}
+			.pf-win__menu[hidden] {
+				display: none;
+			}
 
-	.pf-crash__card {
-		animation: pf-card-in 400ms var(--pf-ease-out) both;
-		background: rgba(255, 255, 255, 0.06);
-		border-left: solid 3px var(--pf-accent);
-		border-radius: var(--pf-radius-s);
-		font-size: 0.85em;
-		margin-top: 1em;
-		padding: 0.75em 1em;
+			.pf-win__menu li {
+				padding: 0;
+			}
+
+			.pf-win__menu button {
+				background: none;
+				border: 0;
+				border-radius: 0;
+				color: #eee;
+				cursor: pointer;
+				display: block;
+				font: inherit;
+				padding: 0.4em 1em;
+				text-align: left;
+				width: 100%;
+			}
+
+				.pf-win__menu button:hover,
+				.pf-win__menu button:focus-visible {
+					background: #0078d4;
+					color: #fff;
+				}
+
+	@keyframes pf-win-restore {
+		from { opacity: 0; transform: translateY(10%) scale(0.92); }
+		to { opacity: 1; transform: none; }
 	}
 
-		.pf-crash__card p {
-			margin: 0 0 0.3em 0;
+	@media screen and (max-width: 736px) {
+
+		.pf-cb__grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}
 
-		.pf-crash__card-head {
-			color: var(--pf-ink);
-			font-weight: 700;
+	}
+
+	@media screen and (max-width: 480px) {
+
+		.pf-cb__grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 
-		.pf-crash__app {
-			background: var(--pf-accent);
-			border-radius: 4px;
-			color: var(--pf-accent-ink);
-			display: inline-block;
-			font-weight: 800;
-			height: 1.4em;
-			line-height: 1.4em;
-			margin-right: 0.5em;
-			text-align: center;
-			width: 1.4em;
-		}
-
-		.pf-crash__card-foot {
-			color: var(--pf-text-muted);
-		}
+	}
 
 	@media screen and (max-width: 980px) {
 
@@ -2827,6 +3124,15 @@
 			margin-left: 0.5em;
 		}
 
+		.pf-card__role,
+		#intro .pf-card__role {
+			color: var(--pf-accent);
+			font-size: 0.85em;
+			font-weight: 600;
+			line-height: 1.4;
+			margin: 0.25em 0 0.45em 0;
+		}
+
 		.pf-card__career {
 			list-style: none;
 			margin: 0;
@@ -2964,9 +3270,9 @@
 		.pf-screen__window,
 		.pf-card,
 		.pf-card__dots,
-		.pf-crash__card,
-		.pf-crash__steps li,
-		.pf-crash__dot,
+		.pf-cb__badge,
+		.pf-win__window,
+		.pf-win__balloon,
 		.pf-detail__chevron,
 		.pf-meter__fill,
 		.pf-switch__thumb,
