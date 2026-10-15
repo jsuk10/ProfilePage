@@ -402,26 +402,6 @@ export function evaluate(scene, finder) {
   return result;
 }
 
-// 직선이 막혔을 때 소리가 들려오는 자리. 우회 경로를 청취자에서부터 따라가며 아직 보이는 마지막 점(문, 벽 끝) 쪽으로
-// 경로 길이만큼 떨어진 곳입니다. 직선이 뚫려 있거나 경로가 없으면 null
-export function apparentSource(scene, result) {
-  if (!result.los.blocked || result.search?.status !== 'found') return null;
-  const { grid, listener } = scene;
-  const from = [listener.x + 0.5, listener.y + 0.5, listener.z + 0.5];
-  let seen = null;
-  for (const index of result.search.path.slice(1)) {
-    const cell = cellOf(grid, index);
-    const to = [cell.x + 0.5, cell.y + 0.5, cell.z + 0.5];
-    if (traverse(grid, from[0], from[1], from[2], to[0] - from[0], to[1] - from[1], to[2] - from[2], 1).blocked) break;
-    seen = to;
-  }
-  if (!seen) return null;
-  const direction = [seen[0] - from[0], seen[1] - from[1], seen[2] - from[2]];
-  const length = Math.hypot(...direction) || 1;
-  const distance = result.search.length;
-  return { position: direction.map((value, axis) => from[axis] + (value / length) * distance), distance };
-}
-
 /* 고르기 ----------------------------------------------------------------- */
 
 // 화면에서 누른 곳: 카메라 레이가 처음 닿는 블록(hit)과 그 앞의 빈 칸(place, 블록을 놓을 자리)을 찾습니다.

@@ -313,25 +313,6 @@ function evaluate(scene, finder) {
   return result;
 }
 
-// 직선이 막혔을 때 소리가 들려오는 자리 (3D 의 apparentSource 와 같음)
-function apparentSource(scene, result) {
-  if (!result.los.blocked || result.search?.status !== 'found') return null;
-  const { grid, listener } = scene;
-  const ox = listener.x + 0.5;
-  const oy = listener.y + 0.5;
-  let seen = null;
-  for (const index of result.search.path.slice(1)) {
-    const x = (index % grid.cols) + 0.5;
-    const y = Math.floor(index / grid.cols) + 0.5;
-    if (traverse(grid, ox, oy, x - ox, y - oy, 1).blocked) break;
-    seen = [x, y];
-  }
-  if (!seen) return null;
-  const length = Math.hypot(seen[0] - ox, seen[1] - oy) || 1;
-  const distance = result.search.length;
-  return { position: [ox + ((seen[0] - ox) / length) * distance, oy + ((seen[1] - oy) / length) * distance], distance };
-}
-
 /* 표시 ------------------------------------------------------------------- */
 
 const CURVE = { left: 30, right: 232, top: 12, bottom: 108 };
@@ -788,15 +769,10 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
 
   // 단면이라 높이는 없습니다. 화면 위쪽이 청취자가 보는 방향입니다.
   function soundFrame() {
-    const via = apparentSource(scene, result);
-    const point = ([x, y]) => [x, 0.5, y];
     return {
-      listener: point([scene.listener.x + 0.5, scene.listener.y + 0.5]),
-      source: point([scene.source.x + 0.5, scene.source.y + 0.5]),
+      listener: [scene.listener.x + 0.5, 0.5, scene.listener.y + 0.5],
+      source: [scene.source.x + 0.5, 0.5, scene.source.y + 0.5],
       straight: result.straight,
-      apparent: via ? point(via.position) : null,
-      pathLength: via?.distance ?? result.straight,
-      blocked: result.los.blocked,
       forward: [0, 0, -1],
       occlusion: result.occlusion,
       openness: result.enclosure.openness,
