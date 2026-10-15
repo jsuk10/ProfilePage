@@ -365,13 +365,24 @@ export function soundValues(frame) {
 
 /* 화면 ------------------------------------------------------------------- */
 
-const SWITCH = '<span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>';
+// 장면 위에 덮는 안내 창. 섹션에 들어오면 뜨고 누르면 소리가 납니다.
+export function soundGateMarkup() {
+  if (!supportsWebAudio()) return '';
+  return `
+        <div class="pf-lab__gate" role="group" aria-label="소리 안내" data-sound-gate hidden>
+          <button type="button" class="pf-button pf-lab__gate-card" data-sound-start>
+            <strong class="pf-lab__gate-title">소리가 나는 데모입니다</strong>
+            <span class="pf-lab__gate-text">누르면 음원 자리에서 소리가 납니다. 음량을 먼저 확인하고 이어폰을 권합니다. 섹션을 벗어나면 꺼집니다.</span>
+            <span class="pf-lab__gate-action">누르면 소리 켜기</span>
+          </button>
+          <button type="button" class="pf-button pf-lab__gate-skip" data-sound-skip>소리 없이 보기</button>
+        </div>`;
+}
 
 export function soundControlsMarkup() {
   if (!supportsWebAudio()) return '';
   return `
       <div class="pf-lab__sound" role="group" aria-label="소리">
-        <button type="button" class="pf-button pf-switch" role="switch" aria-checked="false" data-sound-toggle>${SWITCH}소리 듣기</button>
         <div class="pf-segmented" role="group" aria-label="소리 종류">
           <button type="button" class="pf-button pf-segmented__item" data-sound-source="loop" aria-pressed="true">비트 루프</button>
           <button type="button" class="pf-button pf-segmented__item" data-sound-source="classic" aria-pressed="false">클래식</button>
@@ -400,7 +411,7 @@ export function soundReadoutMarkup() {
 
 export function soundHelpMarkup() {
   if (!supportsWebAudio()) return '';
-  return '<p>소리 듣기를 켜면 음원 자리에서 소리가 납니다. 차폐 계수는 볼륨과 로우패스로, 밀폐도는 리버브로, 거리는 감쇠로 들리고 방향은 화면을 보는 방향 기준입니다. (화면 오른쪽 = 오른쪽 귀) 이어폰이나 헤드폰으로 들으면 방향이 또렷합니다.</p>';
+  return '<p>안내 창을 누르면 음원 자리에서 소리가 나고 섹션을 벗어나면 꺼집니다. 차폐 계수는 볼륨과 로우패스로, 밀폐도는 리버브로, 거리는 감쇠로 들리고 방향은 화면을 보는 방향 기준입니다. (화면 오른쪽 = 오른쪽 귀) 이어폰이나 헤드폰으로 들으면 방향이 또렷합니다.</p>';
 }
 
 const SOURCES = { loop: renderLoop, classic: renderClassic, water: renderWater };
@@ -409,9 +420,11 @@ const formatDb = (value) => `${value <= -0.05 ? '−' : ''}${Math.abs(value).toF
 const formatHz = (value) => (value >= 1000 ? `${(value / 1000).toFixed(1)} kHz` : `${Math.round(value)} Hz`);
 
 export function bindSound(container, { live } = {}) {
-  const toggle = container.querySelector('[data-sound-toggle]');
-  if (!toggle) return { update() {}, setActive() {} };
+  const gate = container.querySelector('[data-sound-gate]');
+  if (!gate) return { update() {}, setActive() {} };
 
+  const startButton = container.querySelector('[data-sound-start]');
+  const skipButton = container.querySelector('[data-sound-skip]');
   const sourceButtons = [...container.querySelectorAll('[data-sound-source]')];
   const volume = container.querySelector('[data-sound-volume]');
   const outputs = Object.fromEntries(
@@ -420,7 +433,8 @@ export function bindSound(container, { live } = {}) {
 
   let engine = null;
   let playing = false;
-  let active = true;
+  let active = false;
+  let dismissed = false;
   let kind = 'loop';
   let level = Number(volume.value) / 100;
   let frame = null;
@@ -506,22 +520,37 @@ export function bindSound(container, { live } = {}) {
     orient(context.listener, next.forward, set);
   }
 
-  toggle.addEventListener('click', () => {
-    playing = !playing;
-    if (playing) {
-      try {
-        ensureEngine();
-      } catch (error) {
-        console.warn('소리를 켜지 못했습니다.', error);
-        playing = false;
-      }
+  const refreshGate = () => {
+    gate.hidden = !(active && !playing && !dismissed);
+  };
+
+  function start() {
+    if (playing) return;
+    try {
+      ensureEngine();
+    } catch (error) {
+      console.warn('소리를 켜지 못했습니다.', error);
+      return;
     }
-    toggle.setAttribute('aria-checked', String(playing));
-    if (!engine) return;
-    if (playing) startSource();
-    else stopSource(engine.context.currentTime);
+    playing = true;
+    startSource();
     applyMaster();
-    if (live) live.textContent = playing ? '소리 켬' : '소리 끔';
+    refreshGate();
+    if (live) live.textContent = '소리 켬';
+  }
+
+  function stop() {
+    if (!playing) return;
+    playing = false;
+    stopSource(engine.context.currentTime);
+    applyMaster();
+    refreshGate();
+  }
+
+  startButton.addEventListener('click', start);
+  skipButton.addEventListener('click', () => {
+    dismissed = true;
+    refreshGate();
   });
 
   sourceButtons.forEach((button) => {
@@ -539,10 +568,15 @@ export function bindSound(container, { live } = {}) {
 
   return {
     update: (next) => apply(next),
+    // 섹션에 들어오면 안내 창을 보이고 나가면 소리를 끕니다.
     setActive(next) {
       if (active === next) return;
       active = next;
-      applyMaster();
+      if (!active) {
+        stop();
+        dismissed = false;
+      }
+      refreshGate();
     },
   };
 }

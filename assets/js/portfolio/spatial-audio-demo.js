@@ -9,7 +9,7 @@
 // 계수는 시연용 값입니다.
 
 import { escapeHtml } from './markdown.js';
-import { soundControlsMarkup, soundReadoutMarkup, soundHelpMarkup, bindSound } from './spatial-audio-sound.js';
+import { soundGateMarkup, soundControlsMarkup, soundReadoutMarkup, soundHelpMarkup, bindSound } from './spatial-audio-sound.js';
 
 export const OCCLUSION_K = 1.6;
 export const SATURATION = 0.98; // 이 값에 닿으면 포화로 보고 탐색을 멈춥니다.
@@ -493,7 +493,9 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
           <button type="button" class="pf-button pf-lab__reset" data-reset>배치 되돌리기</button>
         </div>
       </div>
-      <canvas class="pf-lab__canvas" tabindex="0" role="application" aria-label="공간음향 차폐 데모 그리드" aria-describedby="${helpId}"></canvas>${soundControlsMarkup()}
+      <div class="pf-lab__view">
+        <canvas class="pf-lab__canvas" tabindex="0" role="application" aria-label="공간음향 차폐 데모 그리드" aria-describedby="${helpId}"></canvas>${soundGateMarkup()}
+      </div>${soundControlsMarkup()}
       <ul class="pf-lab__legend" aria-label="그리드 보는 법">
         <li><span class="pf-lab__key pf-lab__key--wall" aria-hidden="true"></span>벽</li>
         <li><span class="pf-lab__key pf-lab__key--explored" aria-hidden="true"></span>A* 가 우회 경로를 찾으며 살펴본 칸</li>
@@ -947,6 +949,7 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
   canvas.style.aspectRatio = `${scene.grid.cols} / ${scene.grid.rows}`;
   update();
   resize();
+  syncSound();
 }
 
 // 테스트용: 계산 부분만 따로 씁니다.

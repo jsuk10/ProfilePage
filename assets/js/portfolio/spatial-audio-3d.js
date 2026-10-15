@@ -8,7 +8,7 @@
 
 import { escapeHtml } from './markdown.js';
 import { panelMarkup, bindPanel } from './spatial-audio-demo.js';
-import { soundControlsMarkup, soundReadoutMarkup, soundHelpMarkup, bindSound } from './spatial-audio-sound.js';
+import { soundGateMarkup, soundControlsMarkup, soundReadoutMarkup, soundHelpMarkup, bindSound } from './spatial-audio-sound.js';
 import {
   OPEN,
   WALL,
@@ -565,7 +565,7 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
           <span class="pf-lab__label" data-label="listener">${NAMES.listener}</span>
           <span class="pf-lab__label" data-label="source">${NAMES.source}</span>
         </div>
-        <p class="pf-lab__hint" aria-hidden="true" data-hint>3D · 끌어서 돌려 보기</p>
+        <p class="pf-lab__hint" aria-hidden="true" data-hint>3D · 끌어서 돌려 보기</p>${soundGateMarkup()}
       </div>${soundControlsMarkup()}
       <ul class="pf-lab__legend" aria-label="장면 보는 법">
         <li><span class="pf-lab__key pf-lab__key--wall" aria-hidden="true"></span>블록</li>
@@ -1293,4 +1293,5 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
   readColors();
   resize();
   loadScene(0);
+  syncSound();
 }
