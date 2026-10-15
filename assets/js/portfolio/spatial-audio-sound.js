@@ -4,7 +4,7 @@
 //   밀폐도     → 리버브 센드 = 1 − 밀폐도² (청취자가 있는 공간의 울림. 바닥 아래로 나간 레이가 열린 것으로 잡혀 밀폐도가 0.5 아래로는 잘 안 내려가므로 제곱으로 당깁니다)
 //   방향       → HRTF 패닝. 화면을 보는 방향이 청취자가 보는 방향입니다. (화면 오른쪽 = 오른쪽 귀)
 //               직선이 막혔으면 우회 경로에서 청취자에게 보이는 마지막 점(문, 벽 끝) 쪽에서 경로 길이만큼 떨어져 들립니다.
-// 소리는 파일 없이 합성합니다. (비트 루프, 핑크 노이즈, 리버브 임펄스)
+// 소리는 파일 없이 합성합니다. (비트 루프, 바흐 프렐류드, 시냇물, 리버브 임펄스)
 
 export const REF_DISTANCE = 1.5; // m. 이 안에서는 거리 감쇠 없음
 export const ROLLOFF = 0.8;
@@ -17,7 +17,9 @@ const SMOOTH = 0.05; // s. 값이 바뀔 때 튀지 않게 따라가는 시간
 const LOOP_BPM = 120;
 const LOOP_BARS = 2;
 const STEPS = 16;
-const NOISE_SECONDS = 4;
+const CLASSIC_BPM = 76;
+const WATER_SECONDS = 8;
+const TARGET_RMS = 0.12; // 세 소리의 크기를 맞추는 기준
 const IMPULSE_SECONDS = 1.2;
 const IMPULSE_DECAY = 6.5; // RT60 약 1초
 const PREDELAY = 0.012;
@@ -75,6 +77,41 @@ function scale(buffer, factor) {
     const data = buffer.getChannelData(channel);
     for (let index = 0; index < data.length; index++) data[index] *= factor;
   }
+}
+
+function matchLevel(buffer) {
+  const data = buffer.getChannelData(0);
+  let factor = TARGET_RMS / (rms(data) || 1);
+  const top = peak(data) * factor;
+  if (top > 0.95) factor *= 0.95 / top;
+  scale(buffer, factor);
+  return buffer;
+}
+
+// 루프 길이보다 길게 렌더한 뒤 넘치는 꼬리를 앞부분에 더합니다. 끝에서 울리던 음이 처음으로 이어집니다.
+function foldTail(context, rendered, seconds) {
+  const length = Math.round(seconds * rendered.sampleRate);
+  const source = rendered.getChannelData(0);
+  const buffer = context.createBuffer(1, length, rendered.sampleRate);
+  const data = buffer.getChannelData(0);
+  data.set(source.subarray(0, length));
+  for (let index = length; index < source.length; index++) data[index - length] += source[index];
+  return buffer;
+}
+
+// 넘치는 꼬리를 앞부분과 겹쳐 섞습니다. 노이즈처럼 이어지는 소리의 이음새용
+function crossfadeSeam(context, rendered, seconds) {
+  const length = Math.round(seconds * rendered.sampleRate);
+  const source = rendered.getChannelData(0);
+  const overlap = source.length - length;
+  const buffer = context.createBuffer(1, length, rendered.sampleRate);
+  const data = buffer.getChannelData(0);
+  data.set(source.subarray(0, length));
+  for (let index = 0; index < overlap; index++) {
+    const weight = index / overlap;
+    data[index] = source[index] * weight + source[length + index] * (1 - weight);
+  }
+  return buffer;
 }
 
 // 2마디 비트 루프: 킥(저음), 스네어 / 하이햇(고음), 플럭 아르페지오(중음), 패드(지속음).
@@ -154,46 +191,100 @@ export function renderLoop(context) {
     for (const [at, note] of Object.entries(bar.pluck)) pluck(base + Number(at) * step, note);
   });
 
-  return offline.startRendering().then((buffer) => {
-    scale(buffer, 0.85 / (peak(buffer.getChannelData(0)) || 1));
-    return buffer;
-  });
+  return offline.startRendering().then(matchLevel);
 }
 
-// 핑크 노이즈 (Paul Kellet 필터). 끝 0.1초를 처음과 겹쳐 이어 붙어도 끊기지 않게 합니다.
-export function renderNoise(context, targetRms) {
+// 바흐 평균율 1권 프렐류드 C장조 첫 8마디. 마디마다 다섯 음을 1 2 3 4 5 3 4 5 꼴로 두 번 펼칩니다.
+const PRELUDE = [
+  [60, 64, 67, 72, 76],
+  [60, 62, 69, 74, 77],
+  [59, 62, 67, 74, 77],
+  [60, 64, 67, 72, 76],
+  [60, 64, 69, 76, 81],
+  [60, 62, 66, 69, 74],
+  [59, 62, 67, 74, 79],
+  [59, 60, 64, 67, 72],
+];
+const PIANO_PARTIALS = [0, 1, 0.55, 0.3, 0.2, 0.12, 0.08, 0.05, 0.03];
+
+export function renderClassic(context) {
   const rate = context.sampleRate;
-  const length = Math.round(NOISE_SECONDS * rate);
-  const overlap = Math.round(0.1 * rate);
-  const raw = new Float32Array(length + overlap);
-  const next = random(11);
-  let b0 = 0;
-  let b1 = 0;
-  let b2 = 0;
-  let b3 = 0;
-  let b4 = 0;
-  let b5 = 0;
-  let b6 = 0;
-  for (let index = 0; index < raw.length; index++) {
-    const white = next() * 2 - 1;
-    b0 = 0.99886 * b0 + white * 0.0555179;
-    b1 = 0.99332 * b1 + white * 0.0750759;
-    b2 = 0.969 * b2 + white * 0.153852;
-    b3 = 0.8665 * b3 + white * 0.3104856;
-    b4 = 0.55 * b4 + white * 0.5329522;
-    b5 = -0.7616 * b5 - white * 0.016898;
-    raw[index] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
-    b6 = white * 0.115926;
+  const sixteenth = 60 / CLASSIC_BPM / 4;
+  const seconds = PRELUDE.length * 16 * sixteenth;
+  const offline = new OfflineAudioContext(1, Math.round((seconds + 2) * rate), rate);
+  const wave = offline.createPeriodicWave(new Float32Array(PIANO_PARTIALS.length), new Float32Array(PIANO_PARTIALS));
+  const out = offline.destination;
+
+  const note = (at, pitch, level) => {
+    const decay = 1.8 - (pitch - 48) / 40;
+    const osc = new OscillatorNode(offline, { frequency: midi(pitch), periodicWave: wave });
+    const filter = new BiquadFilterNode(offline, { type: 'lowpass', frequency: 5000, Q: 0.5 });
+    filter.frequency.setValueAtTime(5000, at);
+    filter.frequency.exponentialRampToValueAtTime(900, at + 0.8);
+    const gain = new GainNode(offline, { gain: 0 });
+    gain.gain.setValueAtTime(0, at);
+    gain.gain.linearRampToValueAtTime(level, at + 0.004);
+    gain.gain.exponentialRampToValueAtTime(0.0005, at + decay);
+    osc.connect(filter).connect(gain).connect(out);
+    osc.start(at);
+    osc.stop(at + decay + 0.02);
+  };
+
+  PRELUDE.forEach((chord, bar) => {
+    const base = bar * 16 * sixteenth;
+    for (let half = 0; half < 2; half++) {
+      [0, 1, 2, 3, 4, 2, 3, 4].forEach((voice, step) => {
+        const level = voice < 2 ? 0.5 : step === 2 ? 0.42 : 0.34;
+        note(base + (half * 8 + step) * sixteenth, chord[voice], level);
+      });
+    }
+  });
+
+  return offline.startRendering().then((rendered) => matchLevel(foldTail(context, rendered, seconds)));
+}
+
+// 시냇물: 대역 노이즈 세 겹(낮은 울렁임, 중간 흐름, 높은 물보라)을 천천히 흔들고 그 위에 작은 거품 소리(위로 쓸리는 사인)를 뿌립니다.
+export function renderWater(context) {
+  const rate = context.sampleRate;
+  const seconds = WATER_SECONDS + 0.25;
+  const offline = new OfflineAudioContext(1, Math.round(seconds * rate), rate);
+  const next = random(23);
+  const out = offline.destination;
+  const noise = whiteNoise(offline, 2, 29);
+  const wander = (low, high, points) => Float32Array.from({ length: points }, () => low + (high - low) * next());
+
+  const layer = (type, frequency, q, level, drift) => {
+    const source = new AudioBufferSourceNode(offline, { buffer: noise, loop: true });
+    const filter = new BiquadFilterNode(offline, { type, frequency, Q: q });
+    filter.frequency.setValueCurveAtTime(wander(frequency / drift, frequency * drift, 24), 0, seconds);
+    const gain = new GainNode(offline, { gain: level });
+    gain.gain.setValueCurveAtTime(wander(level * 0.55, level, 40), 0, seconds);
+    source.connect(filter).connect(gain).connect(out);
+    source.start(0);
+  };
+  layer('bandpass', 320, 1.2, 0.5, 1.4);
+  layer('bandpass', 1600, 0.8, 0.5, 1.5);
+  layer('highpass', 3800, 0.7, 0.14, 1.3);
+
+  const bubbles = Math.round(seconds * 22);
+  for (let index = 0; index < bubbles; index++) {
+    const at = next() * seconds;
+    const start = 500 * 2 ** (next() * 2.3);
+    const sweep = 0.015 + next() * 0.05;
+    const decay = 0.03 + next() * 0.1;
+    const osc = new OscillatorNode(offline, { frequency: start });
+    osc.frequency.setValueAtTime(start, at);
+    osc.frequency.exponentialRampToValueAtTime(start * (1.4 + next() * 1.2), at + sweep);
+    const gain = new GainNode(offline, { gain: 0 });
+    gain.gain.setValueAtTime(0, at);
+    gain.gain.linearRampToValueAtTime(0.08 + next() * 0.22, at + 0.002);
+    gain.gain.exponentialRampToValueAtTime(0.0005, at + decay);
+    osc.connect(gain).connect(out);
+    osc.start(at);
+    osc.stop(at + decay + 0.01);
   }
-  const buffer = context.createBuffer(1, length, rate);
-  const data = buffer.getChannelData(0);
-  data.set(raw.subarray(0, length));
-  for (let index = 0; index < overlap; index++) {
-    const weight = index / overlap;
-    data[index] = raw[index] * weight + raw[length + index] * (1 - weight);
-  }
-  scale(buffer, targetRms / (rms(data) || 1));
-  return buffer;
+
+  return offline.startRendering().then((rendered) => matchLevel(crossfadeSeam(context, rendered, WATER_SECONDS)));
 }
 
 // 리버브 임펄스: 지수 감쇠 노이즈. 뒤로 갈수록 고음을 더 깎습니다. (ConvolverNode 가 크기를 맞추므로 진폭은 상관없음)
@@ -289,7 +380,8 @@ export function soundControlsMarkup() {
         <button type="button" class="pf-button pf-switch" role="switch" aria-checked="false" data-sound-toggle>${SWITCH}소리 듣기</button>
         <div class="pf-segmented" role="group" aria-label="소리 종류">
           <button type="button" class="pf-button pf-segmented__item" data-sound-source="loop" aria-pressed="true">비트 루프</button>
-          <button type="button" class="pf-button pf-segmented__item" data-sound-source="noise" aria-pressed="false">핑크 노이즈</button>
+          <button type="button" class="pf-button pf-segmented__item" data-sound-source="classic" aria-pressed="false">클래식</button>
+          <button type="button" class="pf-button pf-segmented__item" data-sound-source="water" aria-pressed="false">물소리</button>
         </div>
         <button type="button" class="pf-button pf-switch" role="switch" aria-checked="true" data-sound-portal>${SWITCH}우회 방향에서 듣기</button>
         <label class="pf-lab__volume">음량<input type="range" min="0" max="100" value="70" data-sound-volume></label>
@@ -318,6 +410,8 @@ export function soundHelpMarkup() {
   if (!supportsWebAudio()) return '';
   return '<p>소리 듣기를 켜면 음원 자리에서 소리가 납니다. 차폐 계수는 볼륨과 로우패스로, 밀폐도는 리버브로, 거리는 감쇠로 들리고 방향은 화면을 보는 방향 기준입니다. (화면 오른쪽 = 오른쪽 귀) 직선이 막혔을 때는 우회 경로가 보이는 마지막 점(문, 벽 끝) 쪽에서 들립니다. 이어폰이나 헤드폰으로 들으면 방향이 또렷합니다.</p>';
 }
+
+const SOURCES = { loop: renderLoop, classic: renderClassic, water: renderWater };
 
 const formatDb = (value) => `${value <= -0.05 ? '−' : ''}${Math.abs(value).toFixed(1)} dB`;
 const formatHz = (value) => (value >= 1000 ? `${(value / 1000).toFixed(1)} kHz` : `${Math.round(value)} Hz`);
@@ -349,13 +443,11 @@ export function bindSound(container, { live } = {}) {
     if (engine) return engine;
     const context = new AudioContext();
     engine = { context, graph: buildGraph(context), buffers: {}, current: null };
-    engine.ready = renderLoop(context).then((loop) => {
-      engine.buffers.loop = loop;
-      engine.buffers.noise = renderNoise(context, rms(loop.getChannelData(0)));
-    });
     if (frame) apply(frame, true);
     return engine;
   }
+
+  const bufferFor = (name) => (engine.buffers[name] ??= SOURCES[name](engine.context));
 
   function stopSource(now) {
     const current = engine.current;
@@ -368,16 +460,24 @@ export function bindSound(container, { live } = {}) {
   async function startSource() {
     const token = ++generation;
     const { context, graph } = engine;
-    await engine.ready;
+    let buffer;
+    try {
+      buffer = await bufferFor(kind);
+    } catch (error) {
+      console.warn('소리를 만들지 못했습니다.', error);
+      return;
+    }
     if (token !== generation || !playing) return;
     const now = context.currentTime;
     stopSource(now);
-    const node = new AudioBufferSourceNode(context, { buffer: engine.buffers[kind], loop: true });
+    const node = new AudioBufferSourceNode(context, { buffer, loop: true });
     const gain = new GainNode(context, { gain: 0 });
     node.connect(gain).connect(graph.input);
     gain.gain.setTargetAtTime(1, now, 0.03);
     node.start(now);
     engine.current = { node, gain };
+    // 나머지 소리는 미리 만들어 두어 바꿀 때 바로 나오게 합니다.
+    for (const name of Object.keys(SOURCES)) bufferFor(name).catch(() => {});
   }
 
   function applyMaster() {
