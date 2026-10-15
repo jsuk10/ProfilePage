@@ -450,6 +450,7 @@ export function mountTray(container, config) {
   container.innerHTML = `
     <div class="pf-tray__controls">
       <button type="button" class="pf-button pf-lab__reset" data-notify>${escapeHtml(eventName)} 알림 보내기</button>
+      <button type="button" class="pf-button pf-lab__reset" data-menu-open aria-haspopup="menu" aria-expanded="false">트레이 메뉴 열기</button>
       <button type="button" class="pf-button pf-lab__reset" data-relaunch hidden>게임 다시 실행</button>
       <span class="pf-tray__status" data-status aria-live="polite"></span>
     </div>
@@ -485,6 +486,7 @@ export function mountTray(container, config) {
   const task = pick('[data-task]');
   const tray = pick('[data-tray]');
   const notify = pick('[data-notify]');
+  const menuButton = pick('[data-menu-open]');
   const relaunch = pick('[data-relaunch]');
   const status = pick('[data-status]');
   let running = true;
@@ -529,9 +531,18 @@ export function mountTray(container, config) {
     balloonTimer = window.setTimeout(hideBalloon, BALLOON_MS);
     say(`${eventName} 풍선 메시지가 떴습니다. 눌러 보세요.`);
   }
-  function closeMenu() {
-    menu.hidden = true;
-    tray.setAttribute('aria-expanded', 'false');
+  function setMenu(open) {
+    menu.hidden = !open;
+    tray.setAttribute('aria-expanded', String(open));
+    menuButton.setAttribute('aria-expanded', String(open));
+    menuButton.textContent = open ? '트레이 메뉴 닫기' : '트레이 메뉴 열기';
+  }
+  const closeMenu = () => setMenu(false);
+  // 트레이 아이콘이 작아 못 찾을 때 버튼으로 같은 메뉴를 열고 아이콘 자리를 잠깐 비춥니다.
+  function pointTray() {
+    tray.classList.remove('is-pointed');
+    void tray.offsetWidth;
+    tray.classList.add('is-pointed');
   }
 
   notify.addEventListener('click', showBalloon);
@@ -543,8 +554,15 @@ export function mountTray(container, config) {
   });
   tray.addEventListener('click', (event) => {
     event.stopPropagation();
-    menu.hidden = !menu.hidden;
-    tray.setAttribute('aria-expanded', String(!menu.hidden));
+    setMenu(menu.hidden);
+  });
+  menuButton.addEventListener('click', () => {
+    if (!running) return;
+    setMenu(menu.hidden);
+    if (!menu.hidden) {
+      pointTray();
+      say('작업 표시줄 오른쪽 아래 트레이 아이콘의 메뉴입니다. Show Game / Hide Game / Exit 를 눌러 보세요.');
+    }
   });
   menu.addEventListener('click', (event) => {
     const item = event.target.closest('[data-menu-item]');
@@ -563,6 +581,7 @@ export function mountTray(container, config) {
       running = false;
       tray.hidden = true;
       notify.disabled = true;
+      menuButton.disabled = true;
       relaunch.hidden = false;
       say('Exit: 게임을 끝냈습니다.');
     }
@@ -586,6 +605,7 @@ export function mountTray(container, config) {
     running = true;
     tray.hidden = false;
     notify.disabled = false;
+    menuButton.disabled = false;
     relaunch.hidden = true;
     hideWindow();
     say('게임을 다시 실행했습니다. 창은 트레이로 숨겨 둔 상태입니다.');

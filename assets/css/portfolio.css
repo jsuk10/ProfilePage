@@ -2674,11 +2674,15 @@
 			}
 
 		.pf-win__tray-icon {
+			align-items: center;
 			background: none;
 			border: 0;
 			border-radius: 3px;
 			cursor: pointer;
 			display: inline-flex;
+			justify-content: center;
+			min-height: 1.8em;
+			min-width: 1.8em;
 			padding: 0.25em;
 		}
 
@@ -2686,6 +2690,16 @@
 			.pf-win__tray-icon:focus-visible,
 			.pf-win__tray-icon[aria-expanded="true"] {
 				background: rgba(255, 255, 255, 0.14);
+			}
+
+			/* 버튼으로 메뉴를 열면 아이콘 자리를 잠깐 비춥니다 */
+			.pf-win__tray-icon.is-pointed {
+				animation: pf-tray-point 1.6s ease-out;
+			}
+
+			@keyframes pf-tray-point {
+				0%, 40% { box-shadow: 0 0 0 0.25em #4cc2ff, 0 0 1.2em 0.3em rgba(76, 194, 255, 0.6); }
+				100% { box-shadow: 0 0 0 0 rgba(76, 194, 255, 0); }
 			}
 
 			.pf-win__tray-icon[hidden] {

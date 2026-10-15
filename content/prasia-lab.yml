@@ -46,7 +46,7 @@ demos:
     title: 윈도우 트레이 알림 + 풍선 메시지
     text: >-
       게임 창을 트레이로 숨겨 두어도 파티 초대 같은 이벤트를 놓치지 않게 Win API 로 트레이 아이콘과 풍선 메시지를 붙였습니다.
-      알림을 보내 풍선 메시지를 눌러 보고, 트레이 아이콘의 Show Game / Hide Game / Exit 메뉴도 눌러 보세요.
+      알림을 보내 풍선 메시지를 눌러 보고, 작업 표시줄 오른쪽 아래 트레이 아이콘이나 '트레이 메뉴 열기' 버튼으로 Show Game / Hide Game / Exit 메뉴도 눌러 보세요.
     app: 프라시아 전기
     event: 파티 초대
     balloon: images/work/nexon-tray-balloon.png
