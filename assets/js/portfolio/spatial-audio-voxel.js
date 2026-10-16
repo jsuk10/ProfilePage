@@ -404,6 +404,10 @@ export function evaluate(scene, finder) {
 
 // 직선이 막혔을 때 소리가 들려오는 자리. 우회 경로를 청취자에서부터 따라가며 아직 보이는 마지막 점(문, 벽 끝) 쪽으로
 // 경로 길이만큼 떨어진 곳입니다. 직선이 뚫려 있거나 경로가 없으면 null
+// 회절 가상 음원. 직선이 막혔을 때 소리가 들려오는 자리입니다.
+// 우회 경로를 청취자 쪽부터 따라가며 청취자에게 보이는 마지막 점(가장 가까운 꺾인 점, 문이나 벽 끝)을 찾고
+// 청취자에서 그 점으로 향하는 방향의 연장선 위, 음원까지의 직선 거리만큼 떨어진 자리에 둡니다.
+// 실제 구현에서는 이 위치를 Wwise 음원 포지션으로 넘겨 벽 너머가 아니라 뚫린 쪽에서 들리게 합니다.
 export function apparentSource(scene, result) {
   if (!result.los.blocked || result.search?.status !== 'found') return null;
   const { grid, listener } = scene;
@@ -418,8 +422,8 @@ export function apparentSource(scene, result) {
   if (!seen) return null;
   const direction = [seen[0] - from[0], seen[1] - from[1], seen[2] - from[2]];
   const length = Math.hypot(...direction) || 1;
-  const distance = result.search.length;
-  return { position: direction.map((value, axis) => from[axis] + (value / length) * distance), distance };
+  const distance = result.straight;
+  return { position: direction.map((value, axis) => from[axis] + (value / length) * distance), corner: seen, distance };
 }
 
 /* 고르기 ----------------------------------------------------------------- */

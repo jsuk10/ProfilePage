@@ -33,7 +33,7 @@ const NEIGHBORS = [
   [1, 1, Math.SQRT2], [1, -1, Math.SQRT2], [-1, 1, Math.SQRT2], [-1, -1, Math.SQRT2],
 ];
 
-const NAMES = { listener: '청취자', source: '음원' };
+const NAMES = { listener: '청취자', source: '음원', virtual: '가상 음원' };
 
 const reduceMotion =
   typeof window !== 'undefined' && window.matchMedia
@@ -313,7 +313,8 @@ function evaluate(scene, finder) {
   return result;
 }
 
-// 직선이 막혔을 때 소리가 들려오는 자리 (3D 의 apparentSource 와 같음)
+// 회절 가상 음원: 직선이 막혔을 때 소리가 들려오는 자리 (3D 의 apparentSource 와 같음)
+// 우회 경로에서 청취자에게 보이는 마지막 꺾인 점 방향으로 음원까지의 직선 거리만큼 떨어진 자리입니다.
 function apparentSource(scene, result) {
   if (!result.los.blocked || result.search?.status !== 'found') return null;
   const { grid, listener } = scene;
@@ -328,8 +329,8 @@ function apparentSource(scene, result) {
   }
   if (!seen) return null;
   const length = Math.hypot(seen[0] - ox, seen[1] - oy) || 1;
-  const distance = result.search.length;
-  return { position: [ox + ((seen[0] - ox) / length) * distance, oy + ((seen[1] - oy) / length) * distance], distance };
+  const distance = result.straight;
+  return { position: [ox + ((seen[0] - ox) / length) * distance, oy + ((seen[1] - oy) / length) * distance], corner: seen, distance };
 }
 
 /* 표시 ------------------------------------------------------------------- */
@@ -506,6 +507,9 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
             .join('')}
         </div>
         <div class="pf-lab__actions">
+          <button type="button" class="pf-button pf-switch" role="switch" aria-checked="true" data-virtual>
+            <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>가상 음원
+          </button>
           <button type="button" class="pf-button pf-switch" role="switch" aria-checked="false" data-rays>
             <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>밀폐도 레이
           </button>
@@ -520,8 +524,10 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
         <li><span class="pf-lab__key pf-lab__key--explored" aria-hidden="true"></span>A* 가 우회 경로를 찾으며 살펴본 칸</li>
         <li><span class="pf-lab__key pf-lab__key--path" aria-hidden="true"></span>우회 경로</li>
         <li><span class="pf-lab__key pf-lab__key--blocked" aria-hidden="true"></span>막힌 직선 레이</li>
+        <li><span class="pf-lab__key pf-lab__key--virtual" aria-hidden="true"></span>회절 가상 음원 (소리가 들려오는 자리)</li>
       </ul>
       <div class="pf-lab__help" id="${helpId}">
+        <p>가상 음원 스위치를 켜면 직선이 막혔을 때 소리가 들려오는 자리를 그립니다. 우회 경로에서 청취자에게 보이는 마지막 꺾인 점(문, 벽 끝) 방향으로 직선 거리만큼 떨어진 자리이고, 실제 구현에서는 이 위치를 Wwise 음원 포지션으로 넘겨 벽 너머가 아니라 뚫린 쪽에서 들리게 했습니다.</p>
         <p>청취자와 음원 점을 끌어 옮기고, 빈 칸을 누르거나 끌면 벽을 세우고 벽을 누르면 지웁니다.
         키보드로는 방향키로 선택한 점을 옮기고, Space 로 청취자 / 음원을 바꿉니다.</p>
         ${soundHelpMarkup()}
@@ -537,6 +543,7 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
   const sound = bindSound(container, { live });
   const presetButtons = [...container.querySelectorAll('[data-preset]')];
   const raysSwitch = container.querySelector('[data-rays]');
+  const virtualSwitch = container.querySelector('[data-virtual]');
 
   const finder = new PathFinder();
   let presetIndex = 0;
@@ -544,6 +551,7 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
   let result = null;
   let active = 'source';
   let showRays = false;
+  let showVirtual = true;
   let drag = null;
   let view = { width: 0, height: 0, cell: 0, dpr: 1 };
   let colors = null;
@@ -749,8 +757,38 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
       context.stroke();
     }
 
-    // 음원 파동
+    // 회절 가상 음원: 청취자 → 꺾인 점 → 가상 음원 점선, 꺾인 점, 빈 원
     const radius = Math.max(5, cell * 0.36);
+    // 단면 밖으로 나가면 가장자리에 붙여 그립니다. (직선 거리만큼 떨어지므로 그리드를 벗어날 수 있음)
+    const virtual = showVirtual ? apparentSource(scene, result) : null;
+    const edge = radius + 3;
+    const vx = virtual ? Math.min(Math.max(virtual.position[0] * cell, edge), width - edge) : 0;
+    const vy = virtual ? Math.min(Math.max(virtual.position[1] * cell, edge), height - edge) : 0;
+    if (virtual) {
+      context.strokeStyle = colors.accent;
+      context.lineWidth = 1.5;
+      context.lineCap = 'butt';
+      context.setLineDash([4, 4]);
+      context.globalAlpha = 0.7;
+      strokeLine(lx, ly, vx, vy);
+      context.setLineDash([]);
+      context.globalAlpha = 1;
+      context.fillStyle = colors.ink;
+      context.beginPath();
+      context.arc(virtual.corner[0] * cell, virtual.corner[1] * cell, 3, 0, Math.PI * 2);
+      context.fill();
+      context.beginPath();
+      context.arc(vx, vy, radius, 0, Math.PI * 2);
+      context.fillStyle = colors.surface;
+      context.fill();
+      context.lineWidth = 2;
+      context.setLineDash([3, 3]);
+      context.strokeStyle = colors.accent;
+      context.stroke();
+      context.setLineDash([]);
+    }
+
+    // 음원 파동
     context.strokeStyle = colors.accent;
     context.lineWidth = 1.5;
     if (shouldAnimate()) {
@@ -786,6 +824,7 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
 
     drawLabel(NAMES.listener, lx, ly, radius);
     drawLabel(NAMES.source, sx, sy, radius);
+    if (virtual) drawLabel(NAMES.virtual, vx, vy, radius);
   }
 
   // 단면이라 높이는 없습니다. 화면 위쪽이 청취자가 보는 방향입니다.
@@ -796,7 +835,7 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
       source: [scene.source.x + 0.5, 0.5, scene.source.y + 0.5],
       straight: result.straight,
       apparent: via ? [via.position[0], 0.5, via.position[1]] : null,
-      pathLength: via?.distance ?? result.straight,
+      apparentDistance: via?.distance ?? result.straight,
       blocked: result.los.blocked,
       forward: [0, 0, -1],
       occlusion: result.occlusion,
@@ -945,6 +984,11 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
   raysSwitch.addEventListener('click', () => {
     showRays = !showRays;
     raysSwitch.setAttribute('aria-checked', String(showRays));
+    requestDraw();
+  });
+  virtualSwitch.addEventListener('click', () => {
+    showVirtual = !showVirtual;
+    virtualSwitch.setAttribute('aria-checked', String(showVirtual));
     requestDraw();
   });
 

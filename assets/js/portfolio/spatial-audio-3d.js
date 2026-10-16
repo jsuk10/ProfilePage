@@ -22,7 +22,7 @@ import {
   pick,
 } from './spatial-audio-voxel.js';
 
-const NAMES = { listener: '청취자', source: '음원' };
+const NAMES = { listener: '청취자', source: '음원', virtual: '가상 음원' };
 const FOV = (38 * Math.PI) / 180;
 const PHI_MIN = 0.3; // 거의 위에서 내려다보기
 const PHI_MAX = 1.4; // 거의 옆에서 보기
@@ -554,6 +554,9 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
             <button type="button" class="pf-button pf-segmented__item" data-tool="place" aria-pressed="true">블록 놓기</button>
             <button type="button" class="pf-button pf-segmented__item" data-tool="erase" aria-pressed="false">블록 지우기</button>
           </div>
+          <button type="button" class="pf-button pf-switch" role="switch" aria-checked="true" data-virtual>
+            <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>가상 음원
+          </button>
           <button type="button" class="pf-button pf-switch" role="switch" aria-checked="false" data-rays>
             <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>밀폐도 레이
           </button>
@@ -565,6 +568,7 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
         <div class="pf-lab__labels" aria-hidden="true">
           <span class="pf-lab__label" data-label="listener">${NAMES.listener}</span>
           <span class="pf-lab__label" data-label="source">${NAMES.source}</span>
+          <span class="pf-lab__label pf-lab__label--virtual" data-label="virtual" hidden>${NAMES.virtual}</span>
         </div>
         <p class="pf-lab__hint" aria-hidden="true" data-hint>3D · 끌어서 돌려 보기</p>${soundGateMarkup()}
       </div>${soundControlsMarkup()}
@@ -573,8 +577,10 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
         <li><span class="pf-lab__key pf-lab__key--dot" aria-hidden="true"></span>A* 가 우회 경로를 찾으며 살펴본 칸</li>
         <li><span class="pf-lab__key pf-lab__key--path" aria-hidden="true"></span>우회 경로</li>
         <li><span class="pf-lab__key pf-lab__key--blocked" aria-hidden="true"></span>막힌 직선 레이</li>
+        <li><span class="pf-lab__key pf-lab__key--virtual" aria-hidden="true"></span>회절 가상 음원 (소리가 들려오는 자리)</li>
       </ul>
       <div class="pf-lab__help" id="${helpId}">
+        <p>가상 음원 스위치를 켜면 직선이 막혔을 때 소리가 들려오는 자리를 그립니다. 우회 경로에서 청취자에게 보이는 마지막 꺾인 점(문, 벽 끝) 방향으로 직선 거리만큼 떨어진 자리이고, 실제 구현에서는 이 위치를 Wwise 음원 포지션으로 넘겨 벽 너머가 아니라 뚫린 쪽에서 들리게 했습니다.</p>
         <p>화면을 끌면 시점이 돌아가고 청취자와 음원은 끌어서 옮깁니다. 블록 놓기를 고른 뒤 바닥이나 블록 면을 누르면 그 자리에 블록이 생기고 블록 지우기를 고른 뒤 누르면 지워집니다. 벽에 가린 점과 경로는 흐리게 비쳐 보입니다.</p>
         <p>키보드로는 방향키로 선택한 점을 옮기고 PageUp / PageDown 으로 높이를 바꿉니다. Space 로 청취자 / 음원을 바꾸고 [ ] 로 시점을 돌립니다. 확대는 Ctrl + 휠이나 두 손가락으로 합니다.</p>
         ${soundHelpMarkup()}
@@ -590,12 +596,14 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
   const labels = {
     listener: container.querySelector('[data-label="listener"]'),
     source: container.querySelector('[data-label="source"]'),
+    virtual: container.querySelector('[data-label="virtual"]'),
   };
   const renderPanel = bindPanel(container);
   const sound = bindSound(container, { live });
   const presetButtons = [...container.querySelectorAll('[data-preset]')];
   const toolButtons = [...container.querySelectorAll('[data-tool]')];
   const raysSwitch = container.querySelector('[data-rays]');
+  const virtualSwitch = container.querySelector('[data-virtual]');
 
   const finder = new VoxelPathFinder();
   let presetIndex = 0;
@@ -604,6 +612,8 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
   let active = 'source';
   let tool = 'place';
   let showRays = false;
+  let showVirtual = true;
+  let virtual = null; // 회절 가상 음원 (apparentSource)
   let hover = null;
   let gesture = null;
   const pointers = new Map();
@@ -771,17 +781,7 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
       const t = result.los.t;
       const hit = [0, 1, 2].map((axis) => from[axis] + (to[axis] - from[axis]) * t);
       renderer.setThick('los', [[...from, ...hit]]);
-      const dashes = [];
-      const length = Math.hypot(to[0] - hit[0], to[1] - hit[1], to[2] - hit[2]);
-      const count = Math.max(1, Math.floor(length / 0.45));
-      for (let index = 0; index < count; index += 2) {
-        const a = index / count;
-        const b = Math.min(1, (index + 1) / count);
-        dashes.push([0, 1, 2].map((axis) => hit[axis] + (to[axis] - hit[axis]) * a).concat(
-          [0, 1, 2].map((axis) => hit[axis] + (to[axis] - hit[axis]) * b),
-        ));
-      }
-      renderer.setThick('dashes', dashes);
+      renderer.setThick('dashes', dashedSegments(hit, to));
       renderer.setPoints('hit', new Float32Array(hit));
       renderer.setThick('clear', []);
     } else {
@@ -789,6 +789,16 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
       renderer.setThick('los', []);
       renderer.setThick('dashes', []);
       renderer.setPoints('hit', new Float32Array(0));
+    }
+
+    // 회절 가상 음원: 청취자 → 꺾인 점 → 가상 음원 점선, 꺾인 점 표시
+    virtual = apparentSource(scene, result);
+    if (virtual) {
+      renderer.setThick('virtualLine', dashedSegments(from, virtual.position, 0.35));
+      renderer.setPoints('corner', new Float32Array(virtual.corner));
+    } else {
+      renderer.setThick('virtualLine', []);
+      renderer.setPoints('corner', new Float32Array(0));
     }
 
     const rays = [];
@@ -800,6 +810,21 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
     }
     renderer.setThick('rays', rays);
     renderer.setPoints('rayHits', new Float32Array(hits));
+  }
+
+  // a 에서 b 까지 점선 선분
+  function dashedSegments(a, b, dash = 0.45) {
+    const dashes = [];
+    const length = Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+    const count = Math.max(1, Math.floor(length / dash));
+    for (let index = 0; index < count; index += 2) {
+      const s = index / count;
+      const e = Math.min(1, (index + 1) / count);
+      dashes.push(
+        [0, 1, 2].map((axis) => a[axis] + (b[axis] - a[axis]) * s).concat([0, 1, 2].map((axis) => a[axis] + (b[axis] - a[axis]) * e)),
+      );
+    }
+    return dashes;
   }
 
   function rebuildHover() {
@@ -924,12 +949,25 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
     renderer.dots('hit', { color: colors.ink, size: 7 });
     renderer.thickLines('path', { color: colors.accent, width: 3 });
     renderer.dots('joints', { color: colors.accent, size: 3 });
+    const drawVirtual = showVirtual && virtual;
+    if (drawVirtual) {
+      renderer.thickLines('virtualLine', { color: alpha(colors.accent, 0.7), width: 1.5 });
+      renderer.dots('corner', { color: colors.ink, size: 6 });
+      const [vx, vy, vz] = virtual.position;
+      renderer.mesh(renderer.sphere, { color: alpha(colors.accent, 0.55), ambient: 0.7, model: placeAndScale(vx, vy, vz, HANDLE_RADIUS) });
+    }
 
     // 비침: 블록에 가린 부분만 흐리게 한 번 더
     renderer.mode('ghost');
     for (const [, cell, color] of handles) {
       const [x, y, z] = center(cell);
       renderer.mesh(renderer.sphere, { color: alpha(color, 0.75), ambient: 1, model: placeAndScale(x, y, z, HANDLE_RADIUS) });
+    }
+    if (drawVirtual) {
+      const [vx, vy, vz] = virtual.position;
+      renderer.mesh(renderer.sphere, { color: alpha(colors.accent, 0.35), ambient: 1, model: placeAndScale(vx, vy, vz, HANDLE_RADIUS) });
+      renderer.thickLines('virtualLine', { color: alpha(colors.accent, 0.4), width: 1.5 });
+      renderer.dots('corner', { color: alpha(colors.ink, 0.45), size: 6 });
     }
     renderer.dots('explored', { color: alpha(colors.accent, 0.16), size: 0.16, world: true });
     renderer.thickLines('path', { color: alpha(colors.accent, 0.6), width: 3 });
@@ -969,6 +1007,13 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
       if (point) label.style.transform = `translate(${point.x.toFixed(1)}px, ${point.y.toFixed(1)}px) translate(-50%, -100%)`;
       label.classList.toggle('is-active', showActive && active === name);
     }
+    const virtualPoint = drawVirtual
+      ? project([virtual.position[0], virtual.position[1] + HANDLE_RADIUS + 0.12, virtual.position[2]])
+      : null;
+    labels.virtual.hidden = !virtualPoint;
+    if (virtualPoint) {
+      labels.virtual.style.transform = `translate(${virtualPoint.x.toFixed(1)}px, ${virtualPoint.y.toFixed(1)}px) translate(-50%, -100%)`;
+    }
   }
 
   /* 수치 */
@@ -982,7 +1027,7 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
       source: center(scene.source),
       straight: result.straight,
       apparent: via?.position ?? null,
-      pathLength: via?.distance ?? result.straight,
+      apparentDistance: via?.distance ?? result.straight,
       blocked: result.los.blocked,
       forward: [forward[0], 0, forward[2]],
       occlusion: result.occlusion,
@@ -1275,6 +1320,11 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
   raysSwitch.addEventListener('click', () => {
     showRays = !showRays;
     raysSwitch.setAttribute('aria-checked', String(showRays));
+    requestDraw();
+  });
+  virtualSwitch.addEventListener('click', () => {
+    showVirtual = !showVirtual;
+    virtualSwitch.setAttribute('aria-checked', String(showVirtual));
     requestDraw();
   });
 

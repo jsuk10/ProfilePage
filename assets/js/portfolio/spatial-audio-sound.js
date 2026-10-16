@@ -3,7 +3,7 @@
 //   차폐 계수  → 볼륨 + 로우패스 컷오프
 //   밀폐도     → 리버브 센드 = 1 − 밀폐도² (청취자가 있는 공간의 울림. 바닥 아래로 나간 레이가 열린 것으로 잡혀 밀폐도가 0.5 아래로는 잘 안 내려가므로 제곱으로 당깁니다)
 //   방향       → HRTF 패닝. 화면을 보는 방향이 청취자가 보는 방향입니다. (화면 오른쪽 = 오른쪽 귀)
-//               직선이 막혔으면 우회 경로에서 청취자에게 보이는 마지막 점(문, 벽 끝) 쪽에서 경로 길이만큼 떨어져 들립니다.
+//               직선이 막혔으면 회절 가상 음원 자리에서 들립니다. (우회 경로에서 청취자에게 보이는 마지막 꺾인 점 쪽, 직선 거리만큼)
 // 소리는 파일 없이 합성합니다. (비트 루프, 바흐 프렐류드, 시냇물, 리버브 임펄스)
 
 export const REF_DISTANCE = 1.5; // m. 이 안에서는 거리 감쇠 없음
@@ -354,10 +354,10 @@ function orient(listener, [x, y, z], set) {
   }
 }
 
-// 수치 하나를 소리 값으로. frame: { listener, source, straight, apparent, pathLength, blocked, forward, occlusion, openness }
+// 수치 하나를 소리 값으로. frame: { listener, source, straight, apparent, apparentDistance, blocked, forward, occlusion, openness }
 export function soundValues(frame, usePortal) {
   const viaPath = usePortal && Boolean(frame.apparent);
-  const distance = viaPath ? frame.pathLength : frame.straight;
+  const distance = viaPath ? frame.apparentDistance : frame.straight;
   return {
     viaPath,
     position: viaPath ? frame.apparent : frame.source,
@@ -421,7 +421,7 @@ export function soundReadoutMarkup() {
 
 export function soundHelpMarkup() {
   if (!supportsWebAudio()) return '';
-  return '<p>안내 창을 누르면 음원 자리에서 소리가 나고 섹션을 벗어나면 꺼집니다. 차폐 계수는 볼륨과 로우패스로, 밀폐도는 리버브로, 거리는 감쇠로 들리고 방향은 화면을 보는 방향 기준입니다. (화면 오른쪽 = 오른쪽 귀) 직선이 막혔을 때는 우회 경로가 보이는 마지막 점(문, 벽 끝) 쪽에서 들립니다. 이어폰이나 헤드폰으로 들으면 방향이 또렷합니다.</p>';
+  return '<p>안내 창을 누르면 음원 자리에서 소리가 나고 섹션을 벗어나면 꺼집니다. 차폐 계수는 볼륨과 로우패스로, 밀폐도는 리버브로, 거리는 감쇠로 들리고 방향은 화면을 보는 방향 기준입니다. (화면 오른쪽 = 오른쪽 귀) 직선이 막혔을 때는 회절 가상 음원 자리(우회 경로에서 보이는 마지막 꺾인 점 쪽, 직선 거리만큼)에서 들립니다. 가상 음원 스위치를 켜면 그 자리가 장면에 그려집니다. 이어폰이나 헤드폰으로 들으면 방향이 또렷합니다.</p>';
 }
 
 const SOURCES = { loop: renderLoop, classic: renderClassic, water: renderWater };
@@ -513,7 +513,7 @@ export function bindSound(container, { live } = {}) {
     outputs.occlusion.textContent = formatDb(values.db);
     outputs.cutoff.textContent = formatHz(values.cutoff);
     outputs.reverb.textContent = `${Math.round(values.reverb * 100)} %`;
-    outputs.direction.textContent = values.viaPath ? '우회 경로 쪽' : next.blocked ? '직선 (벽 너머)' : '직선';
+    outputs.direction.textContent = values.viaPath ? '가상 음원 쪽 (회절)' : next.blocked ? '직선 (벽 너머)' : '직선';
 
     if (!engine) return;
     const { context, graph } = engine;
