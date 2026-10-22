@@ -9,8 +9,9 @@
 import { t } from './i18n.js';
 
 export const REF_DISTANCE = 1.5; // m. 이 안에서는 거리 감쇠 없음
-export const ROLLOFF = 0.8;
-export const OCCLUSION_DB = -24; // 차폐 계수 1 일 때
+// 노트북 스피커로도 기본 배치(벽 뒤 9m)가 들리도록 거리 감쇠와 차폐 폭을 게임 믹스 수준으로 둡니다. (합쳐서 약 −17 dB)
+export const ROLLOFF = 0.35;
+export const OCCLUSION_DB = -12; // 차폐 계수 1 일 때
 export const CUTOFF_OPEN = 20000; // Hz
 export const CUTOFF_CLOSED = 320; // Hz. 차폐 계수 1 일 때
 export const REVERB_MAX = 2; // 센드 100% 일 때 게인. 컨볼버가 임펄스 크기를 맞추므로 1 보다 큽니다 (젖은 소리가 마른 소리보다 약 3 dB 작게)
@@ -22,6 +23,7 @@ const STEPS = 16;
 const CLASSIC_BPM = 76;
 const WATER_SECONDS = 8;
 const TARGET_RMS = 0.12; // 세 소리의 크기를 맞추는 기준
+const MAKEUP_DB = 12; // 감쇠를 거친 소리를 끌어올리는 출력 게인. 가깝고 뚫린 자리에서 넘치는 몫은 리미터가 막습니다.
 const IMPULSE_SECONDS = 1.2;
 const IMPULSE_DECAY = 6.5; // RT60 약 1초
 const PREDELAY = 0.012;
@@ -311,7 +313,7 @@ export function renderImpulse(context) {
 
 /* 그래프 ----------------------------------------------------------------- */
 
-// 입력 → 로우패스(차폐) → 게인(차폐) → 게인(거리) → HRTF 패너 → 마스터
+// 입력 → 로우패스(차폐) → 게인(차폐) → 게인(거리) → HRTF 패너 → 마스터 → 출력 게인 → 리미터
 //                                  └→ 리버브 센드(밀폐도) → 컨볼버 → 마스터
 // 거리 감쇠는 수치 패널에 보이는 값 그대로 쓰려고 패너 대신 게인으로 직접 겁니다. (rolloffFactor 0)
 export function buildGraph(context) {
@@ -322,6 +324,8 @@ export function buildGraph(context) {
   const send = new GainNode(context, { gain: 0 });
   const reverb = new ConvolverNode(context, { buffer: renderImpulse(context) });
   const master = new GainNode(context, { gain: 0 });
+  const makeup = new GainNode(context, { gain: dbToGain(MAKEUP_DB) });
+  const limiter = new DynamicsCompressorNode(context, { threshold: -6, knee: 0, ratio: 20, attack: 0.003, release: 0.15 });
   filter.connect(occlusion);
   occlusion.connect(distance);
   distance.connect(panner);
@@ -329,8 +333,10 @@ export function buildGraph(context) {
   occlusion.connect(send);
   send.connect(reverb);
   reverb.connect(master);
-  master.connect(context.destination);
-  return { input: filter, filter, occlusion, distance, panner, send, reverb, master };
+  master.connect(makeup);
+  makeup.connect(limiter);
+  limiter.connect(context.destination);
+  return { input: filter, filter, occlusion, distance, panner, send, reverb, master, makeup, limiter };
 }
 
 function place(node, [x, y, z], set) {
