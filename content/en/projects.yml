@@ -1,0 +1,117 @@
+title: Student Works
+lead: >-
+  Games built in Unity before joining the industry. Selected mainly award winners and released titles;
+  videos and detailed PDFs available on each project.
+stack: Unity3D (C#), Flutter (Dart), Node.js (express), Vanilla JS, mongoDB, Android (Java)
+links:
+  - label: Student Works & Activities (Notion)
+    url: https://app.notion.com/p/3f7bed59c36381ee80b9ebb951ce9502
+
+items:
+  - id: moon-slasher
+    title: Moon Slasher
+    image: images/pic01.png
+    award: >-
+      [GitHub Game Off 2020 entry](https://itch.io/jam/game-off-2020/rate/837025)
+    period: 2020.11.01 ~ 2020.11.30 (1 month)
+    points:
+      - Collaborated using Git Flow with separate branches
+      - Used inheritance extensively and learned inheritance structures hands-on
+      - Applied design patterns and optimization techniques, sparking interest in various programming techniques
+    video: 19-HunFVhMqJXQabaP1h45om-gA7aVHKY
+    links:
+      - label: Notion Details
+        url: https://www.notion.so/Moon-Slasher-255bed59c36381a19b4cd2be102ac798
+      - label: Game Jam Page
+        url: https://itch.io/jam/game-off-2020/rate/837025
+      - label: GitHub
+        url: https://github.com/PMM-Dev/moonshot
+      - label: Detailed PDF
+        url: Project/MoonSlayer.pdf
+
+  - id: ad-astra
+    title: Ad Astra
+    image: images/pic02.png
+    award: >-
+      [KAIST Madcamp Week 3 Top Pick](https://madcamp.io/)
+    period: 2021.07.14 ~ 2021.07.21 (1 week)
+    points:
+      - First multiplayer game with a server
+      - Developed with Python
+    video: 1O9YYkWU-kxczq6kvw9jUTSjTDFTTIeCx
+    links:
+      - label: Notion Details
+        url: https://www.notion.so/Ad-Astra-3-255bed59c363815f8e5efe478ba04d55
+      - label: GitHub
+        url: https://github.com/jsuk10/FlowCamp3_AdAstra
+      - label: Detailed PDF
+        url: Project/AdAstra.pdf
+
+  - id: principium
+    title: Principium
+    image: images/pic03.png
+    award: >-
+      [Grand Prize, GICON Indie Stars (Gwangju)](https://www.newsway.co.kr/news/view?ud=2021010116315211164)
+    period: 2020.04.01 ~ 2020.12.05
+    points:
+      - Completed the game end to end as lead developer
+      - Ran a mentor / mentee approach, explaining while developing together, to help junior teammates grow
+    video: 1Z5ljd2X0Dn3j1MHu9gLM6pXfgtJ2pw8X
+    links:
+      - label: Notion Details
+        url: https://www.notion.so/255bed59c36381ae9117c8f3bd17d5e8
+      - label: GitHub
+        url: https://github.com/Leejeongseok0407/principium
+      - label: Detailed PDF
+        url: Project/프린키피움.pdf
+
+  - id: world-tower-defense
+    title: World Tower Defense
+    image: images/pic04.png
+    award: Chonnam National University graduation capstone project, released on Google Play (now taken down)
+    period: 2021.03.01 ~ 2021.06.30
+    points:
+      - Experimented with genetic algorithms for game balance testing
+      - Studied and applied techniques such as C# generics, CSV (Excel) data parsing and object pooling
+    video: 12JCj7FyUF2uOPp6bS7cPqJELVzYsz3v9
+    links:
+      - label: Notion Details
+        url: https://www.notion.so/World-Tower-Defense-255bed59c363810ea6ccd6285fa56d0b
+      - label: GitHub
+        url: https://github.com/jiyullee/WorldTD
+      - label: Detailed PDF
+        url: Project/WorldTowerDefense.pdf
+
+  - id: grow-mawang
+    title: GrowMawang
+    image: images/pic05.png
+    award: Chonnam National University game development capstone (general education) project
+    period: 2019.09.15 ~ 2019.12.31
+    points:
+      - Built with resources borrowed from a [game released](https://play.google.com/store/apps/details?id=com.Degames.FarmDevil) by an acquaintance
+      - Learned to save local data with Unity PlayerPrefs
+      - Learned the concept and usage of coroutines
+    video: 1Zxk_pxGe3NEYBOMy2kQrk6Dpn_M_cXo0
+    links:
+      - label: Notion Details
+        url: https://www.notion.so/GrowMawang-255bed59c36381f783ede512b6f3f0fb
+      - label: GitHub
+        url: https://github.com/jsuk10/nugsa
+      - label: Detailed PDF
+        url: Project/GrowMawang.pdf
+
+  - id: dragon-holiday
+    title: Dragon Clan Holiday
+    image: images/pic06.png
+    award: >-
+      [Excellence Award, GICON Content Academy (Gwangju)](https://www.gitct.or.kr/main/)
+    period: 2019.08.01 ~ 2019.08.31
+    points:
+      - First game project
+      - First Unity project; learned Unity fundamentals including the game loop and asset usage
+    video: 1hY-_kmUSkvvVM1NhksbAAAm5YpYRAbEL
+    links:
+      - label: Notion Details
+        url: https://www.notion.so/255bed59c363810e813af1c7a9e6b9ae
+      - label: Detailed PDF
+        url: Project/용족대명절.pdf

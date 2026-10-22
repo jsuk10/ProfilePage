@@ -1,0 +1,97 @@
+title: Impact Metrics
+lead: |-
+  Measured in Like Or Die by comparing Unreal Insights traces 1:1 before and after (same map, same DDC conditions, with control group)
+
+  Lower is better for all metrics. **Red bar = before**, overlaid **green bar = after**; the remaining red is the reduction
+
+cases:
+  - title: Niagara Inheritance Drift
+    subtitle: Eliminated recompilation on every load
+    metrics:
+      - label: VFX folder load
+        before: 18.4
+        after: 4.5
+        unit: s
+        change: -76%
+      - label: Emitter merge
+        note: 299× → 15×
+        before: 14.7
+        after: 0.7
+        unit: s
+        change: -95%
+      - label: Duplicate loads
+        before: 14.6
+        after: 1.1
+        unit: s
+        change: -92%
+      - label: PIE frames over 50ms
+        before: 204
+        after: 114
+        unit: frames
+        change: -44%
+
+  - title: Mutable Plugin Synchronous Loads
+    subtitle: 3-line referencer class filter
+    metrics:
+      - label: Editor first frame
+        before: 20.8
+        after: 9.2
+        unit: s
+        change: -56%
+      - label: Mutable tick
+        before: 19.0
+        after: 7.6
+        unit: s
+        change: -60%
+      - label: First-tick asset loads
+        before: 9.2
+        after: 1.6
+        unit: s
+        change: -83%
+
+  - title: In-Game Effect Spawn Cost
+    subtitle: Async preload + Niagara component pooling
+    metrics:
+      - label: First-fire frame
+        before: 28.8
+        after: 16.1
+        unit: ms
+        change: -44%
+      - label: Sync loads in that frame
+        note: 12× → 2×
+        before: 17.7
+        after: 5.1
+        unit: ms
+        change: -71%
+      - label: Component registrations
+        before: 2640
+        after: 324
+        unit: calls
+        change: -88%
+      - label: Destruction cost per GC
+        before: 3.2
+        after: 0.8
+        unit: ms
+        change: -74%
+
+  - title: Low Frame Rate at Match Start
+    subtitle: Two-stage anim PostLoad reduction
+    metrics:
+      - label: Low-FPS period
+        note: 11~50fps → 40~80fps
+        before: 53
+        after: 32
+        unit: s
+      - label: PostLoad per anim
+        before: 17.6
+        after: 6.3
+        unit: ms
+      - label: Sequence PostLoad
+        note: Total of 829 calls
+        before: 5.9
+        after: 0.05
+        unit: s
+      - label: Frames over 16.7ms
+        before: 497
+        after: 306
+        unit: frames

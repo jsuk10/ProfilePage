@@ -1,8 +1,10 @@
 // content/ 폴더의 파일을 읽어 JS 객체로 바꿉니다.
 //   .yml  → 객체
 //   .md   → 앞부분(--- 사이 YAML)의 값 + body(본문 Markdown)
+// 영어 화면이면 같은 이름의 파일을 content/en/ 에서 읽습니다. (i18n.js)
 
 import { load, FAILSAFE_SCHEMA, YAMLException } from '../vendor/js-yaml.esm.min.js';
+import { EN } from './i18n.js';
 
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/;
 
@@ -47,7 +49,7 @@ function parseMarkdown(file, source) {
 export async function loadContent(file) {
   let response;
   try {
-    response = await fetch(`content/${file}`, { cache: 'no-cache' });
+    response = await fetch(`content/${EN ? 'en/' : ''}${file}`, { cache: 'no-cache' });
   } catch {
     throw new ContentError(
       file,

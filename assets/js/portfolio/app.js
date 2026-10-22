@@ -9,13 +9,15 @@
 // index.html?embed=데모id 로 열면 노션 같은 곳의 iframe 에 끼워 넣도록 그 데모 하나만 그립니다.
 //   섹션 id            예) ?embed=spatial-audio
 //   툴 데모 항목 id     예) ?embed=prasia-lab--nevercook  ("섹션id--kind")
-// 메뉴, 명함, 꼬리말은 치우고 섹션 제목과 설명은 portfolio.css 의 Embed 규칙이 감춥니다.
+// 메뉴, 명함, 꼬리말, 언어 토글은 치우고 섹션 제목과 설명은 portfolio.css 의 Embed 규칙이 감춥니다.
+// 화면 언어는 i18n.js 가 정합니다. 끼워 넣은 데모도 ?embed=...&lang=en 처럼 언어를 고를 수 있습니다.
 
 import { loadContent, ContentError, isPlainObject } from './content.js';
 import { renderers } from './sections.js';
 import { careerDurations, fillDurations } from './durations.js';
 import { enhance, openInitialHash } from './interactions.js';
 import { escapeHtml } from './markdown.js';
+import { t, mountLangToggle } from './i18n.js';
 
 const SECTION_ID = /^[a-z0-9][a-z0-9-]*$/;
 const STYLES = new Set(['style1', 'style1-alt', 'style2', 'style2-alt', 'style3', 'style3-alt', 'style4', 'style4-alt', 'alt']);
@@ -136,7 +138,7 @@ function createErrorSection(section, error) {
   element.innerHTML = `
     <div class="inner">
       <div class="pf-error" role="alert">
-        <p class="pf-error__title">이 섹션을 그리지 못했습니다.</p>
+        <p class="pf-error__title">${t('이 섹션을 그리지 못했습니다.', 'Could not render this section.')}</p>
         <p class="pf-error__detail">${escapeHtml(detail)}</p>
       </div>
     </div>`;
@@ -151,7 +153,7 @@ async function main() {
   const mounts = [];
   // 끼워 넣을 때는 메뉴, 명함, 꼬리말을 아예 빼서 템플릿의 사이드바 여백과 스크롤스파이가 붙지 않게 합니다.
   if (EMBED) {
-    for (const selector of ['#sidebar', '#footer', '#pf-splash', '.pf-skip']) document.querySelector(selector)?.remove();
+    for (const selector of ['#sidebar', '#footer', '#pf-splash', '.pf-skip', '#pf-lang']) document.querySelector(selector)?.remove();
   }
 
   try {
@@ -197,7 +199,11 @@ async function main() {
   }
 
   wrapper.replaceChildren(fragment);
-  if (navList) navList.innerHTML = navItems.join('');
+  if (navList) {
+    navList.innerHTML = navItems.join('');
+    navList.closest('nav')?.setAttribute('aria-label', t('섹션 이동', 'Sections'));
+  }
+  mountLangToggle();
 
   for (const mount of mounts) {
     try {

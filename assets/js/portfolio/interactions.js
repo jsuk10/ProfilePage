@@ -6,6 +6,8 @@
 //   - 연락처 '복사' 버튼
 // 왼쪽(위쪽) 메뉴의 스크롤 이동은 템플릿(main.js 의 scrolly)이 맡습니다.
 
+import { t } from './i18n.js';
+
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
 const FLASH_MS = 1600;
@@ -33,7 +35,7 @@ function syncToggleAll(list) {
   if (!button) return;
   const toggles = [...list.querySelectorAll('.pf-detail__toggle')];
   const allOpen = toggles.length > 0 && toggles.every((toggle) => toggle.getAttribute('aria-expanded') === 'true');
-  button.textContent = allOpen ? '모두 접기' : '모두 펼치기';
+  button.textContent = allOpen ? t('모두 접기', 'Collapse all') : t('모두 펼치기', 'Expand all');
   button.dataset.state = allOpen ? 'open' : 'closed';
 }
 
@@ -106,7 +108,10 @@ function labelRefs(root) {
     const career = target.closest('section.wrapper')?.querySelector('h2')?.textContent.trim();
     if (!title) return;
     link.title = title;
-    link.setAttribute('aria-label', `${link.textContent.trim()}, ${career ? `${career} ` : ''}경력 상세: ${title}`);
+    link.setAttribute('aria-label', t(
+      `${link.textContent.trim()}, ${career ? `${career} ` : ''}경력 상세: ${title}`,
+      `${link.textContent.trim()}, ${career ? `${career} ` : ''}career details: ${title}`,
+    ));
   });
 }
 
@@ -115,8 +120,8 @@ function labelRefs(root) {
 async function copyContact(button) {
   const item = button.closest('li');
   const status = item?.querySelector('[role="status"]');
-  let label = '복사됨';
-  let message = '주소를 복사했습니다.';
+  let label = t('복사됨', 'Copied');
+  let message = t('주소를 복사했습니다.', 'Copied to clipboard.');
   try {
     await navigator.clipboard.writeText(button.dataset.copy);
   } catch {
@@ -127,15 +132,15 @@ async function copyContact(button) {
     const selection = window.getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
-    label = '선택됨';
-    message = '주소를 선택했습니다. Ctrl+C 로 복사하세요.';
+    label = t('선택됨', 'Selected');
+    message = t('주소를 선택했습니다. Ctrl+C 로 복사하세요.', 'Selected. Press Ctrl+C to copy.');
   }
   button.textContent = label;
   button.classList.add('is-done');
   if (status) status.textContent = message;
   window.clearTimeout(button._pfCopyTimer);
   button._pfCopyTimer = window.setTimeout(() => {
-    button.textContent = '복사';
+    button.textContent = t('복사', 'Copy');
     button.classList.remove('is-done');
     if (status) status.textContent = '';
   }, FLASH_MS);

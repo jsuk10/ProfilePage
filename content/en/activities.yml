@@ -1,0 +1,81 @@
+title: Student Activities
+lead: >-
+  Education, awards, training programs and clubs.
+
+links:
+  - label: Student Works & Activities (Notion)
+    url: https://app.notion.com/p/3f7bed59c36381ee80b9ebb951ce9502
+
+groups:
+  - title: Education / Military Service
+    icon: graduation-cap
+    items:
+      - text: >-
+          [Chonnam National University](https://www.jnu.ac.kr/), [Department of Software Engineering](https://sw.jnu.ac.kr/)
+        date: 2016.03 ~ 2022.03
+      - text: Drill instructor, Recruit Training Battalion, ROK Army 28th Infantry Division (completed full service)
+        date: 2017.10 ~ 2019.07
+      - text: Suncheon High School, Jeollanam-do
+        date: 2013.03 ~ 2016.03
+
+  - title: Awards
+    icon: trophy
+    items:
+      - text: Grand Prize, GICON Indie Stars 5th Cohort (Gwangju)
+        date: 2021.01.06
+      - text: Special Award, 1st Oasis Hackathon
+        date: 2021.01.06
+      - text: Special Award, 2020 Game Academy Summer Program
+        date: 2020.08.31
+      - text: Special Award, 2019 Game Academy Summer Program
+        date: 2019.08.29
+      - text: Gold Prize, Job Roadmap Competition
+        date: 2016.11.24
+      - text: Top Prize, Honam / Jeju Region Creative Problem Solving Competition
+        date: 2016.11.18
+
+  - title: Training / Programs
+    icon: book-open
+    items:
+      - text: >-
+          [KAIST & KRAFTON Madcamp](https://madcamp.io/)
+        date: 2021.07
+        highlight: Game
+      - text: >-
+          [Smilegate CSR Membership, Pro Bono Service](https://www.smilegatefoundation.org/)
+        date: 2021.07 ~ 2021.11
+        highlight: Game
+      - text: GICON Indie Stars 6th Cohort (Gwangju)
+        date: 2021.04 ~ 2021.10
+      - text: Net Challenge (NIA)
+        date: 2021.04 ~ 2021.10
+      - text: Indie Stars 5th Cohort
+        date: 2020.04 ~ 2020.12
+        highlight: Game
+      - text: Inflearn Apple Website Interaction Clone
+        date: 2020.11 ~ 2020.12
+      - text: >-
+          [GitHub Game Off 2020](https://itch.io/jam/game-off-2020/rate/837025) (Moon Slasher)
+        date: 2020.11
+        highlight: Game
+      - text: >-
+          [Nomad Coders](https://nomadcoders.co/) Vanilla JS & Challenge
+        date: 2020.10
+      - text: 2nd Chonnam National University Hackathon
+        date: 2020.08
+      - text: Content Academy Summer Regular Course (100H)
+        date: 2020.08
+      - text: Content Academy Summer Regular Course (100H)
+        date: 2019.08
+      - text: Content Academy Summer Regular Course (100H)
+        date: 2016.08
+
+  - title: Clubs / Communities
+    icon: users
+    items:
+      - text: PIMM, Chonnam National University Game Development Club
+        date: 2016 ~ 2021
+      - text: CTRL, Chonnam National University Game Club
+        date: '2021'
+      - text: Student Council, School of Electronics and Computer Engineering, Chonnam National University
+        date: 2016, 2017, 2019

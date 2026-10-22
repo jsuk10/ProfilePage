@@ -12,13 +12,13 @@
 
 title: 업무 숙련도
 lead: |-
-  출시 전 개발부터 라이브 서비스까지, {total} 동안 쌓은 영역별 숙련도입니다.
+  출시 전 개발부터 라이브 서비스까지, {total} 동안 쌓은 영역별 숙련도
 
-  오른쪽 버튼을 누르면 그 내용이 담긴 경력 상세로 바로 이동합니다.
+  오른쪽 버튼으로 해당 경력 상세로 바로 이동
 
 rows:
   - area: 엔진 / 에디터
-    summary: 엔진 소스까지 내려가 원인을 찾고 필요한 에디터 툴은 직접 만듭니다.
+    summary: 엔진 소스까지 내려가 원인 추적, 필요한 에디터 툴 직접 제작
     detail: >-
       Unreal Engine 4.27 → 5 ({total}). Slate 윈도우 / 뷰포트 툴, 에디터 서브시스템,
       플러그인(Mutable / Niagara) 내부 수정, 엔진 소스 레벨 원인 추적과 수정
@@ -29,7 +29,7 @@ rows:
         ref: prasia#editor-tooling
 
   - area: 퍼포먼스 / 프로파일링
-    summary: 측정으로 병목을 찾고 고친 뒤 같은 조건에서 다시 재서 확인합니다.
+    summary: 측정으로 병목 파악·수정 후 같은 조건 재측정으로 확인
     detail: >-
       Unreal Insights 전후 1:1 비교, 측정 재현성 확보(GC 시점 고정, 대조군),
       비동기 프리로드 / 컴포넌트 풀링 설계, 모바일 PSO 캐시, Animation Budget Allocator 튜닝
@@ -40,7 +40,7 @@ rows:
         ref: prasia#performance
 
   - area: 사운드 (Wwise)
-    summary: Wwise 재생 구조와 공간음향 실시간 계산을 직접 설계했습니다.
+    summary: Wwise 재생 구조·공간음향 실시간 계산 직접 설계
     detail: >-
       재생 서브시스템 + 오디오 컴포넌트 풀링, 차폐 / 밀폐도 실시간 계산(멀티스레드), 우회 경로 쪽 가상 음원,
       Motion, 로컬라이제이션, WAAPI 오프라인 렌더 도구, 라이브 유지보수(미재생 / Starvation 분석)
@@ -51,7 +51,7 @@ rows:
         ref: prasia#audio-plugins
 
   - area: 네트워크 / 리플레이
-    summary: 엔진 리플레이 위에 녹화, 구간 재생, 관전 기능을 만들었습니다.
+    summary: 엔진 리플레이 위에 녹화, 구간 재생, 관전 기능 구현
     detail: >-
       DemoNetDriver 녹화 / 재생, 구간 절단, Seek 후 상태 복원, 리플레이 전용 복제 조건, 관전 대상 추적
     projects:
@@ -59,7 +59,7 @@ rows:
         ref: like-or-die#replay
 
   - area: 빌드 / CI / SCM
-    summary: 빌드가 깨지면 고칠 사람에게 바로 알림이 가게 만듭니다.
+    summary: 빌드 실패 시 고칠 사람에게 바로 가는 알림 구축
     detail: >-
       Jenkins / TeamCity 스텝 설계, 스트림별 교차 빌드, 심볼 백업 자동화,
       실패 리비전 작업자 멘션, Perforce 운영 지원
@@ -70,7 +70,7 @@ rows:
         ref: like-or-die#build-alert
 
   - area: 플랫폼 / 플러그인 운영
-    summary: 크래시 수집 도구를 도입부터 운영까지 맡고 플랫폼 이슈를 대응합니다.
+    summary: 크래시 수집 도구 도입부터 운영까지 담당, 플랫폼 이슈 대응
     detail: >-
       Backtrace 도입과 운영(심볼 태깅, ANR / OOM 지표, SDK 소스 분석으로 네이티브 에러 핸들링),
       Vivox, iOS 프로비저닝 / 스토어 정책, Android OOM 사후 관리, 게임패드 진동
@@ -81,7 +81,7 @@ rows:
         ref: like-or-die#etc
 
   - area: 자동화 / ML
-    summary: 반복 작업은 툴로 덜어 내고 에디터에 ML 모델을 붙였습니다.
+    summary: 반복 작업 툴화, 에디터에 ML 모델 연동
     detail: >-
       Python 유틸과 간이 런처, Power Automate → Teams 알림,
       PyTorch → ONNX → UE NNE 에디터 인퍼런스 파이프라인

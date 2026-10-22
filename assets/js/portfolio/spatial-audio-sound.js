@@ -6,6 +6,8 @@
 //               직선이 막혔으면 회절 가상 음원 자리에서 들립니다. (우회 경로에서 청취자에게 보이는 마지막 꺾인 점 쪽, 직선 거리만큼)
 // 소리는 파일 없이 합성합니다. (비트 루프, 바흐 프렐류드, 시냇물, 리버브 임펄스)
 
+import { t } from './i18n.js';
+
 export const REF_DISTANCE = 1.5; // m. 이 안에서는 거리 감쇠 없음
 export const ROLLOFF = 0.8;
 export const OCCLUSION_DB = -24; // 차폐 계수 1 일 때
@@ -377,36 +379,39 @@ const SWITCH = '<span class="pf-switch__track" aria-hidden="true"><span class="p
 export function soundGateMarkup() {
   if (!supportsWebAudio()) return '';
   return `
-        <div class="pf-lab__gate" role="group" aria-label="소리 안내" data-sound-gate hidden>
+        <div class="pf-lab__gate" role="group" aria-label="${t('소리 안내', 'Sound notice')}" data-sound-gate hidden>
           <button type="button" class="pf-button pf-lab__gate-card" data-sound-start>
-            <strong class="pf-lab__gate-title">소리가 나는 데모입니다</strong>
-            <span class="pf-lab__gate-text">누르면 음원 자리에서 소리가 납니다. 음량을 먼저 확인하고 이어폰을 권합니다. 섹션을 벗어나면 꺼집니다.</span>
-            <span class="pf-lab__gate-action">소리 켜서 보기</span>
+            <strong class="pf-lab__gate-title">${t('소리가 나는 데모입니다', 'This demo plays sound')}</strong>
+            <span class="pf-lab__gate-text">${t(
+              '누르면 음원 자리에서 소리가 납니다. 음량을 먼저 확인하고 이어폰을 권합니다. 섹션을 벗어나면 꺼집니다.',
+              'Click to hear sound from the source position. Check your volume first; earphones are recommended. Sound stops when you leave this section.',
+            )}</span>
+            <span class="pf-lab__gate-action">${t('소리 켜서 보기', 'Start with sound')}</span>
           </button>
-          <button type="button" class="pf-button pf-lab__gate-skip" data-sound-skip>소리 없이 보기</button>
+          <button type="button" class="pf-button pf-lab__gate-skip" data-sound-skip>${t('소리 없이 보기', 'Continue without sound')}</button>
         </div>`;
 }
 
 export function soundControlsMarkup() {
   if (!supportsWebAudio()) return '';
   return `
-      <div class="pf-lab__sound" role="group" aria-label="소리">
-        <div class="pf-segmented" role="group" aria-label="소리 종류">
-          <button type="button" class="pf-button pf-segmented__item" data-sound-source="loop" aria-pressed="true">비트 루프</button>
-          <button type="button" class="pf-button pf-segmented__item" data-sound-source="classic" aria-pressed="false">클래식</button>
-          <button type="button" class="pf-button pf-segmented__item" data-sound-source="water" aria-pressed="false">물소리</button>
+      <div class="pf-lab__sound" role="group" aria-label="${t('소리', 'Sound')}">
+        <div class="pf-segmented" role="group" aria-label="${t('소리 종류', 'Sound type')}">
+          <button type="button" class="pf-button pf-segmented__item" data-sound-source="loop" aria-pressed="true">${t('비트 루프', 'Beat loop')}</button>
+          <button type="button" class="pf-button pf-segmented__item" data-sound-source="classic" aria-pressed="false">${t('클래식', 'Classical')}</button>
+          <button type="button" class="pf-button pf-segmented__item" data-sound-source="water" aria-pressed="false">${t('물소리', 'Water')}</button>
         </div>
-        <button type="button" class="pf-button pf-switch" role="switch" aria-checked="true" data-sound-portal>${SWITCH}우회 방향에서 듣기</button>
-        <label class="pf-lab__volume">음량<input type="range" min="0" max="100" value="70" data-sound-volume></label>
+        <button type="button" class="pf-button pf-switch" role="switch" aria-checked="true" data-sound-portal>${SWITCH}${t('우회 방향에서 듣기', 'Hear from detour direction')}</button>
+        <label class="pf-lab__volume">${t('음량', 'Volume')}<input type="range" min="0" max="100" value="70" data-sound-volume></label>
       </div>`;
 }
 
 const SOUND_READOUT = [
-  ['distance', '거리 감쇠'],
-  ['occlusion', '차폐 볼륨'],
-  ['cutoff', '로우패스'],
-  ['reverb', '리버브 센드'],
-  ['direction', '들리는 방향'],
+  ['distance', t('거리 감쇠', 'Distance attenuation')],
+  ['occlusion', t('차폐 볼륨', 'Occlusion volume')],
+  ['cutoff', t('로우패스', 'Low-pass')],
+  ['reverb', t('리버브 센드', 'Reverb send')],
+  ['direction', t('들리는 방향', 'Perceived direction')],
 ];
 
 export function soundReadoutMarkup() {
@@ -415,13 +420,17 @@ export function soundReadoutMarkup() {
     ([key, label]) => `<div class="pf-readout__row"><dt>${label}</dt><dd data-sound-out="${key}"></dd></div>`,
   ).join('');
   return `
-    <h3 class="pf-readout__title">소리에 적용 <span class="pf-readout__hint">실제 게임에서는 Wwise RTPC</span></h3>
+    <h3 class="pf-readout__title">${t('소리에 적용', 'Applied to sound')} <span class="pf-readout__hint">${t('실제 게임에서는 Wwise RTPC', 'Wwise RTPCs in the actual game')}</span></h3>
     <dl class="pf-readout pf-readout--sound">${rows}</dl>`;
 }
 
 export function soundHelpMarkup() {
   if (!supportsWebAudio()) return '';
-  return '<p>안내 창을 누르면 음원 자리에서 소리가 나고 섹션을 벗어나면 꺼집니다. 차폐 계수는 볼륨과 로우패스로, 밀폐도는 리버브로, 거리는 감쇠로 들리고 방향은 화면을 보는 방향 기준입니다. (화면 오른쪽 = 오른쪽 귀) 직선이 막혔을 때는 회절 가상 음원 자리(우회 경로에서 보이는 마지막 꺾인 점 쪽, 직선 거리만큼)에서 들립니다. 가상 음원 스위치를 켜면 그 자리가 장면에 그려집니다. 이어폰이나 헤드폰으로 들으면 방향이 또렷합니다.</p>';
+  const text = t(
+    '안내 창을 누르면 음원 자리에서 소리가 나고 섹션을 벗어나면 꺼집니다. 차폐 계수는 볼륨과 로우패스로, 밀폐도는 리버브로, 거리는 감쇠로 들리고 방향은 화면을 보는 방향 기준입니다. (화면 오른쪽 = 오른쪽 귀) 직선이 막혔을 때는 회절 가상 음원 자리(우회 경로에서 보이는 마지막 꺾인 점 쪽, 직선 거리만큼)에서 들립니다. 가상 음원 스위치를 켜면 그 자리가 장면에 그려집니다. 이어폰이나 헤드폰으로 들으면 방향이 또렷합니다.',
+    'Click the notice to hear sound from the source position; it stops when you leave this section. Occlusion is heard as volume and low-pass filtering, enclosure as reverb, and distance as attenuation. Direction is relative to the screen (screen right = right ear). When the direct line is blocked, the sound comes from the diffraction virtual source (toward the last visible corner on the detour path, at the direct distance). Turn on Virtual source to see that position in the scene. Earphones or headphones make the direction clearer.',
+  );
+  return `<p>${text}</p>`;
 }
 
 const SOURCES = { loop: renderLoop, classic: renderClassic, water: renderWater };
@@ -513,7 +522,11 @@ export function bindSound(container, { live } = {}) {
     outputs.occlusion.textContent = formatDb(values.db);
     outputs.cutoff.textContent = formatHz(values.cutoff);
     outputs.reverb.textContent = `${Math.round(values.reverb * 100)} %`;
-    outputs.direction.textContent = values.viaPath ? '가상 음원 쪽 (회절)' : next.blocked ? '직선 (벽 너머)' : '직선';
+    outputs.direction.textContent = values.viaPath
+      ? t('가상 음원 쪽 (회절)', 'Virtual source (diffraction)')
+      : next.blocked
+        ? t('직선 (벽 너머)', 'Direct (through wall)')
+        : t('직선', 'Direct');
 
     if (!engine) return;
     const { context, graph } = engine;
@@ -549,7 +562,7 @@ export function bindSound(container, { live } = {}) {
     startSource();
     applyMaster();
     refreshGate();
-    if (live) live.textContent = '소리 켬';
+    if (live) live.textContent = t('소리 켬', 'Sound on');
   }
 
   function stop() {

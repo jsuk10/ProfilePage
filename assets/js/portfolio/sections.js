@@ -9,6 +9,7 @@ import { mountSpatialAudioDemo } from './spatial-audio-demo.js';
 import { mountSpatialAudio3D, supportsWebGL2 } from './spatial-audio-3d.js';
 import { parseVoxelPreset, sliceAtListener } from './spatial-audio-voxel.js';
 import { mountMinimap, mountNeverCook, mountNotify, mountTray } from './lab.js';
+import { t } from './i18n.js';
 
 const CHEVRON =
   '<svg class="pf-detail__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
@@ -98,7 +99,7 @@ function intro(data) {
       return `
               <li>
                 <span class="pf-contact__label">${esc(item.label)}</span>${text}
-                <button type="button" class="pf-button pf-contact__copy" data-copy="${attr(value)}" aria-label="${attr(`${item.label ?? ''} 주소 복사`.trim())}">복사</button>
+                <button type="button" class="pf-button pf-contact__copy" data-copy="${attr(value)}" aria-label="${attr(t(`${item.label ?? ''} 주소 복사`, `Copy ${item.label ?? ''}`).trim())}">${t('복사', 'Copy')}</button>
                 <span class="pf-visually-hidden" role="status"></span>
               </li>`;
     })
@@ -138,7 +139,7 @@ function intro(data) {
           ${summary}
           ${facts ? `<dl class="pf-facts">${facts}</dl>` : ''}
           ${actions(data.links)}
-          ${contact ? `<ul class="pf-contact" aria-label="연락처">${contact}</ul>` : ''}
+          ${contact ? `<ul class="pf-contact" aria-label="${t('연락처', 'Contact')}">${contact}</ul>` : ''}
         </div>
         ${motto}
       </div>`,
@@ -173,7 +174,7 @@ function tools(block) {
     .join('');
   return `
         <div class="pf-tools">
-          <h3>${esc(has(block.title) ? block.title : '사용 도구')}</h3>
+          <h3>${esc(has(block.title) ? block.title : t('사용 도구', 'Tools'))}</h3>
           <div class="pf-tools__grid">${groups}</div>
         </div>`;
 }
@@ -201,7 +202,7 @@ function skills(data) {
         ${lead(data.lead)}
         <table class="pf-skills">
           <thead>
-            <tr><th scope="col">영역</th><th scope="col">숙련 내용</th><th scope="col">근거 경력</th></tr>
+            <tr><th scope="col">${t('영역', 'Area')}</th><th scope="col">${t('숙련 내용', 'Proficiency')}</th><th scope="col">${t('근거 경력', 'Evidence')}</th></tr>
           </thead>
           <tbody>${rows}</tbody>
         </table>
@@ -281,10 +282,10 @@ function career(data, section) {
     ? `${inline(glue(data.period))}${has(data.duration) ? `<span class="pf-meta__sub">${inline(data.duration)}</span>` : ''}`
     : '';
   const meta = [
-    ['회사', has(data.company) && inline(data.company)],
-    ['기간', period],
-    ['엔진', has(data.engine) && inline(data.engine)],
-    ['역할', has(data.role) && inline(data.role)],
+    [t('회사', 'Company'), has(data.company) && inline(data.company)],
+    [t('기간', 'Period'), period],
+    [t('엔진', 'Engine'), has(data.engine) && inline(data.engine)],
+    [t('역할', 'Role'), has(data.role) && inline(data.role)],
   ]
     .filter(([, value]) => value)
     .map(([label, value]) => `<div><dt>${label}</dt><dd>${value}</dd></div>`)
@@ -321,8 +322,8 @@ function career(data, section) {
     ? `
         <section class="pf-details" aria-labelledby="${attr(id)}-details-title">
           <div class="pf-details__head">
-            <h3 id="${attr(id)}-details-title">경력 상세</h3>
-            ${hasToggles ? `<button type="button" class="pf-button pf-details__toggle-all" data-toggle-all aria-controls="${attr(id)}-details">모두 펼치기</button>` : ''}
+            <h3 id="${attr(id)}-details-title">${t('경력 상세', 'Career details')}</h3>
+            ${hasToggles ? `<button type="button" class="pf-button pf-details__toggle-all" data-toggle-all aria-controls="${attr(id)}-details">${t('모두 펼치기', 'Expand all')}</button>` : ''}
           </div>
           ${rndNote}
           ${preamble ? `<div class="pf-details__preamble">${markdown(preamble)}</div>` : ''}
@@ -349,13 +350,13 @@ function career(data, section) {
         <div class="pf-career__columns">
           ${stack ? `
           <section class="pf-stack" aria-labelledby="${attr(id)}-stack-title">
-            <h3 id="${attr(id)}-stack-title">기술 스택</h3>
+            <h3 id="${attr(id)}-stack-title">${t('기술 스택', 'Tech stack')}</h3>
             <dl class="pf-stack__groups">${stack}
             </dl>
           </section>` : ''}
           ${strengths ? `
           <section class="pf-strengths" aria-labelledby="${attr(id)}-strengths-title">
-            <h3 id="${attr(id)}-strengths-title">강점</h3>
+            <h3 id="${attr(id)}-strengths-title">${t('강점', 'Strengths')}</h3>
             <dl class="pf-strengths__list">${strengths}</dl>
           </section>` : ''}
         </div>` : ''}
@@ -395,7 +396,10 @@ function metricRow(metric, index, caseTitle) {
   }
   const ratio = valid ? Math.min(1, after / before) : 1;
   const plain = (value) => `${String(value ?? '').trim()}${has(metric.unit) ? String(metric.unit).trim() : ''}`;
-  const description = `개선 전 ${plain(metric.before)}, 개선 후 ${plain(metric.after)}. 개선 전의 ${Math.round(ratio * 100)}%`;
+  const description = t(
+    `개선 전 ${plain(metric.before)}, 개선 후 ${plain(metric.after)}. 개선 전의 ${Math.round(ratio * 100)}%`,
+    `Before ${plain(metric.before)}, after ${plain(metric.after)}. ${Math.round(ratio * 100)}% of before`,
+  );
 
   // 빨간 막대(개선 전)를 다 깔고 그 위에 초록 막대(개선 후)를 겹칩니다. 남은 빨간 부분이 줄어든 만큼입니다.
   return `
@@ -425,14 +429,14 @@ function impact(data, section) {
               ${has(item.text) ? `<p class="pf-case__text">${inline(item.text)}</p>` : ''}
             </div>
             <table class="pf-bars">
-              <caption class="pf-visually-hidden">${esc(title)}: 지표별 개선 전 / 후 값</caption>
+              <caption class="pf-visually-hidden">${esc(title)}: ${t('지표별 개선 전 / 후 값', 'before / after by metric')}</caption>
               <colgroup><col class="pf-col-metric"><col><col class="pf-col-values"><col class="pf-col-change"></colgroup>
               <thead>
                 <tr>
-                  <th scope="col" class="pf-bars__metric">지표</th>
-                  <th scope="col" class="pf-bars__plot"><span class="pf-visually-hidden">개선 전 길이 위에 겹친 개선 후 길이</span></th>
-                  <th scope="col" class="pf-bars__values">전 → 후</th>
-                  <th scope="col" class="pf-bars__change">변화</th>
+                  <th scope="col" class="pf-bars__metric">${t('지표', 'Metric')}</th>
+                  <th scope="col" class="pf-bars__plot"><span class="pf-visually-hidden">${t('개선 전 길이 위에 겹친 개선 후 길이', 'After bar drawn over before bar')}</span></th>
+                  <th scope="col" class="pf-bars__values">${t('전 → 후', 'Before → After')}</th>
+                  <th scope="col" class="pf-bars__change">${t('변화', 'Change')}</th>
                 </tr>
               </thead>
               <tbody>${toList(item.metrics).map((metric, index) => metricRow(metric, index, title)).join('')}
@@ -449,8 +453,8 @@ function impact(data, section) {
         <h2>${esc(data.title)}</h2>
         ${lead(data.lead)}
         <p class="pf-legend" aria-hidden="true">
-          <span class="pf-legend__item"><span class="pf-legend__swatch pf-legend__swatch--before"></span>개선 전</span>
-          <span class="pf-legend__item"><span class="pf-legend__swatch pf-legend__swatch--after"></span>개선 후</span>
+          <span class="pf-legend__item"><span class="pf-legend__swatch pf-legend__swatch--before"></span>${t('개선 전', 'Before')}</span>
+          <span class="pf-legend__item"><span class="pf-legend__swatch pf-legend__swatch--after"></span>${t('개선 후', 'After')}</span>
         </p>
         <div class="pf-cases">${cases}
         </div>
@@ -514,7 +518,7 @@ function spatialAudio(data) {
       mountSpatialAudioDemo(container, { presets: (flat.length ? flat : scenes).map(sliceAtListener), idPrefix: element.id });
       container.querySelector('.pf-lab__stage')?.insertAdjacentHTML(
         'afterbegin',
-        '<p class="pf-lab__fallback">이 브라우저에서는 3D 를 그릴 수 없어 청취자 높이에서 자른 2D 단면으로 보여 줍니다.</p>',
+        `<p class="pf-lab__fallback">${t('이 브라우저에서는 3D 를 그릴 수 없어 청취자 높이에서 자른 2D 단면으로 보여 줍니다.', 'This browser cannot draw 3D, so a 2D slice at listener height is shown instead.')}</p>`,
       );
     },
   };
@@ -561,13 +565,13 @@ function projects(data, section) {
       const video = has(item.video)
         ? `
               <div class="pf-video">
-                <iframe src="https://drive.google.com/file/d/${encodeURIComponent(String(item.video).trim())}/preview" title="${attr(title)} 플레이 영상" loading="lazy" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                <iframe src="https://drive.google.com/file/d/${encodeURIComponent(String(item.video).trim())}/preview" title="${attr(t(`${title} 플레이 영상`, `${title} gameplay video`))}" loading="lazy" allow="autoplay; fullscreen" allowfullscreen></iframe>
               </div>`
         : '';
 
       return `
         <section class="pf-work" id="${attr(itemId)}">
-          <div class="image" role="img" aria-label="${attr(has(item.image_alt) ? item.image_alt : `${title} 대표 이미지`)}">
+          <div class="image" role="img" aria-label="${attr(has(item.image_alt) ? item.image_alt : t(`${title} 대표 이미지`, `${title} key art`))}">
             <img src="${attr(item.image)}" alt="" data-position="${attr(has(item.image_position) ? item.image_position : 'center center')}">
           </div>
           <div class="content">
@@ -589,7 +593,7 @@ function projects(data, section) {
       <div class="inner pf-works__intro">
         <h2>${esc(data.title)}</h2>
         ${lead(data.lead)}
-        ${has(data.stack) ? `<p class="pf-works__stack"><span class="pf-works__stack-label">써 본 스택</span>${inline(data.stack)}</p>` : ''}
+        ${has(data.stack) ? `<p class="pf-works__stack"><span class="pf-works__stack-label">${t('써 본 스택', 'Stack')}</span>${inline(data.stack)}</p>` : ''}
         ${actions(data.links)}
       </div>
       ${items}`,

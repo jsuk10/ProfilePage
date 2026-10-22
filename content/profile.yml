@@ -15,7 +15,7 @@ role: Unreal Engine 클라이언트 / 엔진 프로그래머
 #   {total}          모든 경력 기간의 합                        예) 4년 11개월
 #   {경력 섹션 id}    그 경력 하나의 기간 (content/site.yml 의 id)   예) {prasia} → 3년 11개월
 # 이 표기는 다른 내용 파일 글 안에서도 똑같이 쓸 수 있습니다. 자세한 건 content/README.md 를 보세요.
-brief: 넥슨에서 4년, NC에서 근무 중인 Unreal 클라이언트/엔진 개발자입니다.
+brief: 넥슨 4년, 현재 NC 재직 중인 Unreal 클라이언트/엔진 개발자
 
 photo: images/frofile.png
 photo_alt: 이정석 프로필 사진
@@ -55,7 +55,7 @@ facts:
 
 motto:
   avatar: images/MyLittleJs.png
-  text: 많은 경험과 끊임없는 공부로 레벨업해서 같이 일하고 싶은 개발자이자 팀일 때 든든한 개발자를 목표로 합니다.
+  text: 많은 경험과 끊임없는 공부로 레벨업, 같이 일하고 싶은 개발자이자 팀일 때 든든한 개발자가 목표
 
 links:
   - label: Notion 포트폴리오

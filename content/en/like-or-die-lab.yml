@@ -1,0 +1,24 @@
+title: Slate Background Notification
+lead: >-
+  Notifies events like match found or loading complete through a topmost Slate window that doesn't steal focus while the game is in the background or minimized. Clicking the notification restores the game window and brings it to front.
+  Each notification includes a thumbnail captured from the player's customized character, so every player gets a different one.
+  Skipped when the game is already in front; live coding complete notifications show even when the editor is in front. In the demo, clicking a button minimizes the game window, then shows the notification.
+
+demos:
+  - kind: notify
+    app: Like Or Die
+    editor: Unreal Editor
+    window: images/likeordie.webp
+    cover: images/likeordie.webp
+    thumb:
+    events:
+      - label: Match Found
+        title: Game Ready
+        body: Your game is ready. Click to return.
+      - label: Loading Done
+        title: Game Ready
+        body: Map loading finished. Time to get back in the game.
+      - label: Live Coding Done
+        title: Live Coding Complete
+        body: Patch applied. Return to the editor.
+        always: true

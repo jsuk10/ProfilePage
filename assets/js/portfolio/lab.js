@@ -6,6 +6,7 @@
 // 지도, 수치, 이름은 데모용입니다.
 
 import { escapeHtml } from './markdown.js';
+import { t } from './i18n.js';
 
 const reduceMotion =
   typeof window !== 'undefined' && window.matchMedia
@@ -28,7 +29,7 @@ const POP_MS = 320;
 export function mountMinimap(container, config) {
   const points = (Array.isArray(config?.waypoints) ? config.waypoints : [])
     .map((point, index) => ({
-      name: String(point?.name ?? `노드 ${index + 1}`),
+      name: String(point?.name ?? t(`노드 ${index + 1}`, `Node ${index + 1}`)),
       x: clamp01(num(point?.x, 0.5)),
       y: clamp01(num(point?.y, 0.5)),
       draw: num(point?.draw),
@@ -45,19 +46,19 @@ export function mountMinimap(container, config) {
 
   container.innerHTML = `
     <div class="pf-minimap__view">
-      <canvas class="pf-minimap__canvas" role="img" aria-label="웨이포인트 미니맵. 순회하면 노드마다 DrawCall 을 재서 색으로 표시합니다."></canvas>
+      <canvas class="pf-minimap__canvas" role="img" aria-label="${t('웨이포인트 미니맵. 순회하면 노드마다 DrawCall 을 재서 색으로 표시합니다.', 'Waypoint minimap. The tour measures DrawCalls at each node and colors it by load.')}"></canvas>
       <div class="pf-minimap__tip" data-tip hidden></div>
     </div>
     <div class="pf-minimap__bar">
-      <button type="button" class="pf-button pf-lab__reset" data-run>순회 시작</button>
-      <label class="pf-lab__volume pf-minimap__threshold">DrawCall 기준
+      <button type="button" class="pf-button pf-lab__reset" data-run>${t('순회 시작', 'Start tour')}</button>
+      <label class="pf-lab__volume pf-minimap__threshold">${t('DrawCall 기준', 'DrawCall limit')}
         <input type="range" min="800" max="${Math.ceil(maxDraw / 100) * 100}" step="50" value="${threshold}" data-threshold>
         <output data-threshold-out>${format(threshold)}</output>
       </label>
-      <ul class="pf-lab__legend" aria-label="색 뜻">
-        <li><span class="pf-lab__key pf-lab__key--ok" aria-hidden="true"></span>기준의 70% 미만</li>
-        <li><span class="pf-lab__key pf-lab__key--warn" aria-hidden="true"></span>70% 이상</li>
-        <li><span class="pf-lab__key pf-lab__key--over" aria-hidden="true"></span>기준 초과</li>
+      <ul class="pf-lab__legend" aria-label="${t('색 뜻', 'Color legend')}">
+        <li><span class="pf-lab__key pf-lab__key--ok" aria-hidden="true"></span>${t('기준의 70% 미만', 'Under 70% of limit')}</li>
+        <li><span class="pf-lab__key pf-lab__key--warn" aria-hidden="true"></span>${t('70% 이상', '70% or more')}</li>
+        <li><span class="pf-lab__key pf-lab__key--over" aria-hidden="true"></span>${t('기준 초과', 'Over limit')}</li>
       </ul>
     </div>
     <div class="pf-minimap__rank" data-rank aria-live="polite"></div>`;
@@ -240,7 +241,10 @@ export function mountMinimap(container, config) {
     const over = measured.filter((point) => level(point.draw) === 'over').length;
     const top = [...measured].sort((a, b) => b.draw - a.draw).slice(0, 3);
     rank.innerHTML = `
-      <p class="pf-minimap__rank-title">최적화 우선순위 <span class="pf-readout__hint">${measured.length}개 측정, 기준 초과 ${over}개</span></p>
+      <p class="pf-minimap__rank-title">${t('최적화 우선순위', 'Optimization priority')} <span class="pf-readout__hint">${t(
+        `${measured.length}개 측정, 기준 초과 ${over}개`,
+        `${measured.length} ${measured.length === 1 ? 'node' : 'nodes'} measured, ${over} over limit`,
+      )}</span></p>
       <ol>${top
         .map(
           (point) =>
@@ -251,7 +255,7 @@ export function mountMinimap(container, config) {
 
   function finish() {
     done = true;
-    runButton.textContent = '다시 순회';
+    runButton.textContent = t('다시 순회', 'Run again');
     renderRank();
   }
 
@@ -272,7 +276,7 @@ export function mountMinimap(container, config) {
     }
     points[0].measured = performance.now();
     marker = { segment: 0, t: 0, lastTime: performance.now() };
-    runButton.textContent = '순회 중…';
+    runButton.textContent = t('순회 중…', 'Touring…');
     if (!frameId) frameId = window.requestAnimationFrame(step);
   }
 
@@ -316,7 +320,7 @@ export function mountMinimap(container, config) {
     tip.hidden = false;
     tip.textContent = point.measured
       ? `${point.name} · DrawCall ${format(point.draw)} · Primitive ${point.prims.toFixed(1)}M`
-      : `${point.name} · 아직 측정 전`;
+      : t(`${point.name} · 아직 측정 전`, `${point.name} · Not measured yet`);
     tip.style.left = `${Math.min(Math.max(x, 70), rect.width - 70)}px`;
     tip.style.top = `${y}px`;
   });
@@ -388,13 +392,16 @@ export function mountNeverCook(container, config) {
       <div class="pf-cb__bar">
         <span class="pf-cb__path">${escapeHtml(path)}</span>
         <button type="button" class="pf-button pf-switch pf-cb__filter" role="switch" aria-checked="false" data-filter>
-          <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>NeverCook 만 보기
+          <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>${t('NeverCook 만 보기', 'NeverCook only')}
         </button>
         <span class="pf-cb__count" data-count></span>
       </div>
       <ul class="pf-cb__grid" style="--pf-cb-columns: ${Math.min(items.length, 8)}">${items.map(tile).join('')}
       </ul>
-      <p class="pf-cb__hint">폴더나 섬네일을 누르면 NeverCook 에 넣거나 뺍니다. 아이콘이 붙은 폴더와 에셋은 쿠킹(패키징)에서 빠집니다.</p>
+      <p class="pf-cb__hint">${t(
+        '폴더나 섬네일을 누르면 NeverCook 에 넣거나 뺍니다. 아이콘이 붙은 폴더와 에셋은 쿠킹(패키징)에서 빠집니다.',
+        'Click a folder or thumbnail to add it to NeverCook or remove it. Marked folders and assets are left out of cooking (packaging).',
+      )}</p>
       <p class="pf-cb__list" data-list aria-live="polite"></p>
     </div>`;
 
@@ -409,7 +416,9 @@ export function mountNeverCook(container, config) {
       .filter((button) => button.classList.contains('is-nevercook'))
       .map((button) => (button.dataset.kind === 'folder' ? `${button.dataset.asset}/` : button.dataset.asset));
     count.textContent = `NeverCook ${names.length} / ${tiles.length}`;
-    list.textContent = names.length ? `NeverCook 목록 (${names.length}): ${names.join(', ')}` : 'NeverCook 목록이 비어 있습니다.';
+    list.textContent = names.length
+      ? t(`NeverCook 목록 (${names.length}): ${names.join(', ')}`, `NeverCook list (${names.length}): ${names.join(', ')}`)
+      : t('NeverCook 목록이 비어 있습니다.', 'The NeverCook list is empty.');
     tiles.forEach((button) => {
       button.parentElement.classList.toggle('is-off', !button.classList.contains('is-nevercook'));
     });
@@ -441,25 +450,28 @@ const SYS_ICONS = `
           <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 6.5a9 9 0 0 1 12 0M4.5 9a5.5 5.5 0 0 1 7 0" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="12" r="1.3" fill="currentColor"/></svg>`;
 
 export function mountTray(container, config) {
-  const app = String(config?.app ?? '게임').trim();
+  const app = String(config?.app ?? t('게임', 'Game')).trim();
   const balloon = String(config?.balloon ?? '').trim();
   const windowImage = String(config?.window ?? '').trim();
-  const eventName = String(config?.event ?? '알림').trim();
+  const eventName = String(config?.event ?? t('알림', 'Alert')).trim();
   if (!balloon) return;
 
   container.innerHTML = `
     <div class="pf-tray__controls">
-      <button type="button" class="pf-button pf-lab__reset" data-notify>${escapeHtml(eventName)} 알림 보내기</button>
-      <button type="button" class="pf-button pf-lab__reset" data-menu-open aria-haspopup="menu" aria-expanded="false">트레이 메뉴 열기</button>
-      <button type="button" class="pf-button pf-lab__reset" data-relaunch hidden>게임 다시 실행</button>
+      <button type="button" class="pf-button pf-lab__reset" data-notify>${t(`${escapeHtml(eventName)} 알림 보내기`, `Send ${escapeHtml(eventName)} alert`)}</button>
+      <button type="button" class="pf-button pf-lab__reset" data-menu-open aria-haspopup="menu" aria-expanded="false">${t('트레이 메뉴 열기', 'Open tray menu')}</button>
+      <button type="button" class="pf-button pf-lab__reset" data-relaunch hidden>${t('게임 다시 실행', 'Relaunch game')}</button>
     </div>
     <div class="pf-win" data-desktop>
-      <div class="pf-win__window" data-window title="누르면 작업 표시줄로 최소화합니다" hidden>
+      <div class="pf-win__window" data-window title="${t('누르면 작업 표시줄로 최소화합니다', 'Click to minimize to the taskbar')}" hidden>
         <div class="pf-win__title"><span class="pf-win__app-icon" aria-hidden="true"></span>${escapeHtml(app)}<span class="pf-win__title-buttons" aria-hidden="true">− □ ×</span></div>
-        ${windowImage ? `<img src="${escapeHtml(windowImage)}" alt="${escapeHtml(app)} 게임 화면" loading="lazy" decoding="async">` : ''}
+        ${windowImage ? `<img src="${escapeHtml(windowImage)}" alt="${t(`${escapeHtml(app)} 게임 화면`, `${escapeHtml(app)} game screen`)}" loading="lazy" decoding="async">` : ''}
       </div>
       <button type="button" class="pf-button pf-win__balloon" data-balloon hidden>
-        <img src="${escapeHtml(balloon)}" alt="${escapeHtml(app)} 풍선 메시지: 파티에 초대되었습니다. 누르면 게임 창이 앞으로 옵니다." decoding="async">
+        <img src="${escapeHtml(balloon)}" alt="${t(
+          `${escapeHtml(app)} 풍선 메시지: 파티에 초대되었습니다. 누르면 게임 창이 앞으로 옵니다.`,
+          `${escapeHtml(app)} balloon message: You've been invited to a party. Click to bring the game window to the front.`,
+        )}" decoding="async">
       </button>
       <ul class="pf-win__menu" data-menu role="menu" hidden>
         <li><button type="button" class="pf-button" role="menuitem" data-menu-item="show">Show Game</button></li>
@@ -471,8 +483,8 @@ export function mountTray(container, config) {
         <button type="button" class="pf-button pf-win__task" data-task hidden><span class="pf-win__app-icon" aria-hidden="true"></span>${escapeHtml(app)}</button>
         <span class="pf-win__tray">
           <span class="pf-win__sys" aria-hidden="true">${SYS_ICONS}</span>
-          <button type="button" class="pf-button pf-win__tray-icon" data-tray aria-label="${escapeHtml(app)} 트레이 아이콘 메뉴" aria-haspopup="menu" aria-expanded="false"><span class="pf-win__app-icon" aria-hidden="true"></span></button>
-          <span class="pf-win__clock" aria-hidden="true">오후 9:41</span>
+          <button type="button" class="pf-button pf-win__tray-icon" data-tray aria-label="${t(`${escapeHtml(app)} 트레이 아이콘 메뉴`, `${escapeHtml(app)} tray icon menu`)}" aria-haspopup="menu" aria-expanded="false"><span class="pf-win__app-icon" aria-hidden="true"></span></button>
+          <span class="pf-win__clock" aria-hidden="true">${t('오후 9:41', '9:41 PM')}</span>
         </span>
       </div>
     </div>
@@ -553,13 +565,13 @@ export function mountTray(container, config) {
     balloonButton.classList.add('is-shown');
     window.clearTimeout(balloonTimer);
     balloonTimer = window.setTimeout(hideBalloon, BALLOON_MS);
-    say(`${eventName} 풍선 메시지가 떴습니다. 눌러 보세요.`);
+    say(t(`${eventName} 풍선 메시지가 떴습니다. 눌러 보세요.`, `A ${eventName} balloon message popped up. Click it.`));
   }
   function setMenu(open) {
     menu.hidden = !open;
     tray.setAttribute('aria-expanded', String(open));
     menuButton.setAttribute('aria-expanded', String(open));
-    menuButton.textContent = open ? '트레이 메뉴 닫기' : '트레이 메뉴 열기';
+    menuButton.textContent = open ? t('트레이 메뉴 닫기', 'Close tray menu') : t('트레이 메뉴 열기', 'Open tray menu');
   }
   const closeMenu = () => setMenu(false);
   // 트레이 아이콘이 작아 못 찾을 때 버튼으로 같은 메뉴를 열고 아이콘 자리를 잠깐 비춥니다.
@@ -574,7 +586,7 @@ export function mountTray(container, config) {
     event.stopPropagation();
     hideBalloon();
     showWindow();
-    say('풍선 메시지를 눌러 숨겨 둔 게임 창을 복원하고 포그라운드로 가져왔습니다.');
+    say(t('풍선 메시지를 눌러 숨겨 둔 게임 창을 복원하고 포그라운드로 가져왔습니다.', 'Clicking the balloon restored the hidden game window and brought it to the foreground.'));
   });
   tray.addEventListener('click', (event) => {
     event.stopPropagation();
@@ -585,7 +597,10 @@ export function mountTray(container, config) {
     setMenu(menu.hidden);
     if (!menu.hidden) {
       pointTray();
-      say('작업 표시줄 오른쪽 아래 트레이 아이콘의 메뉴입니다. Show Game / Hide Game / Exit 를 눌러 보세요.');
+      say(t(
+        '작업 표시줄 오른쪽 아래 트레이 아이콘의 메뉴입니다. Show Game / Hide Game / Exit 를 눌러 보세요.',
+        'This is the menu of the tray icon at the bottom right of the taskbar. Try Show Game, Hide Game or Exit.',
+      ));
     }
   });
   menu.addEventListener('click', (event) => {
@@ -595,10 +610,13 @@ export function mountTray(container, config) {
     closeMenu();
     if (item.dataset.menuItem === 'show') {
       showWindow();
-      say('Show Game: 게임 창을 보이고 앞으로 가져왔습니다.');
+      say(t('Show Game: 게임 창을 보이고 앞으로 가져왔습니다.', 'Show Game: the game window is visible and in front.'));
     } else if (item.dataset.menuItem === 'hide') {
       hideWindow();
-      say('Hide Game: 작업 표시줄에서 게임을 숨겼습니다. 이제 트레이 아이콘(트레이 메뉴 열기)으로만 제어하고 Show Game 으로 다시 띄웁니다.');
+      say(t(
+        'Hide Game: 작업 표시줄에서 게임을 숨겼습니다. 이제 트레이 아이콘(트레이 메뉴 열기)으로만 제어하고 Show Game 으로 다시 띄웁니다.',
+        'Hide Game: the game is hidden from the taskbar. Now it is controlled only from the tray icon (Open tray menu); use Show Game to bring it back.',
+      ));
     } else {
       hideWindow();
       hideBalloon();
@@ -607,7 +625,7 @@ export function mountTray(container, config) {
       notify.disabled = true;
       menuButton.disabled = true;
       relaunch.hidden = false;
-      say('Exit: 게임을 끝냈습니다.');
+      say(t('Exit: 게임을 끝냈습니다.', 'Exit: the game has closed.'));
     }
   });
   // 작업 표시줄 버튼: 최소화돼 있으면 복원, 앞에 있으면 최소화, 뒤에 있으면 앞으로
@@ -616,26 +634,32 @@ export function mountTray(container, config) {
     closeMenu();
     if (minimized) {
       showWindow();
-      say('작업 표시줄 버튼을 눌러 게임 창을 복원했습니다.');
+      say(t('작업 표시줄 버튼을 눌러 게임 창을 복원했습니다.', 'The taskbar button restored the game window.'));
     } else if (front) {
       minimizeWindow();
-      say('게임 창을 최소화했습니다. 작업 표시줄 버튼이나 트레이 메뉴의 Show Game 으로 다시 띄웁니다.');
+      say(t(
+        '게임 창을 최소화했습니다. 작업 표시줄 버튼이나 트레이 메뉴의 Show Game 으로 다시 띄웁니다.',
+        'Game window minimized. Bring it back with the taskbar button or Show Game in the tray menu.',
+      ));
     } else {
       setFront(true);
-      say('게임 창을 앞으로 가져왔습니다.');
+      say(t('게임 창을 앞으로 가져왔습니다.', 'Game window brought to the front.'));
     }
   });
   win.addEventListener('click', (event) => {
     event.stopPropagation();
     closeMenu();
     minimizeWindow();
-    say('게임 창을 눌러 최소화했습니다. 작업 표시줄 버튼이나 트레이 메뉴의 Show Game 으로 다시 띄웁니다.');
+    say(t(
+      '게임 창을 눌러 최소화했습니다. 작업 표시줄 버튼이나 트레이 메뉴의 Show Game 으로 다시 띄웁니다.',
+      'Clicking the game window minimized it. Bring it back with the taskbar button or Show Game in the tray menu.',
+    ));
   });
   desktop.addEventListener('click', () => {
     closeMenu();
     if (front) {
       setFront(false);
-      say('바탕화면을 눌렀습니다. 게임 창이 뒤로 갔습니다.');
+      say(t('바탕화면을 눌렀습니다. 게임 창이 뒤로 갔습니다.', 'You clicked the desktop, so the game window moved to the back.'));
     }
   });
   relaunch.addEventListener('click', () => {
@@ -645,9 +669,9 @@ export function mountTray(container, config) {
     menuButton.disabled = false;
     relaunch.hidden = true;
     hideWindow();
-    say('게임을 다시 실행했습니다. 창은 트레이로 숨겨 둔 상태입니다.');
+    say(t('게임을 다시 실행했습니다. 창은 트레이로 숨겨 둔 상태입니다.', 'Game relaunched. Its window is hidden in the tray.'));
   });
-  say('게임은 켜져 있지만 창은 트레이로 숨겨 둔 상태입니다.');
+  say(t('게임은 켜져 있지만 창은 트레이로 숨겨 둔 상태입니다.', 'The game is running, but its window is hidden in the tray.'));
 }
 
 /* Slate 백그라운드 알림 ------------------------------------------------------ */
@@ -658,12 +682,12 @@ const PERSON_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="fals
 
 export function mountNotify(container, config) {
   const text = (value) => String(value ?? '').trim();
-  const app = text(config?.app) || '게임';
+  const app = text(config?.app) || t('게임', 'Game');
   const editor = text(config?.editor) || 'Unreal Editor';
   const cover = text(config?.cover);
   const windowImage = text(config?.window);
   const thumb = text(config?.thumb);
-  const thumbAlt = text(config?.thumb_alt) || '플레이어가 커스터마이징한 캐릭터 캡처';
+  const thumbAlt = text(config?.thumb_alt) || t('플레이어가 커스터마이징한 캐릭터 캡처', "Capture of the player's customized character");
   const events = (Array.isArray(config?.events) ? config.events : [])
     .map((event) => (typeof event === 'string' ? { label: event } : event))
     .filter((event) => event && text(event.label))
@@ -682,12 +706,12 @@ export function mountNotify(container, config) {
       </div>
       <div class="pf-win__window pf-win__window--game is-minimized" data-window="game">
         <div class="pf-win__title"><span class="pf-win__app-icon" aria-hidden="true"></span>${escapeHtml(app)}<span class="pf-win__title-buttons" aria-hidden="true">− □ ×</span></div>
-        ${windowImage ? `<img src="${escapeHtml(windowImage)}" alt="${escapeHtml(app)} 게임 화면" loading="lazy" decoding="async">` : '<div class="pf-win__blank">게임 프로세스</div>'}
+        ${windowImage ? `<img src="${escapeHtml(windowImage)}" alt="${t(`${escapeHtml(app)} 게임 화면`, `${escapeHtml(app)} game screen`)}" loading="lazy" decoding="async">` : `<div class="pf-win__blank">${t('게임 프로세스', 'Game process')}</div>`}
       </div>
       <button type="button" class="pf-button pf-win__balloon pf-win__banner" data-banner hidden>
         ${cover ? `<span class="pf-win__banner-cover"><img src="${escapeHtml(cover)}" alt="" loading="lazy" decoding="async"></span>` : ''}
         <span class="pf-win__banner-row">
-          <span class="pf-win__banner-thumb">${thumb ? `<img src="${escapeHtml(thumb)}" alt="${escapeHtml(thumbAlt)}" decoding="async">` : `${PERSON_ICON}<i>캡처</i>`}</span>
+          <span class="pf-win__banner-thumb">${thumb ? `<img src="${escapeHtml(thumb)}" alt="${escapeHtml(thumbAlt)}" decoding="async">` : `${PERSON_ICON}<i>${t('캡처', 'Capture')}</i>`}</span>
           <span class="pf-win__banner-text"><em class="pf-win__banner-app">${escapeHtml(app)}</em><strong data-banner-title></strong><span data-banner-body></span></span>
         </span>
       </button>
@@ -697,7 +721,7 @@ export function mountNotify(container, config) {
         <button type="button" class="pf-button pf-win__task" data-task="game"><span class="pf-win__app-icon" aria-hidden="true"></span>${escapeHtml(app)}</button>
         <span class="pf-win__tray">
           <span class="pf-win__sys" aria-hidden="true">${SYS_ICONS}</span>
-          <span class="pf-win__clock" aria-hidden="true">오후 9:41</span>
+          <span class="pf-win__clock" aria-hidden="true">${t('오후 9:41', '9:41 PM')}</span>
         </span>
       </div>
     </div>`;
@@ -779,8 +803,16 @@ export function mountNotify(container, config) {
       window.clearTimeout(showTimer);
       showTimer = window.setTimeout(() => {
         showBanner(event);
-        const how = wasOpen ? '게임 창을 최소화한 뒤' : '게임이 최소화돼 있어';
-        say(event.always ? `${event.label}: ${how} 알림을 띄웠습니다. 이 알림은 에디터가 앞에 있어도 뜹니다. 5초 뒤 저절로 닫힙니다.` : `${event.label}: ${how} 알림을 띄웠습니다. 5초 뒤 저절로 닫힙니다.`);
+        const how = wasOpen
+          ? t('게임 창을 최소화한 뒤 알림을 띄웠습니다.', 'Minimized the game window, then showed the alert.')
+          : t('게임이 최소화돼 있어 바로 알림을 띄웠습니다.', 'The game was already minimized, so the alert showed right away.');
+        const always = event.always
+          ? t(' 이 알림은 에디터가 앞에 있어도 뜹니다.', ' This one shows even when the editor is in front.')
+          : '';
+        say(t(
+          `${event.label}: ${how}${always} 5초 뒤 저절로 닫힙니다.`,
+          `${event.label}: ${how}${always} It closes by itself in 5 seconds.`,
+        ));
       }, wasOpen && !reduceMotion.matches ? MINIMIZE_MS + 60 : 0);
     });
   });
@@ -790,7 +822,10 @@ export function mountNotify(container, config) {
     hideBanner();
     const wasMinimized = minimized('game');
     restore('game');
-    say(`알림을 눌러 게임 창을 ${wasMinimized ? '복원해 ' : ''}앞으로 가져왔습니다. 알림 창은 포커스를 받지 않는 topmost 창이라 이 클릭이 창을 올릴 권한이 됩니다.`);
+    say(t(
+      `알림을 눌러 게임 창을 ${wasMinimized ? '복원해 ' : ''}앞으로 가져왔습니다. 알림 창은 포커스를 받지 않는 topmost 창이라 이 클릭이 창을 올릴 권한이 됩니다.`,
+      `Clicking the alert ${wasMinimized ? 'restored the game window and brought it' : 'brought the game window'} to the front. The alert is a topmost window that never takes focus, so this click is what grants permission to raise the game.`,
+    ));
   });
   for (const key of Object.keys(windows)) {
     windows[key].addEventListener('click', (event) => {
@@ -805,5 +840,5 @@ export function mountNotify(container, config) {
     });
   }
   setFront('editor');
-  say('에디터가 앞에 있고 게임은 최소화돼 있습니다. 이벤트를 눌러 보세요.');
+  say(t('에디터가 앞에 있고 게임은 최소화돼 있습니다. 이벤트를 눌러 보세요.', 'The editor is in front and the game is minimized. Pick an event.'));
 }

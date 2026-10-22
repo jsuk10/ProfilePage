@@ -1,0 +1,60 @@
+sections:
+  - id: intro
+    nav: Intro
+    type: intro
+    source: profile.yml
+    style: style1
+
+  - id: skills
+    nav: Skills
+    type: skills
+    source: skills.yml
+    style: style4
+
+  - id: like-or-die
+    nav: Like Or Die (NC)
+    type: career
+    source: career/nc-like-or-die.md
+    style: alt
+
+  - id: impact
+    nav: Impact
+    type: impact
+    source: impact.yml
+    style: style1
+
+  - id: spatial-audio
+    nav: Spatial Audio
+    type: spatial-audio
+    source: spatial-audio.yml
+    style: style4
+
+  - id: like-or-die-lab
+    nav: Background Notify
+    type: lab
+    source: like-or-die-lab.yml
+    style: style1
+
+  - id: prasia
+    nav: Wars of Prasia (Nexon)
+    type: career
+    source: career/nexon-prasia.md
+    style: alt
+
+  - id: prasia-lab
+    nav: Prasia Lab
+    type: lab
+    source: prasia-lab.yml
+    style: style4
+
+  - id: student-works
+    nav: Student Works
+    type: projects
+    source: projects.yml
+    style: style2
+
+  - id: activities
+    nav: Activities
+    type: activities
+    source: activities.yml
+    style: style3

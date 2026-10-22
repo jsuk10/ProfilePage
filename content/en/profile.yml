@@ -1,0 +1,51 @@
+name: Lee JeongSeok
+name_en: 이정석
+role: Unreal Engine Client / Engine Programmer
+
+brief: Unreal client/engine programmer — 4 years at Nexon, now at NCSOFT
+
+photo: images/frofile.png
+photo_alt: Profile photo of Lee JeongSeok
+
+card:
+  - value: NCSOFT · Like Or Die
+    meta: 2025.10 ~ Present
+    logo: images/logos/nc.png
+  - value: Nexon · Wars of Prasia
+    meta: 2021.11 ~ 2025.09
+    logo: images/logos/nexon.png
+
+summary:
+  - logo: images/logos/nc.png
+    value: >-
+      **NCSOFT · [Like Or Die](https://likeordie.plaync.com/ko-kr/conts/260826_teasing)** (Unreal Engine 5, Client Team)
+    text: Client development, sound/spatial audio, replay, performance optimization, editor tools/ML R&D
+  - logo: images/logos/nexon.png
+    value: >-
+      **Nexon · [Wars of Prasia](https://wp.nexon.com/main)** (Unreal Engine 4.27, Technology (Engine) Team)
+    text: Engine/tool development, performance optimization, plugin/build system operations, automation
+
+facts:
+  - label: Engine
+    value: Unreal Engine 4.27 / 5
+    meta: Windows · iOS · Android
+    logo: images/logos/unreal-engine.png
+  - label: Education
+    value: Chonnam National University, Software Engineering
+    meta: 2016 ~ 2022
+    logo: images/logos/jnu.png
+
+motto:
+  avatar: images/MyLittleJs.png
+  text: Leveling up through broad experience and constant study — aiming to be a developer people want to work with and a reliable teammate
+
+links:
+  - label: Notion Portfolio
+    url: https://app.notion.com/p/JEONGSEOK-LEE-255bed59c3638035bc9afe030ed9dea3
+    primary: true
+  - label: GitHub
+    url: https://github.com/jsuk10
+
+contact:
+  - label: Email
+    value: jsuk970407@gmail.com

@@ -5,9 +5,11 @@
 //     {like-or-die}  그 섹션 하나의 기간        예) 1년
 //   .md 파일 본문은 코드 예시가 들어갈 수 있어 그대로 두고, 앞부분(--- 사이) 값만 바꿉니다.
 
+import { t } from './i18n.js';
+
 // "2021.11 ~ 2025.09" 는 시작 달과 끝 달을 모두 세어 47개월,
-// "2025.10 ~ 현재" 는 지난달까지 셉니다. (오늘이 2026.10 이면 12개월)
-const PERIOD = /^(\d{4})\.(\d{1,2})\s*~\s*(?:(\d{4})\.(\d{1,2})|현재|재직\s*중)$/;
+// "2025.10 ~ 현재" 는 지난달까지 셉니다. (오늘이 2026.10 이면 12개월) 영어판은 "2025.10 ~ Present" 로 씁니다.
+const PERIOD = /^(\d{4})\.(\d{1,2})\s*~\s*(?:(\d{4})\.(\d{1,2})|현재|재직\s*중|present)$/i;
 const SLOT = /\{([a-z0-9][a-z0-9-]*)\}/g;
 
 export function periodMonths(period, today = new Date()) {
@@ -19,11 +21,14 @@ export function periodMonths(period, today = new Date()) {
 }
 
 export function formatMonths(months) {
-  if (months < 1) return '1개월 미만';
+  if (months < 1) return t('1개월 미만', 'under 1 mo');
   const years = Math.floor(months / 12);
   const rest = months % 12;
   // 줄이 바뀌어도 "4년 11개월" 이 둘로 갈리지 않게 붙는 공백(U+00A0)으로 잇습니다.
-  return [years && `${years}년`, rest && `${rest}개월`].filter(Boolean).join(' ');
+  return [
+    years && t(`${years}년`, `${years} ${years > 1 ? 'yrs' : 'yr'}`),
+    rest && t(`${rest}개월`, `${rest} ${rest > 1 ? 'mos' : 'mo'}`),
+  ].filter(Boolean).join(' ');
 }
 
 // sections: [{ id, type, source, data }] → Map(경력 섹션 id 와 'total' → 개월 수)

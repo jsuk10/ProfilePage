@@ -7,6 +7,7 @@
 // 화면 밖이거나 움직임 줄이기 설정이면 바뀔 때만 그립니다.
 
 import { escapeHtml } from './markdown.js';
+import { t } from './i18n.js';
 import { panelMarkup, bindPanel } from './spatial-audio-demo.js';
 import { soundGateMarkup, soundControlsMarkup, soundReadoutMarkup, soundHelpMarkup, bindSound } from './spatial-audio-sound.js';
 import {
@@ -22,7 +23,7 @@ import {
   pick,
 } from './spatial-audio-voxel.js';
 
-const NAMES = { listener: '청취자', source: '음원', virtual: '가상 음원' };
+const NAMES = { listener: t('청취자', 'Listener'), source: t('음원', 'Source'), virtual: t('가상 음원', 'Virtual source') };
 const FOV = (38 * Math.PI) / 180;
 const PHI_MIN = 0.3; // 거의 위에서 내려다보기
 const PHI_MAX = 1.4; // 거의 옆에서 보기
@@ -541,48 +542,57 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
   container.innerHTML = `
     <div class="pf-lab__stage">
       <div class="pf-lab__toolbar">
-        <div class="pf-segmented" role="group" aria-label="배치">
+        <div class="pf-segmented" role="group" aria-label="${t('배치', 'Layout')}">
           ${scenes
             .map(
               (scene, index) =>
-                `<button type="button" class="pf-button pf-segmented__item" data-preset="${index}" aria-pressed="${index === 0}">${escapeHtml(scene.name || `배치 ${index + 1}`)}</button>`,
+                `<button type="button" class="pf-button pf-segmented__item" data-preset="${index}" aria-pressed="${index === 0}">${escapeHtml(scene.name || t(`배치 ${index + 1}`, `Layout ${index + 1}`))}</button>`,
             )
             .join('')}
         </div>
         <div class="pf-lab__actions">
-          <div class="pf-segmented" role="group" aria-label="블록 도구">
-            <button type="button" class="pf-button pf-segmented__item" data-tool="place" aria-pressed="true">블록 놓기</button>
-            <button type="button" class="pf-button pf-segmented__item" data-tool="erase" aria-pressed="false">블록 지우기</button>
+          <div class="pf-segmented" role="group" aria-label="${t('블록 도구', 'Block tool')}">
+            <button type="button" class="pf-button pf-segmented__item" data-tool="place" aria-pressed="true">${t('블록 놓기', 'Place block')}</button>
+            <button type="button" class="pf-button pf-segmented__item" data-tool="erase" aria-pressed="false">${t('블록 지우기', 'Remove block')}</button>
           </div>
           <button type="button" class="pf-button pf-switch" role="switch" aria-checked="true" data-virtual>
-            <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>가상 음원
+            <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>${t('가상 음원', 'Virtual source')}
           </button>
           <button type="button" class="pf-button pf-switch" role="switch" aria-checked="false" data-rays>
-            <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>밀폐도 레이
+            <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>${t('밀폐도 레이', 'Enclosure rays')}
           </button>
-          <button type="button" class="pf-button pf-lab__reset" data-reset>배치 되돌리기</button>
+          <button type="button" class="pf-button pf-lab__reset" data-reset>${t('배치 되돌리기', 'Reset layout')}</button>
         </div>
       </div>
       <div class="pf-lab__view">
-        <canvas class="pf-lab__canvas pf-lab__canvas--3d" tabindex="0" role="application" aria-label="공간음향 차폐 데모 3D 장면" aria-describedby="${helpId}"></canvas>
+        <canvas class="pf-lab__canvas pf-lab__canvas--3d" tabindex="0" role="application" aria-label="${t('공간음향 차폐 데모 3D 장면', 'Spatial audio occlusion demo 3D scene')}" aria-describedby="${helpId}"></canvas>
         <div class="pf-lab__labels" aria-hidden="true">
           <span class="pf-lab__label" data-label="listener">${NAMES.listener}</span>
           <span class="pf-lab__label" data-label="source">${NAMES.source}</span>
           <span class="pf-lab__label pf-lab__label--virtual" data-label="virtual" hidden>${NAMES.virtual}</span>
         </div>
-        <p class="pf-lab__hint" aria-hidden="true" data-hint>3D · 끌어서 돌려 보기</p>${soundGateMarkup()}
+        <p class="pf-lab__hint" aria-hidden="true" data-hint>${t('3D · 끌어서 돌려 보기', '3D · Drag to rotate')}</p>${soundGateMarkup()}
       </div>${soundControlsMarkup()}
-      <ul class="pf-lab__legend" aria-label="장면 보는 법">
-        <li><span class="pf-lab__key pf-lab__key--wall" aria-hidden="true"></span>블록</li>
-        <li><span class="pf-lab__key pf-lab__key--dot" aria-hidden="true"></span>A* 가 우회 경로를 찾으며 살펴본 칸</li>
-        <li><span class="pf-lab__key pf-lab__key--path" aria-hidden="true"></span>우회 경로</li>
-        <li><span class="pf-lab__key pf-lab__key--blocked" aria-hidden="true"></span>막힌 직선 레이</li>
-        <li><span class="pf-lab__key pf-lab__key--virtual" aria-hidden="true"></span>회절 가상 음원 (소리가 들려오는 자리)</li>
+      <ul class="pf-lab__legend" aria-label="${t('장면 범례', 'Scene legend')}">
+        <li><span class="pf-lab__key pf-lab__key--wall" aria-hidden="true"></span>${t('블록', 'Block')}</li>
+        <li><span class="pf-lab__key pf-lab__key--dot" aria-hidden="true"></span>${t('A* 가 우회 경로를 찾으며 살펴본 칸', 'Cells A* explored while searching for a detour')}</li>
+        <li><span class="pf-lab__key pf-lab__key--path" aria-hidden="true"></span>${t('우회 경로', 'Detour path')}</li>
+        <li><span class="pf-lab__key pf-lab__key--blocked" aria-hidden="true"></span>${t('막힌 직선 레이', 'Blocked direct ray')}</li>
+        <li><span class="pf-lab__key pf-lab__key--virtual" aria-hidden="true"></span>${t('회절 가상 음원 (소리가 들려오는 자리)', 'Diffraction virtual source (where the sound comes from)')}</li>
       </ul>
       <div class="pf-lab__help" id="${helpId}">
-        <p>가상 음원 스위치를 켜면 직선이 막혔을 때 소리가 들려오는 자리를 그립니다. 우회 경로에서 청취자에게 보이는 마지막 꺾인 점(문, 벽 끝) 방향으로 직선 거리만큼 떨어진 자리이고, 실제 구현에서는 이 위치를 Wwise 음원 포지션으로 넘겨 벽 너머가 아니라 뚫린 쪽에서 들리게 했습니다.</p>
-        <p>화면을 끌면 시점이 돌아가고 청취자와 음원은 끌어서 옮깁니다. 블록 놓기를 고른 뒤 바닥이나 블록 면을 누르면 그 자리에 블록이 생기고 블록 지우기를 고른 뒤 누르면 지워집니다. 벽에 가린 점과 경로는 흐리게 비쳐 보입니다.</p>
-        <p>키보드로는 방향키로 선택한 점을 옮기고 PageUp / PageDown 으로 높이를 바꿉니다. Space 로 청취자 / 음원을 바꾸고 [ ] 로 시점을 돌립니다. 확대는 Ctrl + 휠이나 두 손가락으로 합니다.</p>
+        <p>${t(
+          '가상 음원 스위치를 켜면 직선이 막혔을 때 소리가 들려오는 자리를 그립니다. 우회 경로에서 청취자에게 보이는 마지막 꺾인 점(문, 벽 끝) 방향으로 직선 거리만큼 떨어진 자리이고, 실제 구현에서는 이 위치를 Wwise 음원 포지션으로 넘겨 벽 너머가 아니라 뚫린 쪽에서 들리게 했습니다.',
+          'Turn on Virtual source to see where the sound comes from when the direct line is blocked. It sits toward the last corner on the detour path that the listener can see (a door or wall edge), at the direct distance. In the real implementation, this position was passed to Wwise as the emitter position, so the sound comes from the opening instead of through the wall.',
+        )}</p>
+        <p>${t(
+          '화면을 끌면 시점이 돌아가고 청취자와 음원은 끌어서 옮깁니다. 블록 놓기를 고른 뒤 바닥이나 블록 면을 누르면 그 자리에 블록이 생기고, 블록 지우기를 고른 뒤 누르면 지워집니다. 벽에 가린 점과 경로는 흐리게 비쳐 보입니다.',
+          'Drag the view to rotate it, and drag the listener and source to move them. With Place block selected, click the floor or a block face to add a block there; with Remove block selected, click a block to delete it. Points and paths hidden behind walls show through faintly.',
+        )}</p>
+        <p>${t(
+          '키보드로는 방향키로 선택한 점을 옮기고 PageUp / PageDown 으로 높이를 바꿉니다. Space 로 청취자 / 음원을 바꾸고 [ ] 로 시점을 돌립니다. 확대는 Ctrl + 휠이나 두 손가락으로 합니다.',
+          'With the keyboard, arrow keys move the selected point and PageUp / PageDown change its height. Space switches between listener and source, and [ ] rotate the view. Zoom with Ctrl + wheel or a two-finger pinch.',
+        )}</p>
         ${soundHelpMarkup()}
       </div>
     </div>
@@ -1045,8 +1055,11 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
 
   function announce(prefix) {
     const r = result;
-    const los = r.los.blocked ? '직선 레이 막힘' : '직선 레이 통과';
-    live.textContent = `${prefix ? `${prefix}. ` : ''}${los}, 차폐 계수 ${r.occlusion.toFixed(2)}, 밀폐도 ${r.enclosure.openness.toFixed(2)}`;
+    const los = r.los.blocked ? t('직선 레이 막힘', 'Direct ray blocked') : t('직선 레이 통과', 'Direct ray clear');
+    const occlusion = r.occlusion.toFixed(2);
+    const openness = r.enclosure.openness.toFixed(2);
+    const status = t(`${los}, 차폐 계수 ${occlusion}, 밀폐도 ${openness}`, `${los}, occlusion ${occlusion}, enclosure ${openness}`);
+    live.textContent = `${prefix ? `${prefix}. ` : ''}${status}`;
   }
 
   function loadScene(index, message) {
@@ -1135,7 +1148,7 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
     scene.grid.set(cell.x, cell.y, cell.z, cell.kind === 'erase' ? OPEN : WALL);
     rebuildBlocks();
     update();
-    announce(cell.kind === 'erase' ? '블록 지움' : '블록 놓음');
+    announce(cell.kind === 'erase' ? t('블록 지움', 'Block removed') : t('블록 놓음', 'Block placed'));
   }
 
   function hideHint() {
@@ -1221,7 +1234,7 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
       // 마우스는 그 자리에 그대로 있으니, 바뀐 장면 기준으로 미리보기를 다시 잡습니다.
       if (event.pointerType !== 'touch') setHover(target(ray));
     } else if (ended.kind === 'handle') {
-      announce(`${NAMES[ended.which]} 이동`);
+      announce(t(`${NAMES[ended.which]} 이동`, `${NAMES[ended.which]} moved`));
     }
   };
   canvas.addEventListener('pointerup', endPointer);
@@ -1266,9 +1279,14 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
       event.preventDefault();
       if (moveHandle(active, next)) {
         update();
-        announce(`${NAMES[active]} 가로 ${next.x + 1}, 세로 ${next.z + 1}, 높이 ${next.y}`);
+        announce(
+          t(
+            `${NAMES[active]} 가로 ${next.x + 1}, 세로 ${next.z + 1}, 높이 ${next.y}`,
+            `${NAMES[active]} at X ${next.x + 1}, Z ${next.z + 1}, height ${next.y}`,
+          ),
+        );
       } else {
-        announce(`${NAMES[active]}, 그쪽으로는 옮길 수 없습니다`);
+        announce(t(`${NAMES[active]}, 그쪽으로는 옮길 수 없습니다`, `${NAMES[active]} can't move there`));
       }
       return;
     }
@@ -1276,7 +1294,7 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
       event.preventDefault();
       active = active === 'source' ? 'listener' : 'source';
       requestDraw();
-      live.textContent = `${NAMES[active]} 선택`;
+      live.textContent = t(`${NAMES[active]} 선택`, `${NAMES[active]} selected`);
     } else if (event.key === '[' || event.key === ']') {
       event.preventDefault();
       orbit.theta += event.key === '[' ? -Math.PI / 12 : Math.PI / 12;
@@ -1305,7 +1323,7 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
   });
 
   presetButtons.forEach((button, index) => {
-    button.addEventListener('click', () => loadScene(index, `${scenes[index].name} 배치`));
+    button.addEventListener('click', () => loadScene(index, t(`${scenes[index].name} 배치`, `${scenes[index].name} layout`)));
   });
   toolButtons.forEach((button) => {
     button.addEventListener('click', () => {
@@ -1315,7 +1333,7 @@ export function mountSpatialAudio3D(container, { presets, idPrefix = 'spatial-au
     });
   });
   container.querySelector('[data-reset]').addEventListener('click', () => {
-    loadScene(presetIndex, '배치를 처음으로 되돌렸습니다');
+    loadScene(presetIndex, t('배치를 처음으로 되돌렸습니다', 'Layout reset'));
   });
   raysSwitch.addEventListener('click', () => {
     showRays = !showRays;

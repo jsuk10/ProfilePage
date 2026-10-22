@@ -9,6 +9,7 @@
 // 계수는 시연용 값입니다.
 
 import { escapeHtml } from './markdown.js';
+import { t } from './i18n.js';
 import { soundGateMarkup, soundControlsMarkup, soundReadoutMarkup, soundHelpMarkup, bindSound } from './spatial-audio-sound.js';
 
 export const OCCLUSION_K = 1.6;
@@ -33,7 +34,7 @@ const NEIGHBORS = [
   [1, 1, Math.SQRT2], [1, -1, Math.SQRT2], [-1, 1, Math.SQRT2], [-1, -1, Math.SQRT2],
 ];
 
-const NAMES = { listener: '청취자', source: '음원', virtual: '가상 음원' };
+const NAMES = { listener: t('청취자', 'Listener'), source: t('음원', 'Source'), virtual: t('가상 음원', 'Virtual source') };
 
 const reduceMotion =
   typeof window !== 'undefined' && window.matchMedia
@@ -361,31 +362,31 @@ function curveMarkup(titleId) {
   return `
     <figure class="pf-curve">
       <svg viewBox="0 0 240 136" role="img" aria-labelledby="${titleId}">
-        <title id="${titleId}">차폐 계수 곡선. 우회 비율이 커질수록 차폐 계수가 1에 가까워지고, 포화 임계에서 탐색을 멈춥니다.</title>
+        <title id="${titleId}">${t('차폐 계수 곡선. 우회 비율이 커질수록 차폐 계수가 1에 가까워지고, 포화 임계에서 탐색을 멈춥니다.', 'Occlusion factor curve. The factor approaches 1 as the detour ratio grows, and the search stops at the saturation threshold.')}</title>
         <g class="pf-curve__grid">${gridLines}</g>
         <path class="pf-curve__area" d="${area}"/>
         <line class="pf-curve__cutoff" x1="${cutoffX}" x2="${cutoffX}" y1="${CURVE.top}" y2="${CURVE.bottom}"/>
-        <text class="pf-curve__note" x="${Number(cutoffX) - 4}" y="${CURVE.bottom - 6}" text-anchor="end">컷오프</text>
+        <text class="pf-curve__note" x="${Number(cutoffX) - 4}" y="${CURVE.bottom - 6}" text-anchor="end">${t('컷오프', 'Cutoff')}</text>
         <path class="pf-curve__line" d="${line}"/>
         <g class="pf-curve__ticks">${xTicks}${yTicks}</g>
-        <text class="pf-curve__axis" x="${(CURVE.left + CURVE.right) / 2}" y="134" text-anchor="middle">우회 비율</text>
+        <text class="pf-curve__axis" x="${(CURVE.left + CURVE.right) / 2}" y="134" text-anchor="middle">${t('우회 비율', 'Detour ratio')}</text>
         <g class="pf-curve__marker" data-curve-marker>
           <line class="pf-curve__guide" data-guide="x"/>
           <line class="pf-curve__guide" data-guide="y"/>
           <circle r="4.5" data-dot/>
         </g>
       </svg>
-      <figcaption>우회 비율이 커질수록 1에 수렴하는 지수 포화 곡선입니다. 곡선 모양은 데모용이고, 점은 근접 보정 전 값입니다.</figcaption>
+      <figcaption>${t('우회 비율이 커질수록 1에 수렴하는 지수 포화 곡선입니다. 곡선 모양은 데모용이고, 점은 근접 보정 전 값입니다.', 'An exponential saturation curve that approaches 1 as the detour ratio grows. The shape is for the demo; the dot shows the value before near-field scaling.')}</figcaption>
     </figure>`;
 }
 
 const READOUT = [
-  ['straight', '직선 거리'],
-  ['los', '직선 레이'],
-  ['path', '우회 경로'],
-  ['ratio', '우회 비율'],
-  ['expanded', 'A* 확장 칸'],
-  ['near', '근접 보정'],
+  ['straight', t('직선 거리', 'Direct distance')],
+  ['los', t('직선 레이', 'Direct ray')],
+  ['path', t('우회 경로', 'Detour path')],
+  ['ratio', t('우회 비율', 'Detour ratio')],
+  ['expanded', t('A* 확장 칸', 'A* cells expanded')],
+  ['near', t('근접 보정', 'Near-field scale')],
 ];
 
 export function panelMarkup(titleId, extra = '') {
@@ -403,8 +404,8 @@ export function panelMarkup(titleId, extra = '') {
   return `
     <dl class="pf-readout">
       ${rows}
-      ${meter('occlusion', '차폐 계수')}
-      ${meter('enclosure', '밀폐도', '1 = 개방')}
+      ${meter('occlusion', t('차폐 계수', 'Occlusion factor'))}
+      ${meter('enclosure', t('밀폐도', 'Enclosure'), t('1 = 개방', '1 = open'))}
     </dl>
     ${extra}
     ${curveMarkup(titleId)}`;
@@ -423,24 +424,24 @@ export function bindPanel(root) {
   return function render(r) {
     const fixed = (value, digits) => value.toFixed(digits);
     outputs.straight.textContent = `${fixed(r.straight, 1)}m`;
-    outputs.los.textContent = r.los.blocked ? '막힘' : '통과';
+    outputs.los.textContent = r.los.blocked ? t('막힘', 'Blocked') : t('통과', 'Clear');
     outputs.los.dataset.state = r.los.blocked ? 'blocked' : 'clear';
 
     if (!r.search) {
-      outputs.path.textContent = '탐색 안 함';
+      outputs.path.textContent = t('탐색 안 함', 'Not searched');
       outputs.ratio.textContent = '0';
-      outputs.expanded.textContent = '0칸';
+      outputs.expanded.textContent = t('0칸', '0 cells');
     } else {
-      outputs.expanded.textContent = `${r.search.expanded}칸`;
+      outputs.expanded.textContent = t(`${r.search.expanded}칸`, `${r.search.expanded} cells`);
       if (r.search.status === 'found') {
         outputs.path.textContent = `${fixed(r.search.length, 1)}m`;
         outputs.ratio.textContent = fixed(r.ratio, 2);
       } else if (r.search.status === 'cutoff') {
-        outputs.path.textContent = '컷오프 (포화)';
-        outputs.ratio.textContent = `${fixed(SATURATION_RATIO, 2)} 이상`;
+        outputs.path.textContent = t('컷오프 (포화)', 'Cutoff (saturated)');
+        outputs.ratio.textContent = t(`${fixed(SATURATION_RATIO, 2)} 이상`, `≥ ${fixed(SATURATION_RATIO, 2)}`);
       } else {
-        outputs.path.textContent = '경로 없음';
-        outputs.ratio.textContent = '측정 불가';
+        outputs.path.textContent = t('경로 없음', 'No path');
+        outputs.ratio.textContent = t('측정 불가', 'N/A');
       }
     }
     outputs.near.textContent = `× ${fixed(r.near, 2)}`;
@@ -498,38 +499,43 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
   container.innerHTML = `
     <div class="pf-lab__stage">
       <div class="pf-lab__toolbar">
-        <div class="pf-segmented" role="group" aria-label="배치">
+        <div class="pf-segmented" role="group" aria-label="${t('배치', 'Layout')}">
           ${scenes
             .map(
               (scene, index) =>
-                `<button type="button" class="pf-button pf-segmented__item" data-preset="${index}" aria-pressed="${index === 0}">${escapeHtml(scene.name || `배치 ${index + 1}`)}</button>`,
+                `<button type="button" class="pf-button pf-segmented__item" data-preset="${index}" aria-pressed="${index === 0}">${escapeHtml(scene.name || t(`배치 ${index + 1}`, `Layout ${index + 1}`))}</button>`,
             )
             .join('')}
         </div>
         <div class="pf-lab__actions">
           <button type="button" class="pf-button pf-switch" role="switch" aria-checked="true" data-virtual>
-            <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>가상 음원
+            <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>${t('가상 음원', 'Virtual source')}
           </button>
           <button type="button" class="pf-button pf-switch" role="switch" aria-checked="false" data-rays>
-            <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>밀폐도 레이
+            <span class="pf-switch__track" aria-hidden="true"><span class="pf-switch__thumb"></span></span>${t('밀폐도 레이', 'Enclosure rays')}
           </button>
-          <button type="button" class="pf-button pf-lab__reset" data-reset>배치 되돌리기</button>
+          <button type="button" class="pf-button pf-lab__reset" data-reset>${t('배치 되돌리기', 'Reset layout')}</button>
         </div>
       </div>
       <div class="pf-lab__view">
-        <canvas class="pf-lab__canvas" tabindex="0" role="application" aria-label="공간음향 차폐 데모 그리드" aria-describedby="${helpId}"></canvas>${soundGateMarkup()}
+        <canvas class="pf-lab__canvas" tabindex="0" role="application" aria-label="${t('공간음향 차폐 데모 그리드', 'Spatial audio occlusion demo grid')}" aria-describedby="${helpId}"></canvas>${soundGateMarkup()}
       </div>${soundControlsMarkup()}
-      <ul class="pf-lab__legend" aria-label="그리드 보는 법">
-        <li><span class="pf-lab__key pf-lab__key--wall" aria-hidden="true"></span>벽</li>
-        <li><span class="pf-lab__key pf-lab__key--explored" aria-hidden="true"></span>A* 가 우회 경로를 찾으며 살펴본 칸</li>
-        <li><span class="pf-lab__key pf-lab__key--path" aria-hidden="true"></span>우회 경로</li>
-        <li><span class="pf-lab__key pf-lab__key--blocked" aria-hidden="true"></span>막힌 직선 레이</li>
-        <li><span class="pf-lab__key pf-lab__key--virtual" aria-hidden="true"></span>회절 가상 음원 (소리가 들려오는 자리)</li>
+      <ul class="pf-lab__legend" aria-label="${t('그리드 범례', 'Grid legend')}">
+        <li><span class="pf-lab__key pf-lab__key--wall" aria-hidden="true"></span>${t('벽', 'Wall')}</li>
+        <li><span class="pf-lab__key pf-lab__key--explored" aria-hidden="true"></span>${t('A* 가 우회 경로를 찾으며 살펴본 칸', 'Cells A* explored while searching for a detour')}</li>
+        <li><span class="pf-lab__key pf-lab__key--path" aria-hidden="true"></span>${t('우회 경로', 'Detour path')}</li>
+        <li><span class="pf-lab__key pf-lab__key--blocked" aria-hidden="true"></span>${t('막힌 직선 레이', 'Blocked direct ray')}</li>
+        <li><span class="pf-lab__key pf-lab__key--virtual" aria-hidden="true"></span>${t('회절 가상 음원 (소리가 들려오는 자리)', 'Diffraction virtual source (where the sound comes from)')}</li>
       </ul>
       <div class="pf-lab__help" id="${helpId}">
-        <p>가상 음원 스위치를 켜면 직선이 막혔을 때 소리가 들려오는 자리를 그립니다. 우회 경로에서 청취자에게 보이는 마지막 꺾인 점(문, 벽 끝) 방향으로 직선 거리만큼 떨어진 자리이고, 실제 구현에서는 이 위치를 Wwise 음원 포지션으로 넘겨 벽 너머가 아니라 뚫린 쪽에서 들리게 했습니다.</p>
-        <p>청취자와 음원 점을 끌어 옮기고, 빈 칸을 누르거나 끌면 벽을 세우고 벽을 누르면 지웁니다.
-        키보드로는 방향키로 선택한 점을 옮기고, Space 로 청취자 / 음원을 바꿉니다.</p>
+        <p>${t(
+          '가상 음원 스위치를 켜면 직선이 막혔을 때 소리가 들려오는 자리를 그립니다. 우회 경로에서 청취자에게 보이는 마지막 꺾인 점(문, 벽 끝) 방향으로 직선 거리만큼 떨어진 자리이고, 실제 구현에서는 이 위치를 Wwise 음원 포지션으로 넘겨 벽 너머가 아니라 뚫린 쪽에서 들리게 했습니다.',
+          'Turn on Virtual source to see where the sound comes from when the direct line is blocked. It sits toward the last corner on the detour path that the listener can see (a door or wall edge), at the direct distance. In the real implementation, this position was passed to Wwise as the emitter position, so the sound comes from the opening instead of through the wall.',
+        )}</p>
+        <p>${t(
+          '청취자와 음원 점을 끌어 옮기고, 빈 칸을 누르거나 끌면 벽을 세우고 벽을 누르면 지웁니다. 키보드로는 방향키로 선택한 점을 옮기고, Space 로 청취자 / 음원을 바꿉니다.',
+          'Drag the listener and source to move them. Click or drag across empty cells to build walls, and click a wall to remove it. With the keyboard, arrow keys move the selected point and Space switches between listener and source.',
+        )}</p>
         ${soundHelpMarkup()}
       </div>
     </div>
@@ -852,8 +858,11 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
 
   function announce(prefix) {
     const r = result;
-    const los = r.los.blocked ? '직선 레이 막힘' : '직선 레이 통과';
-    live.textContent = `${prefix ? `${prefix}. ` : ''}${los}, 차폐 계수 ${r.occlusion.toFixed(2)}, 밀폐도 ${r.enclosure.openness.toFixed(2)}`;
+    const los = r.los.blocked ? t('직선 레이 막힘', 'Direct ray blocked') : t('직선 레이 통과', 'Direct ray clear');
+    const occlusion = r.occlusion.toFixed(2);
+    const openness = r.enclosure.openness.toFixed(2);
+    const status = t(`${los}, 차폐 계수 ${occlusion}, 밀폐도 ${openness}`, `${los}, occlusion ${occlusion}, enclosure ${openness}`);
+    live.textContent = `${prefix ? `${prefix}. ` : ''}${status}`;
   }
 
   function loadScene(index, message) {
@@ -944,7 +953,12 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
 
   const endDrag = (event) => {
     if (!drag || !event.isPrimary) return;
-    const message = drag.kind === 'handle' ? `${NAMES[drag.which]} 이동` : drag.value === WALL ? '벽 세움' : '벽 지움';
+    const message =
+      drag.kind === 'handle'
+        ? t(`${NAMES[drag.which]} 이동`, `${NAMES[drag.which]} moved`)
+        : drag.value === WALL
+          ? t('벽 세움', 'Wall added')
+          : t('벽 지움', 'Wall removed');
     drag = null;
     canvas.style.cursor = handleAt(event) ? 'grab' : 'crosshair';
     announce(message);
@@ -963,23 +977,23 @@ export function mountSpatialAudioDemo(container, { presets, idPrefix = 'spatial-
         update();
         announce(`${NAMES[active]} ${scene[active].x + 1}, ${scene[active].y + 1}`);
       } else {
-        announce(`${NAMES[active]}, 그쪽으로는 옮길 수 없습니다`);
+        announce(t(`${NAMES[active]}, 그쪽으로는 옮길 수 없습니다`, `${NAMES[active]} can't move there`));
       }
     } else if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault();
       active = active === 'source' ? 'listener' : 'source';
       requestDraw();
-      live.textContent = `${NAMES[active]} 선택`;
+      live.textContent = t(`${NAMES[active]} 선택`, `${NAMES[active]} selected`);
     }
   });
   canvas.addEventListener('focus', requestDraw);
   canvas.addEventListener('blur', requestDraw);
 
   presetButtons.forEach((button, index) => {
-    button.addEventListener('click', () => loadScene(index, `${scenes[index].name} 배치`));
+    button.addEventListener('click', () => loadScene(index, t(`${scenes[index].name} 배치`, `${scenes[index].name} layout`)));
   });
   container.querySelector('[data-reset]').addEventListener('click', () => {
-    loadScene(presetIndex, '배치를 처음으로 되돌렸습니다');
+    loadScene(presetIndex, t('배치를 처음으로 되돌렸습니다', 'Layout reset'));
   });
   raysSwitch.addEventListener('click', () => {
     showRays = !showRays;

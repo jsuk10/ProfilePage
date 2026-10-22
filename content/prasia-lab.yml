@@ -15,15 +15,15 @@
 
 title: 프라시아 전기 툴 데모
 lead: >-
-  프라시아 전기에서 만든 툴 세 가지를 데모로 옮겼습니다. 눌러 보세요. 지도, 수치, 에셋 이름은 데모용입니다.
+  프라시아 전기에서 만든 툴 세 가지를 데모로 재현. 눌러 보세요. 지도, 수치, 에셋 이름은 데모용.
 
 demos:
   - kind: nevercook
     wide: true
     title: NeverCook 비주얼 툴
     text: >-
-      쿠킹(패키징)에서 빼는 NeverCook 폴더와 에셋을 콘텐츠 브라우저 위에 아이콘으로 보여 주는 에디터 확장입니다.
-      폴더나 섬네일을 누르면 NeverCook 에 넣거나 빼고, 필터로 NeverCook 만 모아 볼 수 있습니다.
+      쿠킹(패키징)에서 빼는 NeverCook 폴더와 에셋을 콘텐츠 브라우저 위에 아이콘으로 표시하는 에디터 확장.
+      폴더나 섬네일을 누르면 NeverCook 에 넣거나 빼고, 필터로 NeverCook 만 모아 보기.
     sprite: images/work/nexon-nevercook-thumbs.png
     columns: 6
     path: Content › Materials
@@ -45,8 +45,8 @@ demos:
   - kind: tray
     title: 윈도우 트레이 알림 + 풍선 메시지
     text: >-
-      게임 창을 트레이로 숨겨 두어도 파티 초대 같은 이벤트를 놓치지 않게 Win API 로 트레이 아이콘과 풍선 메시지를 붙였습니다.
-      알림을 보내 풍선 메시지를 눌러 보고, 작업 표시줄 오른쪽 아래 트레이 아이콘이나 '트레이 메뉴 열기' 버튼으로 Show Game / Hide Game / Exit 메뉴도 눌러 보세요.
+      게임 창을 트레이로 숨겨도 파티 초대 같은 이벤트를 놓치지 않도록 Win API 로 트레이 아이콘과 풍선 메시지 추가.
+      알림을 보낸 뒤 풍선 메시지를 눌러 보고, 작업 표시줄 오른쪽 아래 트레이 아이콘이나 '트레이 메뉴 열기' 버튼으로 Show Game / Hide Game / Exit 메뉴도 눌러 보세요.
     app: 프라시아 전기
     event: 파티 초대
     balloon: images/work/nexon-tray-balloon.png
@@ -55,8 +55,8 @@ demos:
   - kind: minimap
     title: 렌더링 지표 미니맵
     text: >-
-      게임 안 웨이포인트를 순회하며 노드마다 DrawCall 과 Primitive 를 재서 미니맵에 색으로 표시하는 툴입니다.
-      기준을 넘는 노드가 최적화 우선순위가 되고 주기적으로 프로파일 데이터와 가이드라인을 함께 냈습니다.
+      게임 안 웨이포인트를 순회하며 노드마다 DrawCall 과 Primitive 를 재서 미니맵에 색으로 표시하는 툴.
+      기준을 넘는 노드를 최적화 우선순위로 삼고, 프로파일 데이터와 가이드라인을 주기적으로 배포.
     threshold: 1500
     zones:
       - { kind: water, x: 0, y: 0.62, w: 0.3, h: 0.38 }

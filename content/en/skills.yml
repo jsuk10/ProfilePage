@@ -1,0 +1,80 @@
+title: Skills
+lead: |-
+  Proficiency by area, built over {total} from pre-launch development to live service.
+
+  Click a button on the right to jump to the related career detail.
+
+rows:
+  - area: Engine / Editor
+    summary: Traced root causes down to engine source; built editor tools as needed
+    detail: >-
+      Unreal Engine 4.27 → 5 ({total}). Slate window / viewport tools, editor subsystems,
+      internal plugin modifications (Mutable / Niagara), engine-source-level root-cause tracing and fixes
+    projects:
+      - name: NCSOFT
+        ref: like-or-die#load-performance
+      - name: Nexon
+        ref: prasia#editor-tooling
+
+  - area: Performance / Profiling
+    summary: Found bottlenecks by measurement, fixed them, and verified by re-measuring under identical conditions
+    detail: >-
+      Unreal Insights before/after 1:1 comparison, reproducible measurement (fixed GC timing, control group),
+      async preload / component pooling design, mobile PSO cache, Animation Budget Allocator tuning
+    projects:
+      - name: NCSOFT
+        ref: like-or-die#load-performance
+      - name: Nexon
+        ref: prasia#performance
+
+  - area: Sound (Wwise)
+    summary: Designed Wwise playback architecture and real-time spatial audio computation
+    detail: >-
+      Playback subsystem + audio component pooling, real-time occlusion / enclosure calculation (multithreaded), virtual sources along detour paths,
+      Motion, localization, WAAPI offline render tool, live maintenance (no-playback / Starvation analysis)
+    projects:
+      - name: NCSOFT
+        ref: like-or-die#sound
+      - name: Nexon
+        ref: prasia#audio-plugins
+
+  - area: Network / Replay
+    summary: Built recording, segment playback, and spectating on top of engine replay
+    detail: >-
+      DemoNetDriver recording / playback, segment cutting, state restoration after Seek, replay-only replication conditions, spectator target tracking
+    projects:
+      - name: NCSOFT
+        ref: like-or-die#replay
+
+  - area: Build / CI / SCM
+    summary: Built alerts that reach whoever can fix a broken build, right away
+    detail: >-
+      Jenkins / TeamCity step design, per-stream cross builds, automated symbol backup,
+      mentioning authors of failing revisions, Perforce operations support
+    projects:
+      - name: Nexon
+        ref: prasia#ci-cd
+      - name: NCSOFT
+        ref: like-or-die#build-alert
+
+  - area: Platform / Plugin Operations
+    summary: Owned crash-collection tooling from adoption to operation; handled platform issues
+    detail: >-
+      Backtrace adoption and operation (symbol tagging, ANR / OOM metrics, native error handling via SDK source analysis),
+      Vivox, iOS provisioning / store policy, Android post-hoc OOM management, gamepad vibration
+    projects:
+      - name: Nexon
+        ref: prasia#backtrace
+      - name: NCSOFT
+        ref: like-or-die#etc
+
+  - area: Automation / ML
+    summary: Offloaded repetitive work to tools; integrated ML models into the editor
+    detail: >-
+      Python utilities and a simple launcher, Power Automate → Teams alerts,
+      PyTorch → ONNX → UE NNE editor inference pipeline
+    projects:
+      - name: Nexon
+        ref: prasia#ci-cd
+      - name: NCSOFT
+        ref: like-or-die#ml-notify

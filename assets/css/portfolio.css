@@ -335,6 +335,87 @@
 
 	}
 
+/* Language toggle (우상단 KO / EN, assets/js/portfolio/i18n.js) */
+
+	.pf-lang {
+		backdrop-filter: blur(8px);
+		background: rgba(30, 13, 66, 0.72);
+		border: 1px solid var(--pf-line-strong);
+		border-radius: 999px;
+		box-sizing: border-box;
+		display: flex;
+		font-size: 0.75rem;
+		gap: 2px;
+		height: 2rem;
+		line-height: 1;
+		padding: 3px;
+		position: fixed;
+		right: 1.5rem;
+		top: 1.25rem;
+		z-index: 10001;
+	}
+
+		.pf-lang a {
+			align-items: center;
+			border-bottom: 0;
+			border-radius: 999px;
+			color: var(--pf-text-muted);
+			font-weight: 600;
+			letter-spacing: 0.12em;
+			display: flex;
+			padding: 0 0.85em 0 0.97em;
+			text-decoration: none;
+			transition: background-color 0.2s var(--pf-ease-out), color 0.2s var(--pf-ease-out);
+		}
+
+			.pf-lang a:hover {
+				color: var(--pf-ink);
+			}
+
+			.pf-lang a[aria-current] {
+				background: var(--pf-accent);
+				color: var(--pf-accent-ink);
+			}
+
+			.pf-lang a:focus-visible {
+				outline: 2px solid var(--pf-accent);
+				outline-offset: 2px;
+			}
+
+	html.is-embed .pf-lang {
+		display: none;
+	}
+
+	/* 1400px 이하: 위쪽 막대(3.5em = 56px) 오른쪽 끝에 세로 가운데로 놓고, 메뉴가 토글 밑으로 들어가지 않게 비웁니다. */
+	@media screen and (max-width: 1400px) {
+
+		.pf-lang {
+			backdrop-filter: none;
+			background: transparent;
+			right: 1rem;
+			top: calc(1.75rem - 1rem);
+		}
+
+		#sidebar nav ul {
+			margin-right: 7.5rem;
+		}
+
+	}
+
+	@media screen and (max-width: 736px) {
+
+		/* 막대가 3em(48px)으로 얇아집니다. */
+		.pf-lang {
+			right: 0.75rem;
+			top: calc(1.5rem - 1rem);
+		}
+
+		#sidebar nav ul {
+			margin-right: 7rem;
+		}
+
+	}
+
 /* Intro */
 
 	/* 템플릿의 #intro p { font-size: 1.25em } 을 되돌립니다. */

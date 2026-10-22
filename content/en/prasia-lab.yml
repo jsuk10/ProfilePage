@@ -1,0 +1,63 @@
+title: Wars of Prasia Tool Demos
+lead: >-
+  Three tools built for Wars of Prasia, recreated as demos. Try clicking them. Maps, numbers and asset names are for demo only.
+
+demos:
+  - kind: nevercook
+    wide: true
+    title: NeverCook Visual Tool
+    text: >-
+      Editor extension that shows NeverCook folders and assets (excluded from cooking/packaging) as icons in the Content Browser.
+      Click a folder or thumbnail to add it to or remove it from NeverCook; use the filter to show only NeverCook items.
+    sprite: images/work/nexon-nevercook-thumbs.png
+    columns: 6
+    path: Content › Materials
+    folders:
+      - name: Dev
+        nevercook: true
+      - name: Shared
+    assets:
+      - M_AssetPlatform
+      - M_Basic_Floor
+      - M_Brick_Clay_Beveled
+      - M_Brick_Hewn_Stone
+      - M_CobbleStone_Pebble
+      - M_CobbleStone_Rough
+    marked:
+      - M_Brick_Clay_Beveled
+      - M_CobbleStone_Rough
+
+  - kind: tray
+    title: Windows Tray Notification + Balloon Message
+    text: >-
+      Added a tray icon and balloon messages via Win API so events like party invites aren't missed while the game window is hidden in the tray.
+      Send a notification and click the balloon message, then try the Show Game / Hide Game / Exit menu from the tray icon at the bottom right of the taskbar or the 'Open tray menu' button.
+    app: Wars of Prasia
+    event: Party Invite
+    balloon: images/work/nexon-tray-balloon.png
+    window: images/warofprasia.jpg
+
+  - kind: minimap
+    title: Rendering Metrics Minimap
+    text: >-
+      Tool that tours in-game waypoints, measures DrawCall and Primitive count at each node and color-codes them on a minimap.
+      Nodes over the threshold became optimization priorities; profile data and guidelines were shared periodically.
+    threshold: 1500
+    zones:
+      - { kind: water, x: 0, y: 0.62, w: 0.3, h: 0.38 }
+      - { kind: forest, x: 0.48, y: 0.04, w: 0.3, h: 0.3 }
+      - { kind: town, x: 0.1, y: 0.18, w: 0.22, h: 0.26 }
+      - { kind: town, x: 0.62, y: 0.52, w: 0.26, h: 0.3 }
+      - { kind: forest, x: 0.84, y: 0.08, w: 0.14, h: 0.36 }
+    waypoints:
+      - { name: Golden Harbor Docks, x: 0.14, y: 0.7, draw: 1840, prims: 2.9 }
+      - { name: Golden Harbor Market, x: 0.2, y: 0.48, draw: 2310, prims: 3.6 }
+      - { name: Castle Gate Plaza, x: 0.3, y: 0.3, draw: 1620, prims: 2.4 }
+      - { name: North Forest Trail, x: 0.46, y: 0.16, draw: 760, prims: 1.1 }
+      - { name: Forest Altar, x: 0.62, y: 0.12, draw: 980, prims: 1.6 }
+      - { name: Canyon Bridge, x: 0.76, y: 0.28, draw: 1180, prims: 1.5 }
+      - { name: Fortress Outer Wall, x: 0.86, y: 0.46, draw: 1430, prims: 2.2 }
+      - { name: Fortress Keep, x: 0.74, y: 0.64, draw: 2560, prims: 4.1 }
+      - { name: Battlefield Center, x: 0.56, y: 0.74, draw: 2050, prims: 3.3 }
+      - { name: Farmland, x: 0.4, y: 0.86, draw: 690, prims: 0.9 }
+      - { name: Abandoned Mine Entrance, x: 0.34, y: 0.58, draw: 1120, prims: 1.7 }

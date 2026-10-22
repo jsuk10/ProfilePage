@@ -22,6 +22,14 @@ https://jsuk10.github.io/ProfilePage/
 - 공간음향: `?embed=spatial-audio`
 - 툴 데모: `?embed=섹션id--kind` 예) `prasia-lab--nevercook`, `prasia-lab--tray`, `prasia-lab--minimap`, `like-or-die-lab--notify`
 
+### 한국어 / 영어
+
+오른쪽 위 KO / EN 토글로 언어를 바꿉니다. 처음 열면 시스템(브라우저) 언어가 한국어일 때 한국어, 아니면 영어로 보입니다.
+주소에 `?lang=ko` 나 `?lang=en` 을 붙이면 그 언어로 고정됩니다. (끼워 넣는 데모도 `?embed=spatial-audio&lang=en`)
+
+- 영어 글은 `content/en/` 에 한국어판과 같은 파일 이름, 같은 키 구조로 둡니다.
+- JS 안에 적힌 버튼·제목 글은 `t('한국어', 'English')` 로 함께 적습니다. (`assets/js/portfolio/i18n.js`)
+
 ### 사용한 라이브러리
 
 - [js-yaml](https://github.com/nodeca/js-yaml) 4.1.0 (MIT), [marked](https://github.com/markedjs/marked) 17.0.6 (MIT): `assets/js/vendor/`
