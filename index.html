@@ -36,6 +36,8 @@
 	<script>
 		// index.html 을 파일로 바로 열었는지 확인합니다. (이때는 content/ 를 읽을 수 없어 안내문을 보여 줍니다.)
 		if (location.protocol === 'file:') document.documentElement.classList.add('is-file-protocol');
+		// ?embed=데모id 로 열면 데모 하나만 보여 주므로 메뉴와 명함을 처음부터 감춥니다. (assets/js/portfolio/app.js)
+		if (/[?&]embed=/.test(location.search)) document.documentElement.classList.add('is-embed');
 		// 내용을 끝내 못 그리면 명함(#pf-splash)이 영원히 남지 않게 8초 뒤에는 치웁니다.
 		window.setTimeout(function () {
 			var splash = document.getElementById('pf-splash');

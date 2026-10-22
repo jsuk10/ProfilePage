@@ -5,6 +5,11 @@
 //   3. 'portfolio:rendered' 이벤트를 보내면 assets/js/main.js 가 템플릿 인터랙션
 //      (스크롤스파이, fade-up, spotlights, features, 부드러운 스크롤)을 붙입니다.
 // 내용 파일 하나가 잘못돼도 그 섹션 자리에만 오류 상자가 나오고 나머지는 그대로 그려집니다.
+//
+// index.html?embed=데모id 로 열면 노션 같은 곳의 iframe 에 끼워 넣도록 그 데모 하나만 그립니다.
+//   섹션 id            예) ?embed=spatial-audio
+//   툴 데모 항목 id     예) ?embed=prasia-lab--nevercook  ("섹션id--kind")
+// 메뉴, 명함, 꼬리말은 치우고 섹션 제목과 설명은 portfolio.css 의 Embed 규칙이 감춥니다.
 
 import { loadContent, ContentError, isPlainObject } from './content.js';
 import { renderers } from './sections.js';
@@ -14,6 +19,7 @@ import { escapeHtml } from './markdown.js';
 
 const SECTION_ID = /^[a-z0-9][a-z0-9-]*$/;
 const STYLES = new Set(['style1', 'style1-alt', 'style2', 'style2-alt', 'style3', 'style3-alt', 'style4', 'style4-alt', 'alt']);
+const EMBED = (new URLSearchParams(location.search).get('embed') ?? '').trim();
 
 function readSections(site) {
   if (!isPlainObject(site) || !Array.isArray(site.sections)) {
@@ -47,6 +53,21 @@ function readSections(site) {
       style: STYLES.has(style) ? style : 'style1',
     };
   });
+}
+
+// ?embed= 의 섹션 하나만 남깁니다. "섹션id--kind" 면 그 섹션의 demos 에서도 그 kind 하나만 남깁니다.
+function pickEmbed(sections) {
+  const [id, kind = ''] = EMBED.split('--');
+  const picked = sections.filter((section) => section.id === id);
+  if (!picked.length) throw new ContentError('site.yml', `embed "${EMBED}" 에 맞는 섹션 id 가 없습니다.`);
+  return { sections: picked, kind };
+}
+
+function pickDemo(data, kind, source) {
+  const demos = (Array.isArray(data.demos) ? data.demos : [])
+    .filter((demo) => isPlainObject(demo) && String(demo.kind ?? '').trim() === kind);
+  if (!demos.length) throw new ContentError(source, `embed 의 데모 "${kind}" 가 demos 에 없습니다.`);
+  return { ...data, demos };
 }
 
 // 불러오는 동안 보이던 명함(index.html 의 #pf-splash)을 치웁니다. 너무 빨리 지나가 깜빡이지 않게 1.2초는 보여 줍니다.
@@ -128,9 +149,15 @@ async function main() {
   const fragment = document.createDocumentFragment();
   const navItems = [];
   const mounts = [];
+  // 끼워 넣을 때는 메뉴, 명함, 꼬리말을 아예 빼서 템플릿의 사이드바 여백과 스크롤스파이가 붙지 않게 합니다.
+  if (EMBED) {
+    for (const selector of ['#sidebar', '#footer', '#pf-splash', '.pf-skip']) document.querySelector(selector)?.remove();
+  }
 
   try {
-    const sections = readSections(await loadContent('site.yml'));
+    let sections = readSections(await loadContent('site.yml'));
+    let embedKind = '';
+    if (EMBED) ({ sections, kind: embedKind } = pickEmbed(sections));
     const results = await Promise.allSettled(
       sections.map((section) => (section.error ? Promise.reject(section.error) : loadContent(section.source))),
     );
@@ -148,9 +175,12 @@ async function main() {
       try {
         if (result.status === 'rejected') throw result.reason;
         if (!isPlainObject(result.value)) throw new ContentError(section.source, '"이름: 값" 형식의 내용이 없습니다.');
-        const data = fillDurations(result.value, durations, section.source);
+        let data = fillDurations(result.value, durations, section.source);
+        if (embedKind) data = pickDemo(data, embedKind, section.source);
         const output = renderers[section.type](data, section);
         element = createSection(section, output);
+        // 끼워 넣은 데모는 스크롤로 나타나는 효과 없이 바로 보입니다.
+        if (EMBED) element.classList.remove('fade-up');
         if (output.mount) mounts.push(() => output.mount(element, data));
       } catch (error) {
         console.error(error);
@@ -181,7 +211,7 @@ async function main() {
   document.documentElement.classList.add('is-rendered');
   document.dispatchEvent(new CustomEvent('portfolio:rendered'));
   window.requestAnimationFrame(() => {
-    openInitialHash();
+    if (!EMBED) openInitialHash();
     hideSplash();
   });
 }

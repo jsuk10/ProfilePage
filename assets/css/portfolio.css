@@ -3423,6 +3423,52 @@
 			margin: 0;
 		}
 
+/* Embed (index.html?embed=데모id, 노션 같은 곳의 iframe 에 데모 하나만 끼워 넣을 때) */
+/* 메뉴, 명함, 꼬리말, 섹션 제목과 설명을 빼고 데모만 꽉 차게 둡니다. app.js 가 그 섹션 하나만 그립니다. */
+
+	html.is-embed {
+		scroll-padding-top: 0;
+		scrollbar-gutter: auto;
+	}
+
+	html.is-embed #sidebar,
+	html.is-embed #footer,
+	html.is-embed .pf-splash,
+	html.is-embed .pf-skip {
+		display: none !important;
+	}
+
+	html.is-embed #wrapper {
+		margin-left: 0 !important;
+		padding-top: 0 !important;
+	}
+
+		html.is-embed #wrapper > .wrapper {
+			min-height: 100vh;
+		}
+
+			html.is-embed #wrapper > .wrapper > .inner {
+				padding: 1rem;
+				width: 100%;
+			}
+
+			html.is-embed #wrapper > .wrapper > .inner > :not(.pf-toollab):not(.pf-lab):not(.pf-error) {
+				display: none;
+			}
+
+	html.is-embed .pf-toollab {
+		display: block;
+		margin: 0;
+	}
+
+		html.is-embed .pf-toollab__item {
+			max-width: none;
+		}
+
+			html.is-embed .pf-toollab__item > :not(.pf-toollab__demo) {
+				display: none;
+			}
+
 /* Reduced motion: 움직임은 빼고, 이해를 돕는 투명도 변화만 짧게 남깁니다. */
 
 	@media (prefers-reduced-motion: reduce) {

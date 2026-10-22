@@ -15,6 +15,13 @@ https://jsuk10.github.io/ProfilePage/
 - 미리 보기: VS Code 의 Live Server 로 `index.html` 을 엽니다. (파일을 더블클릭해서 열면 내용을 읽지 못합니다)
 - 올리기: 빌드 과정 없이 push 하면 GitHub Pages 에 그대로 반영됩니다.
 
+### 데모 하나만 끼워 넣기
+
+`index.html?embed=데모id` 로 열면 메뉴, 명함, 섹션 설명 없이 그 데모 하나만 보입니다. 노션의 임베드 블록에 이 주소를 넣으면 됩니다.
+
+- 공간음향: `?embed=spatial-audio`
+- 툴 데모: `?embed=섹션id--kind` 예) `prasia-lab--nevercook`, `prasia-lab--tray`, `prasia-lab--minimap`, `like-or-die-lab--notify`
+
 ### 사용한 라이브러리
 
 - [js-yaml](https://github.com/nodeca/js-yaml) 4.1.0 (MIT), [marked](https://github.com/markedjs/marked) 17.0.6 (MIT): `assets/js/vendor/`
