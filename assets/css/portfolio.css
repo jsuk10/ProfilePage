@@ -3443,11 +3443,16 @@
 		padding-top: 0 !important;
 	}
 
+		/* 노션 밖에서 링크로 크게 열면 넓은 화면 가운데에 놓입니다. */
 		html.is-embed #wrapper > .wrapper {
+			align-items: center;
+			display: flex;
 			min-height: 100vh;
 		}
 
 			html.is-embed #wrapper > .wrapper > .inner {
+				margin: 0 auto;
+				max-width: 64em;
 				padding: 1rem;
 				width: 100%;
 			}
